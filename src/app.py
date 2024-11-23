@@ -1,4 +1,5 @@
 import time
+from monitor.monitor import Monitor
 from queries.http_content_query import HttpContentQuery
 from queries.http_headers_query import HttpHeadersQuery
 from queries.http_regex_query import HttpRegexQuery
@@ -40,3 +41,25 @@ def run_debug_query(Query, expected_to_pass):
 # run_debug_query(RenderedContentRegexQuery(url="https://github.com/JeanMariePrevost/pyfolio", timeout=1, regex_to_find="Easy.*Websites"), True)
 # run_debug_query(RenderedContentRegexQuery(url="https://github.com/JeanMariePrevost/pyfolio", timeout=1, regex_to_find="create.simple"), True)
 # run_debug_query(RenderedContentRegexQuery(url="https://github.com/JeanMariePrevost/pyfolio", timeout=1, regex_to_find="This tool.*license"), True)
+
+
+# TEsting out monitor saving and loading
+monitor = Monitor()
+monitor.url = "http://www.google.com"
+monitor.query_type = HttpQuery
+json_string = monitor.to_json()
+print(json_string)
+monitor2 = Monitor.create_from_json(json_string)
+print(monitor2.to_json())
+print(f"Monitors are equivalent: {monitor.to_json() == monitor2.to_json()}")
+
+
+# Run both monitors a second apart and print the results
+print("Running the first monitor")
+result1 = monitor.execute()
+print(result1)
+time.sleep(1)
+print("Running the second monitor")
+result2 = monitor2.execute()
+print(result2)
+print(f"Results are equivalent: {result1 == result2}")
