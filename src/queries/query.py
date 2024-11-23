@@ -6,15 +6,8 @@ class Query:
     Abstract query that defines the "interface" for all queries and potentially holds common logic.
     """
 
-    def __init__(self, config: dict) -> None:
-        # Parse and validate the monitor configuration
-        self._validate_and_apply_config(config)
-
-    def _validate_and_apply_config(self, config: dict) -> None:
-        """
-        Validate and apply the configuration for the query.
-        """
-        raise NotImplementedError("Subclasses must implement this method.")
+    def __init__(self) -> None:
+        self._retries = 0
 
     def execute(self) -> QueryResult:
         """

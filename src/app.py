@@ -1,23 +1,27 @@
-from queries.http_availability_query import HttpAvailabilityQuery
+import time
+from queries.http_availability_query import HttpStatusCodeQuery
+from queries.http_query import HttpQuery
 
 
 print("Welcome to bump.")
-# ask user for a url to test for availability
-url = input("Please enter a URL to test for availability: ")
-# ask user for a timeout value in seconds
-timeout = input("Please enter a timeout value in seconds: ")
-# Create and run the query
-query = HttpAvailabilityQuery({"url": url, "timeout": float(timeout)})
-print("Running query...")
-result = query.execute()
-print("Query complete.")
+print("Current behavior is to run a series of simple queries to test the monitoring system.")
 
-# Print every member variable of the result
 
-print(f"Start time: {result.start_time}")
-print(f"End time: {result.end_time}")
-print(f"Test passed: {result.test_passed}")
-print(f"Tries: {result.tries}")
-print(f"Code or status: {result.code_or_status}")
-print(f"Message: {result.message}")
-print(f"Reason: {result.reason}")
+def run_debug_query(Query, expected_to_pass):
+    time.sleep(0.4)  # Just to not bombard the servers
+    result = Query.execute()
+    if result.test_passed == expected_to_pass:
+        print(f"AS EXPECTED: {result}")
+    else:
+        print(f"NOPE, something's not right: {result}")
+
+
+run_debug_query(HttpQuery(url="http://www.google.com", timeout=1), True)
+run_debug_query(HttpStatusCodeQuery(url="http://www.httpstat.us/200", timeout=1, expected_status_code=200), True)
+run_debug_query(HttpStatusCodeQuery(url="http://www.httpstat.us/200", timeout=1, expected_status_code=404), False)
+run_debug_query(HttpStatusCodeQuery(url="https://httpstat.us/404", timeout=1, expected_status_code=404), True)
+run_debug_query(HttpQuery(url="https://httpstat.us/200", timeout=1), True)
+run_debug_query(HttpStatusCodeQuery(url="https://httpstat.us/200", timeout=1, expected_status_code=500), False)
+run_debug_query(HttpStatusCodeQuery(url="https://thereissimplynowaythisisanactualurl", timeout=1, expected_status_code=500), False)
+run_debug_query(HttpQuery(url="https://httpstat.us/200", timeout=0.0001), False)  # Forced timeout
+run_debug_query(HttpStatusCodeQuery(url="https://httpstat.us/200", timeout=0.0001, expected_status_code=200), False)  # Forced timeout
