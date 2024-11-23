@@ -33,7 +33,7 @@ class HttpAvailabilityQuery(Query):
                     test_passed=response.code == 200,
                     tries=1,  # TODO: Implement retries
                     code_or_status=response.code,
-                    message=response.message,
+                    message=response.msg,
                     reason=response.reason,
                 )
         except ValueError as e:
@@ -44,7 +44,7 @@ class HttpAvailabilityQuery(Query):
                 test_passed=False,
                 tries=1,
                 code_or_status="ValueError",
-                message=response.message,
+                message=str(e),
                 reason=str(e.reason),
             )
         except urllib.error.HTTPError as e:
@@ -54,8 +54,8 @@ class HttpAvailabilityQuery(Query):
                 end_time=datetime.now(),
                 test_passed=False,
                 tries=1,
-                result_code_or_status=e.code,
-                result_message=str(e),
+                code_or_status=e.code,
+                message=str(e),
                 reason=str(e.reason),
             )
         except urllib.error.URLError as e:
