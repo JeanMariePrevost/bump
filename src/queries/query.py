@@ -1,4 +1,4 @@
-from query_result import QueryResult
+from queries.query_result import QueryResult
 
 
 class Query:

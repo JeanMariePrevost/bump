@@ -3,7 +3,7 @@ import re
 
 from playwright.sync_api import sync_playwright
 from queries.query import Query
-from query_result import QueryResult
+from queries.query_result import QueryResult
 
 
 class RenderedContentRegexQuery(Query):

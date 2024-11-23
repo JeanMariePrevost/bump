@@ -5,7 +5,7 @@ import urllib
 from urllib.error import HTTPError, URLError
 from urllib.request import Request
 from queries.query import Query
-from query_result import QueryResult
+from queries.query_result import QueryResult
 
 
 class HttpQuery(Query):
