@@ -1,8 +1,6 @@
-from datetime import datetime
 from http.client import HTTPResponse
 
 from queries.http_query import HttpQuery
-from query_result import QueryResult
 
 
 class HttpStatusCodeQuery(HttpQuery):
