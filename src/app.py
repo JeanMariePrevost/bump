@@ -44,28 +44,51 @@ def run_debug_query(Query, expected_to_pass):
 # run_debug_query(RenderedContentRegexQuery(url="https://github.com/JeanMariePrevost/pyfolio", timeout=1, regex_to_find="This tool.*license"), True)
 
 
-# TEsting out monitor saving and loading
+# TEsting serialiation stuff
 monitor = Monitor()
 monitor.query = HttpQuery(url="http://www.google.com", timeout=1)
-json_string = monitor.to_json()
-print(json_string)
-monitor2 = Monitor.create_from_json(json_string)
-print(monitor2.to_json())
-print(f"Monitors are equivalent: {monitor.to_json() == monitor2.to_json()}")
 
 
-# Run both monitors a second apart and print the results
-print("Running the first monitor")
-result1 = monitor.execute()
-print(result1)
-time.sleep(1)
-print("Running the second monitor")
-result2 = monitor2.execute()
-print(result2)
-print(f"Results are equivalent: {result1 == result2}")
+monitor2 = Monitor()
+monitor2.query = HttpQuery(url="http://www.google.com", timeout=1)
+
 
 monitors_manager = MonitorsManager()
 monitors_manager.add_monitor(monitor)
 monitors_manager.add_monitor(monitor2)
-print("saving monitors")
-monitors_manager.save_monitors_to_file()
+# print("saving monitors")
+# monitors_manager.save_monitors_to_file()
+
+
+print("Testing serialization module's functions")
+import serialization
+
+print("Testing serialization of a single query")
+encoded_query = serialization.to_encoded_json(monitor.query)
+print("Testing serialization of a single monitor")
+encoded_monitor = serialization.to_encoded_json(monitor)
+print(encoded_monitor)
+print("Testing serialization of a monitors manager")
+encoded_manager_content = serialization.to_encoded_json(monitors_manager.monitors)
+print(encoded_manager_content)
+
+deserialized_monitor = serialization.load_from_encoded_json(encoded_monitor)
+print("Deserialized monitor:")
+print(deserialized_monitor)
+result = deserialized_monitor.execute()
+print(f"Result of deserialized monitor: {result}")
+
+deserialized_manager = serialization.load_from_encoded_json(encoded_manager_content)
+deserialized_query_from_serialized_manager = deserialized_manager[0].query
+
+print("Deserialized query from serialized manager:")
+print(deserialized_query_from_serialized_manager)
+result = deserialized_query_from_serialized_manager.execute()
+print(f"Result of deserialized query from serialized manager: {result}")
+
+# extract the query from all 3 "as_dict" objects and compare
+# print("Comparing the query from the 3 serialized objects")
+# query_from_monitor_as_dict = monitor_as_dict["query"]
+# query_from_manager_as_dict = all_monitors_as_dict[0]["query"]
+# print(f"query_as_dict == query_from_monitor_as_dict? {query_as_dict == query_from_monitor_as_dict}")
+# print(f"query_as_dict == query_from_manager_as_dict? {query_as_dict == query_from_manager_as_dict}")

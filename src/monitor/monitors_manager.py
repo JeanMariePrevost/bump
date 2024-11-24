@@ -15,19 +15,6 @@ class MonitorsManager:
     def remove_monitor(self, monitor: Monitor) -> None:
         self.monitors.remove(monitor)
 
-    def save_monitors_to_file(self) -> None:
-        """
-        Serializes monitor objects and write them to a JSON file.
-        """
-
-        # Create path if it doesn't exist
-        os.makedirs(os.path.dirname(MONITORS_JSON_FILE), exist_ok=True)
-
-        with open(MONITORS_JSON_FILE, "w") as file:
-            for monitor in self.monitors:
-                monitor_as_json = monitor.to_json()
-                file.write(monitor_as_json)
-
     def load_monitors_from_file(self) -> None:
         """
         Reads monitor objects from a JSON file and deserializes and re-create them.

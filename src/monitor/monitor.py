@@ -4,37 +4,15 @@ import queries
 
 
 class Monitor:
-    @staticmethod
-    def create_from_json(json_string: str) -> "Monitor":
-        json_object = json.loads(json_string)
-        monitor = Monitor()
-        for key in json_object:
-            if hasattr(monitor, key):
-                setattr(monitor, key, json_object[key])
 
-        # Fix non-simple attributes
-        query_type = json_object["query"]["query_type"]
-        query_data_dict = json_object["query"]
-        monitor.query = getattr(queries, query_type).from_dict(query_data_dict)
+    @staticmethod
+    def from_dict(dict_object: dict) -> "Monitor":
+        monitor = Monitor()
+        for key in dict_object:
+            if hasattr(monitor, key):
+                setattr(monitor, key, dict_object[key])
 
         return monitor
-
-    def to_json(self):
-        self_as_dict = self.__dict__.copy()
-
-        # Fix non-simple attributes
-        if self.query:
-            # Make query a dictionary
-            self_as_dict["query"] = self.query.__dict__.copy()
-            # Add the query type to be able to recreate the query object
-            self_as_dict["query"]["query_type"] = self.query.__class__.__name__
-
-            # Turn every datetime object into a string
-            for key in self_as_dict["query"]:
-                if isinstance(self_as_dict["query"][key], datetime):
-                    self_as_dict["query"][key] = self_as_dict["query"][key].isoformat()
-
-        return json.dumps(self_as_dict)
 
     def __init__(self) -> None:
         self.unique_name = "Monitor"
