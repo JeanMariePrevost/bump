@@ -21,8 +21,6 @@ def create_default_testing_monitors_setup():
     print("Default monitors created successfully.")
     serialization.save_as_json_file(monitors_manager, "data/monitors.json")
     print("Default monitors configuration created.")
-    print("Please restart the program.")
-    exit(0)
 
 
 print("Trying to load monitors from file...")
@@ -32,9 +30,11 @@ try:
 except FileNotFoundError:
     print("No monitors found. Creating new monitors manager.")
     create_default_testing_monitors_setup()
+    monitors_manager: MonitorsManager = serialization.load_from_json_file("data/monitors.json")
 except Exception as e:
     print(f"An error occurred while loading monitors: {e}. Creating new monitors manager.")
     create_default_testing_monitors_setup()
+    monitors_manager: MonitorsManager = serialization.load_from_json_file("data/monitors.json")
 
 
 print("Starting monitor loop.")

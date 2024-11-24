@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
+import json
 from queries.query import Query
 from serialization import Deserializable
+import os
 
 
 class Monitor(Deserializable):
@@ -15,7 +17,9 @@ class Monitor(Deserializable):
         if not hasattr(self, "query") or self.query is None:
             raise ValueError("Monitor has no query to execute")
         self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
-        return self.query.execute()
+        query_result = self.query.execute()
+        self.append_query_result_to_history(query_result)
+        return query_result
 
     def execute_if_due(self):
         if datetime.now() > self._next_run_time:
@@ -23,3 +27,14 @@ class Monitor(Deserializable):
         else:  # DEBUG
             print(f"Monitor {self.unique_name} not due yet, next run in {self._next_run_time - datetime.now()}")
         return None
+
+    def append_query_result_to_history(self, query_result):
+        try:
+            target_path = f"data/history/{self.unique_name}.jsonl"
+            # create the whole path if it doesn't exist
+            os.makedirs(os.path.dirname(target_path), exist_ok=True)
+            with open(target_path, "a") as f:
+                f.write(json.dumps(query_result.__dict__) + "\n")
+
+        except Exception as e:
+            print(f"Error while appending query result to history: {e}")
