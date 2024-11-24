@@ -1,8 +1,10 @@
 import time
+import global_events
 from monitor.monitor import Monitor
 from monitor.monitors_manager import MonitorsManager
 import serialization
 from custom_logging import general_logger
+from util.signal import Signal, UntypedSignal
 
 
 general_logger.info("Starting application...")
@@ -96,6 +98,8 @@ except Exception as e:
 #### /ASYNC Scratch pad
 ############################################################################
 
+global_events.test_stop_bg_thread_signal.send()
+
 
 def mock_gui_loop():
     duration = 4
@@ -113,6 +117,7 @@ mock_gui_loop()
 
 print("Main thread exited the mock GUI loop.")
 print("At this point, the background monitoring thread is preventing the application from exiting.")
-monitors_manager.stop_bg_tasks = True
+# monitors_manager.stop_bg_tasks = True
+global_events.test_stop_bg_thread_signal.send()
 async_bg_monitoring_thread.join()
 print("Background monitoring thread joined. Application exiting.")

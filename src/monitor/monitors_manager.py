@@ -1,5 +1,6 @@
 import asyncio
 import threading
+import global_events
 from monitor.monitor import Monitor
 from serialization import Deserializable
 from custom_logging import general_logger
@@ -9,7 +10,7 @@ class MonitorsManager(Deserializable):
 
     def __init__(self) -> None:
         self.monitors: list[Monitor] = []
-        self.stop_bg_tasks = False  # Temporary solutions while I try signals
+        self.__bg_monitoring_running = False
 
     def add_monitor(self, monitor: Monitor) -> None:
         # Assert no duplicate names
@@ -37,11 +38,11 @@ class MonitorsManager(Deserializable):
     def start_background_monitoring_thread(self) -> threading.Thread:
         """Starts a background thread that continuously executes due monitors."""
 
+        self.__bg_monitoring_running = True
+        global_events.test_stop_bg_thread_signal.add(self.stop_background_monitoring_thread)
+
         async def background_monitoring_loop():
-            while True:
-                if self.stop_bg_tasks:
-                    general_logger.debug("Background monitoring loop stopping")
-                    break
+            while self.__bg_monitoring_running:
                 general_logger.debug("Background monitoring loop ticking")
                 self.execute_due_monitors()
                 await asyncio.sleep(3)
@@ -52,3 +53,6 @@ class MonitorsManager(Deserializable):
         thread = threading.Thread(target=thread_target)
         thread.start()
         return thread
+
+    def stop_background_monitoring_thread(self) -> None:
+        self.__bg_monitoring_running = False
