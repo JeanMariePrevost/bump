@@ -20,13 +20,20 @@ function addCard() {
   cards.push(card);
 }
 
+import { sendDataToPython } from "./PythonJsBridge.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   for (let i = 0; i < 4; i++) {
     addCard();
   }
+
+  // Wait for 5 seconds then send an event back to the backend
+  setTimeout(() => {
+    sendDataToPython("js_py_test_event", { data: "Hello from JavaScript!" });
+  }, 5000);
 });
 
-window.addEventListener("test_event", (event) => {
+window.addEventListener("py_js_test_event", (event) => {
   console.log("Event received from Python:");
   // Print each key-value pair in the event payload
   for (const key in event.detail) {

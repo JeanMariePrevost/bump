@@ -2,7 +2,7 @@ import os
 import time
 import webview
 
-from python_js_bridge import PythonJSBridge
+import python_js_bridge
 
 
 class MainPage:
@@ -12,9 +12,15 @@ class MainPage:
 
     def show(self):
         # NOTE: pywebview uses the script's current working directory as the base directory for relative paths. E.g. /src/...
-        self._window = webview.create_window("BUMP - Dashboard", "frontend/content/main_page.html", text_select=True, width=1200, height=800)
+        self._window: webview.Window = webview.create_window(
+            "BUMP - Dashboard",
+            "frontend/content/main_page.html",
+            js_api=python_js_bridge.get_js_api(),
+            text_select=True,
+            width=1200,
+            height=800,
+        )
 
-        print(f"Current working directory: {os.getcwd()}")
         webview.start(self.webview_custom_logic_callback, debug=True)
 
     def webview_custom_logic_callback(self):
@@ -22,6 +28,5 @@ class MainPage:
         print("Webview custom logic callback")
         time.sleep(2)
         # Dispatch dummy event to test communication
-        bridge = PythonJSBridge(self._window)
-        bridge.send_event("test_event", "Hello from the backend!")
+        python_js_bridge.send_event_to_js(self._window, "py_js_test_event", {"data": "Hello from the backend!"})
         pass

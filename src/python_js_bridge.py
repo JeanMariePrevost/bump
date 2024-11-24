@@ -1,13 +1,31 @@
 import json
 import webview
 
+__js_api = None
 
-class PythonJSBridge:
-    def __init__(self, window):
-        self.window = window
 
-    def send_event(self, event_type, data):
-        payload = {"data": data}  # Wrap the data in a dictionary
-        js_code = f"window.dispatchEvent(new CustomEvent('{event_type}', {{ detail: {json.dumps(payload)} }}));"
-        self.window.evaluate_js(js_code)
-        print(f"Sent event: {event_type} with data: {data}")
+def send_event_to_js(window: webview.Window, event_type: str, data: dict):
+    js_code = f"window.dispatchEvent(new CustomEvent('{event_type}', {{ detail: {json.dumps(data)} }}));"
+    window.evaluate_js(js_code)
+    print(f"Sent event: {event_type} with data: {data}")
+
+
+class JsApi:
+    """
+    Defines the set of functions that the *JavaScript* side can call on the Python side.
+    """
+
+    # def __init__(self, bridge):
+    #     self.bridge = bridge
+    #     self.window = bridge.window
+
+    def send_event_to_python(self, event_type, data):
+        print(f"Received event: {event_type} with data: {data}")
+        pass
+
+
+def get_js_api():
+    global __js_api
+    if __js_api is None:
+        __js_api = JsApi()
+    return __js_api
