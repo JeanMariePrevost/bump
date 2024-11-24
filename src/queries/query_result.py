@@ -1,7 +1,8 @@
 from datetime import datetime
+from serialization import Deserializable
 
 
-class QueryResult:
+class QueryResult(Deserializable):
     """Class to hold the results of a query"""
 
     def __init__(
@@ -15,8 +16,8 @@ class QueryResult:
         reason: str = None,
         exception_type: str = None,
     ) -> None:
-        self.start_time = start_time.isoformat()
-        self.end_time = end_time.isoformat()
+        self.start_time = start_time
+        self.end_time = end_time
         self.test_passed = test_passed
         self.retries = retries
         self.code_or_status = code_or_status

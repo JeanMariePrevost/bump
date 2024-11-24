@@ -14,10 +14,6 @@ class HttpHeadersQuery(HttpQuery):
         self.header_value = header_value
 
     def _test_passed_predicate(self, response: HTTPResponse | Exception) -> bool:
-        # Debug, print the headers
-        if hasattr(response, "headers"):
-            print(response.headers)
-
         if hasattr(response, "headers"):
             return response.headers.get(self.header_key) == self.header_value
         else:

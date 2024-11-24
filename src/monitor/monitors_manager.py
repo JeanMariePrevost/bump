@@ -1,11 +1,12 @@
 from monitor.monitor import Monitor
 from serialization import Deserializable
+from custom_logging import general_logger
 
 
 class MonitorsManager(Deserializable):
 
     def __init__(self) -> None:
-        self.monitors = []
+        self.monitors: list[Monitor] = []
 
     def add_monitor(self, monitor: Monitor) -> None:
         # Assert no duplicate names
@@ -21,8 +22,8 @@ class MonitorsManager(Deserializable):
         """Executes all monitors and prints the result."""
 
         for monitor in self.monitors:
-            print(f"Executing monitor {monitor.unique_name}")
-            print(monitor.execute())
+            general_logger.debug(f"Executing monitor {monitor.unique_name}")
+            general_logger.debug(monitor.execute())
 
     def execute_due_monitors(self) -> None:
         """Executes all monitors that are due and prints the result."""

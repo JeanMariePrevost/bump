@@ -1,18 +1,3 @@
-# def to_dict_tree(object) -> dict:
-#     if isinstance(object, dict):
-#         return {key: to_dict_tree(value) for key, value in object.items()}
-#     elif isinstance(object, list):
-#         return [to_dict_tree(element) for element in object]
-#     elif hasattr(object, "__dict__"):
-#         return to_dict_tree(object.__dict__)
-#     else:
-#         return object
-
-
-# def to_dict(object) -> dict:
-#     return object.__dict__
-
-
 from datetime import datetime
 import json
 
@@ -64,9 +49,16 @@ def encode_with_type(obj):
 
 def to_encoded_json(obj):
     """
-    Encodes an object to JSON, but includes the type of the non-simple objects for them to beproperly deserialized.
+    Encodes an object to JSON, but includes the type of the non-simple objects for them to be properly deserialized.
     """
     return json.dumps(encode_with_type(obj), indent=4)
+
+
+def to_encoded_jsonl(obj):
+    """
+    Like to_encoded_json, but as a single line
+    """
+    return json.dumps(encode_with_type(obj))
 
 
 def from_encoded_json(json_string) -> object:
