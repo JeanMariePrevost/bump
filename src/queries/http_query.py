@@ -14,8 +14,12 @@ class HttpQuery(Query):
     This one simply passes if the response code is 200, fails otherwise.
     """
 
+    @staticmethod
+    def from_dict(dictionary: dict) -> "HttpQuery":
+        HttpQuery.assert_keys_exist(dictionary, ["url", "timeout"])
+        return HttpQuery(url=dictionary["url"], timeout=dictionary["timeout"])
+
     def __init__(self, url: str, timeout: float) -> None:
-        # Confirm we have a URL and timeout in the config
         super().__init__()
         self.url = url
         self.timeout = timeout

@@ -9,6 +9,15 @@ class HttpStatusCodeQuery(HttpQuery):
     An HttpStatusCodeQuery with code 200 would be equivalent to a default HttpQuery.
     """
 
+    @staticmethod
+    def from_dict(dictionary: dict) -> "HttpStatusCodeQuery":
+        HttpStatusCodeQuery.assert_keys_exist(dictionary, ["url", "timeout", "expected_status_code"])
+        return HttpStatusCodeQuery(
+            url=dictionary["url"],
+            timeout=dictionary["timeout"],
+            expected_status_code=dictionary["expected_status_code"],
+        )
+
     def __init__(self, url: str, timeout: float, expected_status_code: int) -> None:
         super().__init__(url, timeout)
         self.expected_status_code = expected_status_code
