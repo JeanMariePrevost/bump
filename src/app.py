@@ -11,10 +11,10 @@ def create_default_testing_monitors_setup():
     from queries.http_query import HttpQuery
     from queries.http_regex_query import HttpRegexQuery
 
-    monitor = Monitor()
-    monitor.query = HttpQuery(url="http://www.google.com", timeout=10)
-    monitor2 = Monitor()
-    monitor2.query = HttpRegexQuery(url="https://github.com/JeanMariePrevost/p3-project-pew-pew", timeout=10, regex_to_find="proj.*pew")
+    temp_query = HttpQuery(url="http://www.google.com", timeout=10)
+    monitor = Monitor(unique_name="Google", period_in_seconds=16, query=temp_query)
+    temp_query = HttpRegexQuery(url="https://github.com/JeanMariePrevost/p3-project-pew-pew", timeout=10, regex_to_find="proj.*pew")
+    monitor2 = Monitor(unique_name="GitHub_pew_pew", period_in_seconds=8, query=temp_query)
     monitors_manager = MonitorsManager()
     monitors_manager.add_monitor(monitor)
     monitors_manager.add_monitor(monitor2)
@@ -27,7 +27,7 @@ def create_default_testing_monitors_setup():
 
 print("Trying to load monitors from file...")
 try:
-    monitors_manager = serialization.load_from_json_file("data/monitors.json")
+    monitors_manager: MonitorsManager = serialization.load_from_json_file("data/monitors.json")
     print("Monitors loaded successfully.")
 except FileNotFoundError:
     print("No monitors found. Creating new monitors manager.")
@@ -40,4 +40,4 @@ except Exception as e:
 print("Starting monitor loop.")
 while True:
     monitors_manager.execute_due_monitors()
-    time.sleep(1)
+    time.sleep(2)

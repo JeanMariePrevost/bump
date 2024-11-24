@@ -1,4 +1,3 @@
-import json
 from monitor.monitor import Monitor
 from serialization import Deserializable
 
@@ -9,6 +8,10 @@ class MonitorsManager(Deserializable):
         self.monitors = []
 
     def add_monitor(self, monitor: Monitor) -> None:
+        # Assert no duplicate names
+        for m in self.monitors:
+            if m.unique_name == monitor.unique_name:
+                raise ValueError(f"Monitor with name {monitor.unique_name} already exists")
         self.monitors.append(monitor)
 
     def remove_monitor(self, monitor: Monitor) -> None:
@@ -25,5 +28,4 @@ class MonitorsManager(Deserializable):
         """Executes all monitors that are due and prints the result."""
 
         for monitor in self.monitors:
-            print(f"Executing monitor {monitor.unique_name} is due")
-            print(monitor.execute_if_due())
+            monitor.execute_if_due()
