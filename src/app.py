@@ -45,8 +45,7 @@ def run_debug_query(Query, expected_to_pass):
 
 # TEsting out monitor saving and loading
 monitor = Monitor()
-monitor.url = "http://www.google.com"
-monitor.query_type = HttpQuery
+monitor.query = HttpQuery(url="http://www.google.com", timeout=1)
 json_string = monitor.to_json()
 print(json_string)
 monitor2 = Monitor.create_from_json(json_string)
