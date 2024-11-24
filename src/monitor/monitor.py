@@ -1,3 +1,4 @@
+from datetime import datetime
 import json
 import queries
 
@@ -27,6 +28,11 @@ class Monitor:
             self_as_dict["query"] = self.query.__dict__.copy()
             # Add the query type to be able to recreate the query object
             self_as_dict["query"]["query_type"] = self.query.__class__.__name__
+
+            # Turn every datetime object into a string
+            for key in self_as_dict["query"]:
+                if isinstance(self_as_dict["query"][key], datetime):
+                    self_as_dict["query"][key] = self_as_dict["query"][key].isoformat()
 
         return json.dumps(self_as_dict)
 

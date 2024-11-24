@@ -6,6 +6,7 @@ from queries.http_regex_query import HttpRegexQuery
 from queries.http_status_code_query import HttpStatusCodeQuery
 from queries.http_query import HttpQuery
 from queries.rendered_content_regex_query import RenderedContentRegexQuery
+from monitor.monitors_manager import MonitorsManager
 
 
 print("Welcome to bump.")
@@ -62,3 +63,9 @@ print("Running the second monitor")
 result2 = monitor2.execute()
 print(result2)
 print(f"Results are equivalent: {result1 == result2}")
+
+monitors_manager = MonitorsManager()
+monitors_manager.add_monitor(monitor)
+monitors_manager.add_monitor(monitor2)
+print("saving monitors")
+monitors_manager.save_monitors_to_file()
