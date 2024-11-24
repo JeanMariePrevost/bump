@@ -55,7 +55,7 @@ def to_encoded_json(obj):
     return json.dumps(encode_with_type(obj), indent=4)
 
 
-def load_from_encoded_json(json_string) -> object:
+def from_encoded_json(json_string) -> object:
     """
     Deserializes an object from a JSON string that was encoded with the encode_with_type function.
     """
@@ -69,6 +69,7 @@ def load_from_encoded_json(json_string) -> object:
                 class_module = ".".join(obj["type"].split(".")[:-1])
                 class_ = getattr(__import__(class_module, fromlist=[class_name]), class_name)
                 return class_.from_dict({key: decode_with_type(value) for key, value in obj["value"].items()})
+
         elif isinstance(obj, list):
             return [decode_with_type(item) for item in obj]
         elif isinstance(obj, dict):
@@ -77,3 +78,19 @@ def load_from_encoded_json(json_string) -> object:
             return obj
 
     return decode_with_type(json.loads(json_string))
+
+
+def save_as_json_file(obj, file_path) -> None:
+    """
+    Saves an object to a JSON file, but includes the type of the non-simple objects for them to beproperly deserialized.
+    """
+    with open(file_path, "w") as file:
+        file.write(to_encoded_json(obj))
+
+
+def load_from_json_file(file_path) -> object:
+    """
+    Loads an object from a JSON file that was encoded with the encode_with_type function.
+    """
+    with open(file_path, "r") as file:
+        return from_encoded_json(file.read())

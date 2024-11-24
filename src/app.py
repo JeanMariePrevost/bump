@@ -72,13 +72,13 @@ print("Testing serialization of a monitors manager")
 encoded_manager_content = serialization.to_encoded_json(monitors_manager.monitors)
 print(encoded_manager_content)
 
-deserialized_monitor = serialization.load_from_encoded_json(encoded_monitor)
+deserialized_monitor = serialization.from_encoded_json(encoded_monitor)
 print("Deserialized monitor:")
 print(deserialized_monitor)
 result = deserialized_monitor.execute()
 print(f"Result of deserialized monitor: {result}")
 
-deserialized_manager = serialization.load_from_encoded_json(encoded_manager_content)
+deserialized_manager = serialization.from_encoded_json(encoded_manager_content)
 deserialized_query_from_serialized_manager = deserialized_manager[0].query
 
 print("Deserialized query from serialized manager:")
@@ -86,9 +86,12 @@ print(deserialized_query_from_serialized_manager)
 result = deserialized_query_from_serialized_manager.execute()
 print(f"Result of deserialized query from serialized manager: {result}")
 
-# extract the query from all 3 "as_dict" objects and compare
-# print("Comparing the query from the 3 serialized objects")
-# query_from_monitor_as_dict = monitor_as_dict["query"]
-# query_from_manager_as_dict = all_monitors_as_dict[0]["query"]
-# print(f"query_as_dict == query_from_monitor_as_dict? {query_as_dict == query_from_monitor_as_dict}")
-# print(f"query_as_dict == query_from_manager_as_dict? {query_as_dict == query_from_manager_as_dict}")
+
+# Test saving and loading to and from file
+serialization.save_as_json_file(monitors_manager.monitors, "data/monitors.json")
+loaded_monitors = serialization.load_from_json_file("data/monitors.json")
+
+new_monitors_manager = MonitorsManager()
+new_monitors_manager.monitors = loaded_monitors
+
+new_monitors_manager.execute_monitors()

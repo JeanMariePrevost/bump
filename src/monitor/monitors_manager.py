@@ -23,3 +23,12 @@ class MonitorsManager:
 
         with open(MONITORS_JSON_FILE, "r") as file:
             self.monitors = [Monitor.from_dict(monitor) for monitor in json.load(file)]
+
+    def execute_monitors(self) -> None:
+        """
+        Executes all monitors and prints the result.
+        """
+
+        for monitor in self.monitors:
+            print(f"Executing monitor {monitor.unique_name}")
+            print(monitor.execute())
