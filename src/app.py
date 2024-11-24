@@ -94,4 +94,9 @@ loaded_monitors = serialization.load_from_json_file("data/monitors.json")
 new_monitors_manager = MonitorsManager()
 new_monitors_manager.monitors = loaded_monitors
 
-new_monitors_manager.execute_monitors()
+new_monitors_manager.force_execute_monitors()
+
+
+while True:
+    new_monitors_manager.execute_due_monitors()
+    time.sleep(1)
