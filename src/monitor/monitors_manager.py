@@ -2,8 +2,6 @@ import json
 from monitor.monitor import Monitor
 from serialization import Deserializable
 
-MONITORS_JSON_FILE = "data/monitors.json"
-
 
 class MonitorsManager(Deserializable):
 
@@ -15,15 +13,6 @@ class MonitorsManager(Deserializable):
 
     def remove_monitor(self, monitor: Monitor) -> None:
         self.monitors.remove(monitor)
-
-    def load_monitors_from_file(self) -> None:
-        """
-        Reads monitor objects from a JSON file and deserializes and re-create them.
-        Replaces all existing monitors.
-        """
-
-        with open(MONITORS_JSON_FILE, "r") as file:
-            self.monitors = [Monitor.from_dict(monitor) for monitor in json.load(file)]
 
     def force_execute_monitors(self) -> None:
         """Executes all monitors and prints the result."""
