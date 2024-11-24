@@ -6,13 +6,13 @@ class QueryResult:
 
     def __init__(
         self,
-        start_time: datetime,
-        end_time: datetime,
-        test_passed: bool,
-        retries: int,
-        code_or_status: int,
-        message: str,
-        reason: str,
+        start_time: datetime = None,
+        end_time: datetime = None,
+        test_passed: bool = None,
+        retries: int = None,
+        code_or_status: int = None,
+        message: str = None,
+        reason: str = None,
         exception_type: str = None,
     ) -> None:
         self.start_time = start_time.isoformat()

@@ -21,6 +21,20 @@ class SerializationError(Exception):
     pass
 
 
+class Deserializable:
+    """Base class for class instances that can be deserialized from a dictionary."""
+
+    @classmethod
+    def from_dict(cls, dict_object: dict):
+        # Dynamically create an instance of the calling class
+        instance = cls()
+        for key, value in dict_object.items():
+            # Only set attributes that exist in the class
+            if hasattr(instance, key):
+                setattr(instance, key, value)
+        return instance
+
+
 def encode_with_type(obj):
     """
     Function to encode an non-simple object to as a dictionary of its attributes AND its type.

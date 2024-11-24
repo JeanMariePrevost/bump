@@ -1,24 +1,13 @@
-from datetime import datetime
-import json
-import queries
+from serialization import Deserializable
 
 
-class Monitor:
-
-    @staticmethod
-    def from_dict(dict_object: dict) -> "Monitor":
-        monitor = Monitor()
-        for key in dict_object:
-            if hasattr(monitor, key):
-                setattr(monitor, key, dict_object[key])
-
-        return monitor
+class Monitor(Deserializable):
 
     def __init__(self) -> None:
         self.unique_name = "Monitor"
         self.query = None
 
     def execute(self):
-        if not self.query:
+        if not hasattr(self, "query") or self.query is None:
             raise ValueError("Monitor has no query to execute")
         return self.query.execute()

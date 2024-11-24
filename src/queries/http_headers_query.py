@@ -8,7 +8,7 @@ class HttpHeadersQuery(HttpQuery):
     Looks for a specific key:value pair in the response headers.
     """
 
-    def __init__(self, url: str, timeout: float, header_key: str, header_value: str) -> None:
+    def __init__(self, url: str = "", timeout: float = 1, header_key: str = "", header_value: str = "") -> None:
         super().__init__(url, timeout)
         self.header_key = header_key
         self.header_value = header_value

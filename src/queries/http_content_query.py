@@ -8,17 +8,7 @@ class HttpContentQuery(HttpQuery):
     Looks for a string in the response body.
     """
 
-    @staticmethod
-    def from_dict(dictionary: dict) -> "HttpContentQuery":
-        HttpContentQuery.assert_keys_exist(dictionary, ["url", "timeout", "string_to_find"])
-
-        return HttpContentQuery(
-            url=dictionary["url"],
-            timeout=dictionary["timeout"],
-            string_to_find=dictionary["string_to_find"],
-        )
-
-    def __init__(self, url: str, timeout: float, string_to_find: str) -> None:
+    def __init__(self, url: str = "", timeout: float = 1, string_to_find: str = "") -> None:
         super().__init__(url, timeout)
         self.string_to_find = string_to_find
 

@@ -9,20 +9,8 @@ class HttpRegexQuery(HttpQuery):
     Looks for a string in the response body.
     """
 
-    @staticmethod
-    def from_dict(dictionary: dict) -> "HttpRegexQuery":
-        HttpRegexQuery.assert_keys_exist(dictionary, ["url", "timeout", "regex_to_find"])
-        return HttpRegexQuery(
-            url=dictionary["url"],
-            timeout=dictionary["timeout"],
-            regex_to_find=dictionary["regex_to_find"],
-            multi_line=dictionary.get("multi_line", False),
-            ignore_case=dictionary.get("ignore_case", False),
-            dot_all=dictionary.get("dot_all", False),
-        )
-
     def __init__(
-        self, url: str, timeout: float, regex_to_find: str, multi_line: bool = False, ignore_case: bool = False, dot_all: bool = False
+        self, url: str = "", timeout: float = 1, regex_to_find: str = "", multi_line: bool = False, ignore_case: bool = False, dot_all: bool = False
     ) -> None:
         """
         :param url: The URL to query

@@ -1,11 +1,12 @@
 import json
 from monitor.monitor import Monitor
-import os
+from serialization import Deserializable
 
 MONITORS_JSON_FILE = "data/monitors.json"
 
 
-class MonitorsManager:
+class MonitorsManager(Deserializable):
+
     def __init__(self) -> None:
         self.monitors = []
 
