@@ -1,4 +1,5 @@
 import time
+from frontend.main_page import MainPage
 import global_events
 from monitor.monitor import Monitor
 from monitor.monitors_manager import MonitorsManager
@@ -113,7 +114,9 @@ async_bg_monitoring_thread = monitors_manager.start_background_monitoring_thread
 
 print("We started the background monitoring thread. Now we can do other things in the main thread.")
 
-mock_gui_loop()
+# mock_gui_loop()
+test_window = MainPage()
+test_window.show()  # This will block until the window is closed
 
 print("Main thread exited the mock GUI loop.")
 print("At this point, the background monitoring thread is preventing the application from exiting.")
