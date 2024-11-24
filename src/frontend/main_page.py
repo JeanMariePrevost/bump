@@ -11,7 +11,7 @@ class MainPage:
         _window = webview.create_window("BUMP - Dashboard", "frontend/content/main_page.html", text_select=True, width=1200, height=800)
 
         print(f"Current working directory: {os.getcwd()}")
-        webview.start(self.webview_custom_logic_callback, debug=False)
+        webview.start(self.webview_custom_logic_callback, debug=True)
 
     def webview_custom_logic_callback(self):
         # A separate thread handled by the webview?

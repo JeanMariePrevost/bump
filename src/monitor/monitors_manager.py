@@ -44,7 +44,8 @@ class MonitorsManager(Deserializable):
         async def background_monitoring_loop():
             while self.__bg_monitoring_running:
                 general_logger.debug("Background monitoring loop ticking")
-                self.execute_due_monitors()
+                general_logger.warning("DEBUG: Monitoring currently disabled in the code.")
+                # self.execute_due_monitors()
                 await asyncio.sleep(3)
 
         def thread_target():
