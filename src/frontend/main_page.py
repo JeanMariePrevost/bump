@@ -1,12 +1,15 @@
 import time
 import webview
 
+import global_events
 import python_js_bridge
 
 
 class MainPage:
     def __init__(self) -> None:
         self._window = None
+        global_events.open_gui_requested.add(self.show)
+        global_events.app_exit_requested.add(self.close)
         pass
 
     def show(self):
@@ -20,7 +23,14 @@ class MainPage:
             height=800,
         )
 
+        global_events.app_exit_requested.add(self._window.destroy)
+
         webview.start(self.webview_custom_logic_callback, debug=True)
+
+    def close(self):
+        if self._window is not None:
+            self._window.destroy()
+            self._window = None
 
     def webview_custom_logic_callback(self):
         # A separate thread handled by the webview?

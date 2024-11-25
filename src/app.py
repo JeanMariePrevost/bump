@@ -1,11 +1,10 @@
-import time
 from frontend.main_page import MainPage
 import global_events
 from monitor.monitor import Monitor
 from monitor.monitors_manager import MonitorsManager
 import serialization
 from custom_logging import general_logger
-from util.signal import Signal, UntypedSignal
+from system_tray_icon import SystemTrayIcon
 
 
 general_logger.info("Starting application...")
@@ -99,28 +98,24 @@ except Exception as e:
 #### /ASYNC Scratch pad
 ############################################################################
 
-global_events.app_exit_requested.send()
-
-
-def mock_gui_loop():
-    duration = 4
-    for i in range(duration):
-        print(f"Mock gui loop will stop in {duration - i} seconds")
-        time.sleep(1)
-    print("Mock gui loop stopping.")
-
 
 async_bg_monitoring_thread = monitors_manager.start_background_monitoring_thread()
 
 print("We started the background monitoring thread. Now we can do other things in the main thread.")
 
-# mock_gui_loop()
+tray_icon = SystemTrayIcon()
+
+
+def exit_application():
+    general_logger.info("Exiting application...")
+    test_window.close()
+    monitors_manager.stop_background_monitoring_thread()
+    general_logger.info("Background monitoring thread stopped.")
+
+
+global_events.app_exit_requested.add(tray_icon.stop)
+
 test_window = MainPage()
 test_window.show()  # This will block until the window is closed
 
-print("Main thread exited the mock GUI loop.")
-print("At this point, the background monitoring thread is preventing the application from exiting.")
-# monitors_manager.stop_bg_tasks = True
-global_events.app_exit_requested.send()
-async_bg_monitoring_thread.join()
-print("Background monitoring thread joined. Application exiting.")
+print("Main window was closed. End of script reached.")

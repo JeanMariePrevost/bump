@@ -1,7 +1,8 @@
-from util.signal import Signal
+from my_utils.signal import Signal
 
 
 app_exit_requested = Signal()
+open_gui_requested = Signal()
 
 
 # Signals to probably add:

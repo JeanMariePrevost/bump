@@ -1,6 +1,8 @@
 from inspect import signature
 from typing import Callable, List, Tuple, Type, Union
 
+from custom_logging import general_logger
+
 
 class Signal:
     """
@@ -17,6 +19,8 @@ class Signal:
     """
 
     # TODO: Make thread-safe? (threading.Lock)
+    # TODO: Add support for async callbacks? For awaits?
+    # TODO: Add support for weak references?
 
     @staticmethod
     def create_wildcard_signal() -> "Signal":
@@ -75,7 +79,7 @@ class Signal:
         """
         self.observers.clear()
 
-    def send(self, *args, **kwargs) -> None:
+    def trigger(self, *args, **kwargs) -> None:
         """
         Trigger the signal, passing the payload to all observers.
         """
@@ -96,7 +100,7 @@ class Signal:
             raise TypeError(f"Callback {target_function} does not match signal signature {self.arg_types}")
 
         if self.function_in_list(target_function):
-            raise ValueError(f"Callback {target_function} is already in the observer list")
+            general_logger.debug(f"Trying to add {target_function} which is already in the signal's list")
 
     def _payload_is_valid_type(self, args: Tuple) -> bool:
         """
