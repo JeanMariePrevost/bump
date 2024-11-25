@@ -106,16 +106,28 @@ print("We started the background monitoring thread. Now we can do other things i
 tray_icon = SystemTrayIcon()
 
 
-def exit_application():
-    general_logger.info("Exiting application...")
-    test_window.close()
-    monitors_manager.stop_background_monitoring_thread()
-    general_logger.info("Background monitoring thread stopped.")
+def main_thread_loop():
+    general_logger.debug("Main loop started.")
+    global_events.main_thread_event_queue.put("show_gui")
+    while True:
+        general_logger.debug("Main loop ticking.")
+        print(f"Elements on queue: {global_events.main_thread_event_queue.qsize()}")
+        event = global_events.main_thread_event_queue.get()
+        print(f"Received event: {event}")
+
+        if event == "exit":
+            general_logger.info("Exiting application...")
+            break
+        elif event == "show_gui":
+            test_window = MainPage()
+            test_window.show()
+            print("Main window was closed.")
+        else:
+            general_logger.error(f"Unknown event received: {event}")
 
 
-global_events.app_exit_requested.add(tray_icon.stop)
+main_thread_loop()
 
-test_window = MainPage()
-test_window.show()  # This will block until the window is closed
+global_events.main_loop_exited.trigger()
 
 print("Main window was closed. End of script reached.")

@@ -31,7 +31,7 @@ class SystemTrayIcon:
             ),
         )
 
-        global_events.app_exit_requested.add(self.stop)
+        global_events.main_loop_exited.add(self.stop)
 
         # Run pystray
         __pystray_icon_object.run_detached()
@@ -39,7 +39,7 @@ class SystemTrayIcon:
     # Define actions for the RMB menu of the tray icon
     def on_clicked_exit(self, icon, item):
         general_logger.debug(f'system_tray.on_clicked_exit: Clicked "{item}"')
-        global_events.app_exit_requested.trigger()
+        global_events.main_thread_event_queue.put("exit")
 
     def stop(self):
         general_logger.debug("system_tray.stop: Stopping system tray...")
@@ -50,4 +50,4 @@ class SystemTrayIcon:
     # Define actions for the RMB menu of the tray icon
     def on_clicked_open_gui(self, icon, item):
         general_logger.debug(f'system_tray.on_clicked_open_gui: Clicked "{item}"')
-        global_events.open_gui_requested.trigger()
+        global_events.main_thread_event_queue.put("show_gui")

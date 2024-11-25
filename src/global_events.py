@@ -1,8 +1,19 @@
+from queue import Queue
 from my_utils.signal import Signal
 
+# Queue for sending stuff that NEEDS to be handled in the main thread, e.g. showing pywebview windows
+__main_thread_event_queue = Queue()
 
-app_exit_requested = Signal()
-open_gui_requested = Signal()
+
+main_loop_exited = Signal()  # E.g. the main loop has exited, application is shutting down, threads need to stop
+
+
+def request_to_show_gui():
+    __main_thread_event_queue.put("show_gui")
+
+
+def request_to_exit_app():
+    __main_thread_event_queue.put("exit")
 
 
 # Signals to probably add:

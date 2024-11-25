@@ -39,7 +39,7 @@ class MonitorsManager(Deserializable):
         """Starts a background thread that continuously executes due monitors."""
 
         self.__bg_monitoring_running = True
-        global_events.app_exit_requested.add(self.stop_background_monitoring_thread)
+        global_events.main_loop_exited.add(self.stop_background_monitoring_thread)
 
         async def background_monitoring_loop():
             while self.__bg_monitoring_running:

@@ -18,9 +18,9 @@ class Signal:
     ```
     """
 
+    # TODO: Add support for weak references? Either we need explicit "desctruction" of objects, or we need to use weakrefs
     # TODO: Make thread-safe? (threading.Lock)
     # TODO: Add support for async callbacks? For awaits?
-    # TODO: Add support for weak references?
 
     @staticmethod
     def create_wildcard_signal() -> "Signal":
