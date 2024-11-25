@@ -1,4 +1,20 @@
 from util.signal import Signal
 
 
-test_stop_bg_thread_signal = Signal()
+app_exit_requested = Signal()
+
+
+# Signals to probably add:
+# Monitor state changed
+# errors?
+
+# Other potential events:
+# Monitor added
+# Monitor removed
+# Monitor modified
+# Monitor executed / new results in
+
+
+# Signals to WEAK MAYBE CONSIDER adding:
+# Monitor due state changed
+# Monitor execution failed

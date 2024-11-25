@@ -99,7 +99,7 @@ except Exception as e:
 #### /ASYNC Scratch pad
 ############################################################################
 
-global_events.test_stop_bg_thread_signal.send()
+global_events.app_exit_requested.send()
 
 
 def mock_gui_loop():
@@ -121,6 +121,6 @@ test_window.show()  # This will block until the window is closed
 print("Main thread exited the mock GUI loop.")
 print("At this point, the background monitoring thread is preventing the application from exiting.")
 # monitors_manager.stop_bg_tasks = True
-global_events.test_stop_bg_thread_signal.send()
+global_events.app_exit_requested.send()
 async_bg_monitoring_thread.join()
 print("Background monitoring thread joined. Application exiting.")
