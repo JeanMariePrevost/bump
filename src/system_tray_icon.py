@@ -7,6 +7,7 @@ import pystray
 
 from custom_logging import general_logger
 import global_events
+from my_utils.simple_queue import QueueEvents
 from my_utils import util
 
 
@@ -39,7 +40,10 @@ class SystemTrayIcon:
     # Define actions for the RMB menu of the tray icon
     def on_clicked_exit(self, icon, item):
         general_logger.debug(f'system_tray.on_clicked_exit: Clicked "{item}"')
-        global_events.main_thread_event_queue.put("exit")
+        # global_events.main_thread_event_queue.put("exit")
+        global_events.app_exit_requested.trigger()
+        global_events.bg_monitoring_queue.put_nowait(QueueEvents.EXIT_APP)
+        global_events.main_thread_blocking_queue.put(QueueEvents.EXIT_APP, 1)
 
     def stop(self):
         general_logger.debug("system_tray.stop: Stopping system tray...")
@@ -50,4 +54,9 @@ class SystemTrayIcon:
     # Define actions for the RMB menu of the tray icon
     def on_clicked_open_gui(self, icon, item):
         general_logger.debug(f'system_tray.on_clicked_open_gui: Clicked "{item}"')
-        global_events.main_thread_event_queue.put("show_gui")
+        # global_events.main_thread_event_queue.put("show_gui")
+        if not global_events.gui_winow_opened:
+            global_events.main_thread_blocking_queue.put(QueueEvents.OPEN_GUI, 1)
+        else:
+            general_logger.debug("system_tray.on_clicked_open_gui: Main window already open.")
+            pass

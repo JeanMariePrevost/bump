@@ -1,5 +1,5 @@
 from inspect import signature
-from typing import Callable, List, Tuple, Type, Union
+from typing import Callable, List, Tuple, Type
 
 from custom_logging import general_logger
 
@@ -18,7 +18,7 @@ class Signal:
     ```
     """
 
-    # TODO: Add support for weak references? Either we need explicit "desctruction" of objects, or we need to use weakrefs
+    # TODO: Turn to weak references. Either we need explicit "desctruction" of objects, or we need to use weakrefs.
     # TODO: Make thread-safe? (threading.Lock)
     # TODO: Add support for async callbacks? For awaits?
 

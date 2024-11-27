@@ -2,6 +2,7 @@ from frontend.main_page import MainPage
 import global_events
 from monitor.monitor import Monitor
 from monitor.monitors_manager import MonitorsManager
+from my_utils.simple_queue import QueueEvents
 import serialization
 from custom_logging import general_logger
 from system_tray_icon import SystemTrayIcon
@@ -108,17 +109,20 @@ tray_icon = SystemTrayIcon()
 
 def main_thread_loop():
     general_logger.debug("Main loop started.")
-    global_events.main_thread_event_queue.put("show_gui")
+    test_window = MainPage()
+    test_window.show()
+    # global_events.main_thread_event_queue.put("show_gui")
     while True:
         general_logger.debug("Main loop ticking.")
-        print(f"Elements on queue: {global_events.main_thread_event_queue.qsize()}")
-        event = global_events.main_thread_event_queue.get()
-        print(f"Received event: {event}")
 
-        if event == "exit":
+        general_logger.debug("Main loop listening for next event...")
+        event = global_events.main_thread_blocking_queue.get()  # Blocks until an event is received
+        general_logger.debug(f"Main loop received event: {event}")
+
+        if event == QueueEvents.EXIT_APP:
             general_logger.info("Exiting application...")
             break
-        elif event == "show_gui":
+        elif event == QueueEvents.OPEN_GUI:
             test_window = MainPage()
             test_window.show()
             print("Main window was closed.")
