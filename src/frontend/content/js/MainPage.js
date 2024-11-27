@@ -20,7 +20,7 @@ function addCard() {
   cards.push(card);
 }
 
-import { sendDataToPython } from "./PythonJsBridge.js";
+import { sendDataToPython, getDataFromPython } from "./PythonJsBridge.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   for (let i = 0; i < 4; i++) {
@@ -28,9 +28,48 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Wait for 5 seconds then send an event back to the backend
-  setTimeout(() => {
-    sendDataToPython("js_py_test_event", { data: "Hello from JavaScript!" });
-  }, 5000);
+  // setTimeout(() => {
+  //   sendDataToPython("js_py_test_event", { data: "Hello from JavaScript!" });
+  // }, 5000);
+
+  // Test requesting data from the backend after a delay
+  // setTimeout(async () => {
+  //   const response = await testRequestDataFromPython("Hello from JavaScript!");
+  //   console.log("Response from Python:", response);
+  // }, 3000);
+
+  // Instant request test
+  // (async () => {
+  //   const response = await testRequestDataFromPython("Hello from JavaScript!");
+  //   console.log("Response from Python:", response);
+  // })();
+});
+
+window.addEventListener("pywebviewready", function () {
+  console.log("PyWebView is ready!");
+
+  // (async () => {
+  //   const the_actual_data = await getDataFromPython("My input");
+  //   console.log("Received data:", the_actual_data);
+  // })();
+
+  getDataFromPython("Hello from JavaScript!").then((response) => {
+    console.log("Response from Python:", response);
+  });
+
+  // const result = fetchDataFromPython("The JS input was this1.");
+  // // DEBUG: Print the contents and the type of the result
+  // console.log("Result from fetchDataFromPython:", result);
+  // console.log("Type of result:", typeof result);
+
+  // (async () => {
+  //   try {
+  //     const response = await testRequestDataFromPython("The JS input was this.");
+  //     console.log("Response from Python:", response.data);
+  //   } catch (error) {
+  //     console.error("Error while fetching data from Python:", error);
+  //   }
+  // })();
 });
 
 window.addEventListener("py_js_test_event", (event) => {

@@ -28,6 +28,11 @@ class JsApi:
         print(f"Received event: {event_type} with data: {data}")
         pass
 
+    def test_request_some_data(self, input_string: str):
+        print(f"Received request for data with input: {input_string}")
+        result = input_string + " - modified on the Python side"
+        return {"data": result}
+
 
 def get_js_api():
     global __js_api
