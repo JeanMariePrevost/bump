@@ -6,7 +6,7 @@ import PIL.Image
 import pystray
 
 from custom_logging import general_logger
-import global_events
+import mediator
 from my_utils.simple_queue import QueueEvents
 from my_utils import util
 
@@ -32,7 +32,7 @@ class SystemTrayIcon:
             ),
         )
 
-        global_events.main_loop_exited.add(self.stop)
+        mediator.main_loop_exited.add(self.stop)
 
         # Run pystray
         __pystray_icon_object.run_detached()
@@ -41,9 +41,9 @@ class SystemTrayIcon:
     def on_clicked_exit(self, icon, item):
         general_logger.debug(f'system_tray.on_clicked_exit: Clicked "{item}"')
         # global_events.main_thread_event_queue.put("exit")
-        global_events.app_exit_requested.trigger()
-        global_events.bg_monitoring_queue.put_nowait(QueueEvents.EXIT_APP)
-        global_events.main_thread_blocking_queue.put(QueueEvents.EXIT_APP, 1)
+        mediator.app_exit_requested.trigger()
+        mediator.bg_monitoring_queue.put_nowait(QueueEvents.EXIT_APP)
+        mediator.main_thread_blocking_queue.put(QueueEvents.EXIT_APP, 1)
 
     def stop(self):
         general_logger.debug("system_tray.stop: Stopping system tray...")
@@ -55,8 +55,8 @@ class SystemTrayIcon:
     def on_clicked_open_gui(self, icon, item):
         general_logger.debug(f'system_tray.on_clicked_open_gui: Clicked "{item}"')
         # global_events.main_thread_event_queue.put("show_gui")
-        if not global_events.gui_winow_opened:
-            global_events.main_thread_blocking_queue.put(QueueEvents.OPEN_GUI, 1)
+        if not mediator.get_active_gui().is_open():
+            mediator.main_thread_blocking_queue.put(QueueEvents.OPEN_GUI, 1)
         else:
             general_logger.debug("system_tray.on_clicked_open_gui: Main window already open.")
             pass

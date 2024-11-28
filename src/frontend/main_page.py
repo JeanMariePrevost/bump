@@ -2,7 +2,7 @@ import threading
 import time
 import webview
 
-import global_events
+import mediator
 import python_js_bridge
 from custom_logging import general_logger
 
@@ -10,8 +10,8 @@ from custom_logging import general_logger
 class MainPage:
     def __init__(self) -> None:
         self._window: webview.Window = None
-        global_events.app_exit_requested.add(self.close)
-        global_events.main_loop_exited.add(self.close)
+        mediator.app_exit_requested.add(self.close)
+        mediator.main_loop_exited.add(self.close)
         pass
 
     def show(self):
@@ -36,17 +36,21 @@ class MainPage:
         )
 
         self._window.events.closed += self.close
-        global_events.gui_winow_opened = True
+        mediator.register_active_gui(self)
 
         webview.start(self.webview_custom_logic_callback, debug=True)
 
     def close(self):
+        if mediator.get_active_gui() == self._window:
+            mediator.register_active_gui(None)
         if self._window is not None:
             self._window.events.closed -= self.close
             self._window.destroy()
         self._window = None
-        global_events.gui_winow_opened = False
         print("MainPage.close: Window closed.")
+
+    def is_open(self) -> bool:
+        return self._window is not None
 
     def webview_custom_logic_callback(self):
         # A separate thread handled by the webview?

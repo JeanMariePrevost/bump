@@ -20,7 +20,7 @@ class Deserializable:
         return instance
 
 
-def encode_with_type(obj):
+def to_dict_encoded_with_types(obj) -> dict:
     """
     Function to encode an non-simple object to as a dictionary of its attributes AND its type.
     """
@@ -33,12 +33,12 @@ def encode_with_type(obj):
 
         return {
             "type": f"{obj.__class__.__module__}.{obj.__class__.__name__}",
-            "value": {key: encode_with_type(value) for key, value in obj.__dict__.items()},  # Recursively encode attributes of the object
+            "value": {key: to_dict_encoded_with_types(value) for key, value in obj.__dict__.items()},  # Recursively encode attributes of the object
         }
     elif isinstance(obj, list):
-        return [encode_with_type(item) for item in obj]  # Recursively handle lists to identify non-simple objects
+        return [to_dict_encoded_with_types(item) for item in obj]  # Recursively handle lists to identify non-simple objects
     elif isinstance(obj, dict):
-        return {key: encode_with_type(value) for key, value in obj.items()}  # Recursively handle dicts to identify non-simple objects
+        return {key: to_dict_encoded_with_types(value) for key, value in obj.items()}  # Recursively handle dicts to identify non-simple objects
     else:
         # "value" types with custom encoding, then a default behavior
         if isinstance(obj, datetime):
@@ -51,14 +51,14 @@ def to_encoded_json(obj):
     """
     Encodes an object to JSON, but includes the type of the non-simple objects for them to be properly deserialized.
     """
-    return json.dumps(encode_with_type(obj), indent=4)
+    return json.dumps(to_dict_encoded_with_types(obj), indent=4)
 
 
 def to_encoded_jsonl(obj):
     """
     Like to_encoded_json, but as a single line
     """
-    return json.dumps(encode_with_type(obj))
+    return json.dumps(to_dict_encoded_with_types(obj))
 
 
 def from_encoded_json(json_string) -> object:

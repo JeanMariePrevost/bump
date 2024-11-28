@@ -20,7 +20,7 @@ function addCard() {
   cards.push(card);
 }
 
-import { sendDataToPython, getDataFromPython } from "./PythonJsBridge.js";
+import { sendDataToPython, getDataFromPython, requestAllMonitorsData, requestMonitorData } from "./PythonJsBridge.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   for (let i = 0; i < 4; i++) {
@@ -56,6 +56,31 @@ window.addEventListener("pywebviewready", function () {
   getDataFromPython("Hello from JavaScript!").then((response) => {
     console.log("Response from Python:", response);
   });
+
+  // Test, try requesting and printing the list of all monitors, then grab the name of the 1st, and fetch the info of that monitor
+  requestAllMonitorsData()
+    .then((response) => {
+      console.log("All monitors data:");
+      console.log(response);
+      console.log("Type of response:", typeof response);
+      // console.log("GOing to parse the response");
+      // const responseAsObject = JSON.parse(response);
+      // console.log("Response parsed as object:");
+      // console.log(responseAsObject);
+      // const firstMonitorName = responseAsObject[0].value.unique_name;
+      // console.log("First monitor name:", firstMonitorName);
+      // console.log("Requesting data for monitor:", firstMonitorName);
+      const firstMonitorName = response[0].value.unique_name;
+      console.log("First monitor name:", firstMonitorName);
+      console.log("Requesting data for monitor:", firstMonitorName);
+
+      requestMonitorData(firstMonitorName).then((monitorData) => {
+        console.log("Data for monitor " + firstMonitorName + ":", monitorData);
+      });
+    })
+    .catch((error) => {
+      console.error("Error while fetching all monitors data:", error);
+    });
 
   // const result = fetchDataFromPython("The JS input was this1.");
   // // DEBUG: Print the contents and the type of the result

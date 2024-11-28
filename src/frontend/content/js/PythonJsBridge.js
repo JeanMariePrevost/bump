@@ -37,6 +37,19 @@ export async function getDataFromPython(inputString) {
   }
 }
 
+/**
+ * Get an object containing the list of all monitors and their data
+ */
+export async function requestAllMonitorsData() {
+  const response = await pywebview.api.request_all_monitors_data();
+  return response;
+}
+
+export async function requestMonitorData(monitorName) {
+  const response = await pywebview.api.request_monitor_data(monitorName);
+  return response;
+}
+
 //
 //
 //

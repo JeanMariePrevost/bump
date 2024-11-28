@@ -2,6 +2,8 @@ import json
 import webview
 
 from custom_logging import general_logger
+import mediator
+import serialization
 
 __js_api = None
 
@@ -20,9 +22,9 @@ class JsApi:
     Defines the set of functions that the *JavaScript* side can call on the Python side.
     """
 
-    # def __init__(self, bridge):
-    #     self.bridge = bridge
-    #     self.window = bridge.window
+    # NOTE: Send json-compatible dictionaries, simple types, or strings as data
+    # use serialization.to_dict_encoded_with_types to create safe dictionaries containing non-simple objects
+    # use serialization.to_encoded_json to create safe JSON strings
 
     def send_event_to_python(self, event_type, data):
         print(f"Received event: {event_type} with data: {data}")
@@ -32,6 +34,15 @@ class JsApi:
         print(f"Received request for data with input: {input_string}")
         result = input_string + " - modified on the Python side"
         return {"data": result}
+
+    def request_all_monitors_data(self):
+        print("Received request for monitors data")
+        # return mediator.get_monitors_manager().monitors
+        return serialization.to_dict_encoded_with_types(mediator.get_monitors_manager().monitors)
+
+    def request_monitor_data(self, unique_name: str):
+        print(f"Received request for monitor data: {unique_name}")
+        return serialization.to_dict_encoded_with_types(mediator.get_monitors_manager().get_monitor_by_name(unique_name))
 
 
 def get_js_api():
