@@ -201,6 +201,24 @@ Testing shit out from gpt
   flex: 0 0 50px; /* Fixed height */
   background-color: var(--status-unknown-color-300);
   color: var(--status-unknown-color-800);
+  position: relative; /* For absolute positioning of the title and count */
+  user-select: none;
+  cursor: default;
+}
+
+.summary-card .summary-card-count {
+  font-size: larger;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
+
+.summary-card .summary-card-title {
+  font-size: larger;
+  position: absolute;
+  left: 30px;
+  top: 50%;
+  transform: translate(0, -50%); /* Compensate for the title's own height */
 }
 
 .summary-card .card-content {
