@@ -5,8 +5,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
 });
 
 export class MonitorCard {
-  constructor() {
-    console.log("MonitorCard instance created!");
+  constructor(monitorData) {
+    this.monitorData = monitorData;
+    console.log("MonitorCard instance created with config:", monitorData);
     this.addSelfToPage();
   }
 
@@ -19,8 +20,8 @@ export class MonitorCard {
     const cardContainer = document.getElementById("cards-container");
     if (cardContainer) {
       const card = document.createElement("div");
-      card.className = "card";
-      card.innerText = "This is a dummy card";
+      card.className = "monitor-card";
+      card.innerText = this.monitorData.unique_name;
       cardContainer.appendChild(card);
     } else {
       console.error("cards-container not found");

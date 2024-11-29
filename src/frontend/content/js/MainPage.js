@@ -12,32 +12,50 @@ window.onload = function () {
 const cards = [];
 
 /**
- * Function to add a new card to the page
+ * Creates a "card" element from the given monitor data and adds it to the DOM.
  */
-function addCard() {
+function addCard(monitorData) {
+  if (!monitorData) {
+    throw new Error("addCard: cannot create a card without monitor data");
+  }
+
   console.log("Adding a new card to the page");
-  const card = new MonitorCard();
+  const card = new MonitorCard(monitorData);
   cards.push(card);
+
+  updateNoMonitorsCardVisibility();
+}
+
+/**
+ * Updates the visibility of the "no monitors" card based on the number of cards on the page.
+ */
+function updateNoMonitorsCardVisibility() {
+  const noMonitorsCard = document.getElementById("no-monitors-card");
+  if (noMonitorsCard) {
+    if (cards.length > 0) {
+      noMonitorsCard.style.display = "none";
+    } else {
+      noMonitorsCard.style.display = "block";
+    }
+  }
 }
 
 import { sendDataToPython, getDataFromPython, requestAllMonitorsData, requestMonitorData } from "./PythonJsBridge.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  for (let i = 0; i < 4; i++) {
-    addCard();
-  }
-
+  // for (let i = 0; i < 4; i++) {
+  //   addCard();
+  // }
+  //
   // Wait for 5 seconds then send an event back to the backend
   // setTimeout(() => {
   //   sendDataToPython("js_py_test_event", { data: "Hello from JavaScript!" });
   // }, 5000);
-
   // Test requesting data from the backend after a delay
   // setTimeout(async () => {
   //   const response = await testRequestDataFromPython("Hello from JavaScript!");
   //   console.log("Response from Python:", response);
   // }, 3000);
-
   // Instant request test
   // (async () => {
   //   const response = await testRequestDataFromPython("Hello from JavaScript!");
@@ -47,54 +65,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
 window.addEventListener("pywebviewready", function () {
   console.log("PyWebView is ready!");
-
-  // (async () => {
-  //   const the_actual_data = await getDataFromPython("My input");
-  //   console.log("Received data:", the_actual_data);
-  // })();
-
-  getDataFromPython("Hello from JavaScript!").then((response) => {
-    console.log("Response from Python:", response);
-  });
-
   // Test, try requesting and printing the list of all monitors, then grab the name of the 1st, and fetch the info of that monitor
   requestAllMonitorsData()
     .then((response) => {
-      console.log("All monitors data:");
-      console.log(response);
-      console.log("Type of response:", typeof response);
-      // console.log("GOing to parse the response");
-      // const responseAsObject = JSON.parse(response);
-      // console.log("Response parsed as object:");
-      // console.log(responseAsObject);
-      // const firstMonitorName = responseAsObject[0].value.unique_name;
-      // console.log("First monitor name:", firstMonitorName);
-      // console.log("Requesting data for monitor:", firstMonitorName);
-      const firstMonitorName = response[0].value.unique_name;
-      console.log("First monitor name:", firstMonitorName);
-      console.log("Requesting data for monitor:", firstMonitorName);
+      if (!response) {
+        console.error("Failed to fetch monitors data");
+        return;
+      } else if (response.length === 0) {
+        console.log("Config contains no monitors");
+        return;
+      }
 
-      requestMonitorData(firstMonitorName).then((monitorData) => {
-        console.log("Data for monitor " + firstMonitorName + ":", monitorData);
-      });
+      // use addCard for each monitor in response
+      for (let i = 0; i < response.length; i++) {
+        addCard(response[i].value);
+      }
     })
     .catch((error) => {
       console.error("Error while fetching all monitors data:", error);
     });
-
-  // const result = fetchDataFromPython("The JS input was this1.");
-  // // DEBUG: Print the contents and the type of the result
-  // console.log("Result from fetchDataFromPython:", result);
-  // console.log("Type of result:", typeof result);
-
-  // (async () => {
-  //   try {
-  //     const response = await testRequestDataFromPython("The JS input was this.");
-  //     console.log("Response from Python:", response.data);
-  //   } catch (error) {
-  //     console.error("Error while fetching data from Python:", error);
-  //   }
-  // })();
 });
 
 window.addEventListener("py_js_test_event", (event) => {

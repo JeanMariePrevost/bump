@@ -80,18 +80,6 @@ nav a:active {
   text-align: center;
 }
 
-#no-monitors-card {
-  text-align: center;
-  color: var(--text-mid-color);
-  background-color: var(--background-fullbright-color);
-  padding: 20px;
-  margin: 10px 0;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  animation: fadeIn 0.2s ease-out; /* Animate cards loading or being created */
-}
-
 #action-buttons {
   display: flex;
   justify-content: center;
@@ -121,13 +109,20 @@ nav a:active {
 }
 
 /* Style the cards */
-.card {
+#no-monitors-card,
+.monitor-card {
   background-color: var(--background-fullbright-color);
   padding: 20px;
   margin: 10px 0; /* Spacing between cards */
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.2s ease-out; /* Animate cards loading or being created */
+}
+
+#no-monitors-card {
+  text-align: center;
+  color: var(--text-mid-color);
+  text-align: center;
 }
 
 @keyframes fadeIn {
