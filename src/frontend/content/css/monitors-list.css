@@ -20,12 +20,12 @@
 
 .monitor-list-item:hover {
   /* Use a very light version of the accent color */
-  background-color: color-mix(in srgb, var(--accent-color-hover), var(--background-light-color) 90%);
+  background-color: var(--status-no-data-color-100);
 }
 
 .monitor-list-item:active {
   /* Use a very light version of the accent color */
-  background-color: color-mix(in srgb, var(--accent-color-active), var(--background-light-color) 85%);
+  background-color: var(--status-no-data-color-200);
 }
 
 .monitor-list-item-status-indicator {

@@ -38,13 +38,13 @@
   /* Each are defined by their 100 (lightest) to 500 (middle) to 900 (darkest) variants */
   /* No data : neutral status. Things like "this monitor hasn't even run yet" */
   --status-no-data-color-100: rgb(231, 231, 231);
-  --status-no-data-color-200: color-mix(in srgb, var(--status-unknown-color-100), var(--status-unknown-color-500) 25%);
-  --status-no-data-color-300: color-mix(in srgb, var(--status-unknown-color-100), var(--status-unknown-color-500) 50%);
-  --status-no-data-color-400: color-mix(in srgb, var(--status-unknown-color-100), var(--status-unknown-color-500) 75%);
+  --status-no-data-color-200: color-mix(in srgb, var(--status-no-data-color-100), var(--status-no-data-color-500) 25%);
+  --status-no-data-color-300: color-mix(in srgb, var(--status-no-data-color-100), var(--status-no-data-color-500) 50%);
+  --status-no-data-color-400: color-mix(in srgb, var(--status-no-data-color-100), var(--status-no-data-color-500) 75%);
   --status-no-data-color-500: rgb(135, 135, 135);
-  --status-no-data-color-600: color-mix(in srgb, var(--status-unknown-color-500), var(--status-unknown-color-900) 25%);
-  --status-no-data-color-700: color-mix(in srgb, var(--status-unknown-color-500), var(--status-unknown-color-900) 50%);
-  --status-no-data-color-800: color-mix(in srgb, var(--status-unknown-color-500), var(--status-unknown-color-900) 75%);
+  --status-no-data-color-600: color-mix(in srgb, var(--status-no-data-color-500), var(--status-no-data-color-900) 25%);
+  --status-no-data-color-700: color-mix(in srgb, var(--status-no-data-color-500), var(--status-no-data-color-900) 50%);
+  --status-no-data-color-800: color-mix(in srgb, var(--status-no-data-color-500), var(--status-no-data-color-900) 75%);
   --status-no-data-color-900: rgb(54, 54, 54);
 
   /* Unknown : things like exceptions and unecpected results / data, but NOT for monitors that are explicitly down */
