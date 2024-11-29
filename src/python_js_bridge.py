@@ -44,6 +44,16 @@ class JsApi:
         print(f"Received request for monitor data: {unique_name}")
         return serialization.to_dict_encoded_with_types(mediator.get_monitors_manager().get_monitor_by_name(unique_name))
 
+    def request_monitor_history(self, unique_name: str, max_number_of_entries: int):
+        print(f"Received request for monitor history: {unique_name}")
+        targetMonitor = mediator.get_monitors_manager().get_monitor_by_name(unique_name)
+        if targetMonitor is None:
+            general_logger.error(f"Monitor {unique_name} requested but not found.")
+            return {}
+        history = targetMonitor.read_results_from_history(max_number_of_entries)
+        # encodedJson = serialization.to_dict_encoded_with_types(history)
+        return serialization.to_dict_encoded_with_types(history)
+
 
 def get_js_api():
     global __js_api

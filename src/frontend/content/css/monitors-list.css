@@ -70,5 +70,13 @@
   height: 90%;
   width: 0.3rem;
   border-radius: 0.2rem;
-  background-color: var(--status-unknown-color);
+  background-color: var(--status-no-data-color);
+}
+
+.monitor-list-item-history-bar[data-status="up"] {
+  background-color: var(--status-good-color);
+}
+
+.monitor-list-item-history-bar[data-status="down"] {
+  background-color: var(--status-bad-color);
 }

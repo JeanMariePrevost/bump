@@ -1,5 +1,7 @@
 // File: /f:/OneDrive/MyDocs/Study/TELUQ/Session 5 - Hiver 2024/INF1430 Final Project/TN3 - Actual Software/bump/src/frontend/content/js/MonitorCard.js
 
+import { requestMonitorHistory } from "./PythonJsBridge.js";
+
 document.addEventListener("DOMContentLoaded", (event) => {
   console.log("Hello, world! This coming from MonitorCard.js!");
 });
@@ -48,17 +50,40 @@ export class MonitorListItem {
       for (let i = 0; i < 12; i++) {
         const bar = document.createElement("div");
         bar.className = "monitor-list-item-history-bar";
-        if (i < this.monitorData.last_query_duration) {
-          bar.setAttribute("data-status", "up");
-        } else {
-          bar.setAttribute("data-status", "down");
-        }
+        bar.setAttribute("data-status", "no-data");
         barChart.appendChild(bar);
       }
 
       newItem.appendChild(barChart);
+
+      // Add a click event listener to the item
+      newItem.addEventListener("click", (event) => {
+        console.log(`Clicked on ${this.monitorData.unique_name}`);
+        requestMonitorHistory(this.monitorData.unique_name, 12)
+          .then((response) => {
+            console.log(`Received history data for ${this.monitorData.unique_name}:`, response);
+
+            //DEBUG
+            const len = response.length;
+            const firstElement = response[0];
+
+            for (let i = 0; i < response.length; i++) {
+              const bar = barChart.children[i];
+              if (response[i].value.test_passed === true) {
+                bar.setAttribute("data-status", "up");
+              } else if (response[i].value.test_passed === false) {
+                bar.setAttribute("data-status", "down");
+              } else {
+                bar.setAttribute("data-status", "unknown");
+              }
+            }
+          })
+          .catch((error) => {
+            console.error(`Error while fetching history data for ${this.monitorData.unique_name}:`, error);
+          });
+      });
     } else {
-      console.error("cards-container not found");
+      console.error(".monitors-list element not found");
     }
   }
 }

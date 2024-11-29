@@ -50,7 +50,7 @@ class Monitor(Deserializable):
                 if len(lines) > 0:
                     capped_count = min(count, len(lines))  # Avoid reading more entries than we have
                     for line in lines[-capped_count:]:
-                        resultsList.append(serialization.from_encoded_jsonl(line))
+                        resultsList.append(serialization.from_encoded_json(line))
                     return resultsList
         except Exception as e:
             general_logger.error(f"Error while getting previous query result: {e}")
