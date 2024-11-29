@@ -8,27 +8,86 @@
   </head>
 
   <body>
-    <nav>
-      <div id="nav-title-label">BUMP</div>
-      <a href="#home">Home</a>
-      <a href="#about">About</a>
-      <a href="#contact">Contact</a>
-      <a href="#stuff">Stuff</a>
-      <a href="#taking">Taking</a>
-      <a href="#space">Space</a>
-    </nav>
-    <section id="dashboard">
-      <h1>Resource Monitoring</h1>
+    <div class="page">
+      <nav class="navbar">
+        <div class="nav-title-label">BUMP</div>
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+        <a href="#stuff">Stuff</a>
+        <a href="#taking">Taking</a>
+        <a href="#space">Space</a>
+      </nav>
+      <!-- <div class="dashboard-content"> -->
+      <main class="content">
+        <div class="dashboard-grid-layout">
+          <div class="left-column">
+            <div class="card monitors-list">
+              <div class="card-title">Monitors</div>
+              <div class="card-content">
+                <!-- All monitors name go here -->
+              </div>
+            </div>
+          </div>
+          <div class="right-column">
+            <div class="card summary-card">
+              <div class="card-content">
+                All monitors are up
+                <!-- Current global state and up/down/uknown counts go here -->
+              </div>
+            </div>
+            <div class="card recent-events-card">
+              <div class="card-title">Recent Events</div>
+              <div class="card-content">
+                <div class="recent-events">
+                  <p>2024-11-29 12:34:56 - User logged in</p>
+                  <p>2024-11-29 12:36:10 - File uploaded</p>
+                  <p>2024-11-29 12:40:03 - Error: Invalid input</p>
+                  <p>2024-11-29 12:45:22 - User logged out</p>
+                  <p>2024-11-29 13:00:15 - Server restarted</p>
+                  <p>
+                    2024-11-29 12:40:03 - This is a test for a very long log entry that will most definitely span across multiple lines so that I can see how these will behave in
+                    the recent entries element
+                  </p>
+                  <p>2024-11-29 12:40:03 - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>2024-11-29 12:40:03 - And this<br />is an entry<br />that uses line breaks.</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                  <p>YYYY-MM-DD HH:MM:SS - Something happened</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- </div> -->
+        </div>
+      </main>
+    </div>
+
+    <!-- <h1>Resource Monitoring</h1>
       <div id="action-buttons">
         <button id="add-card-btn">Add monitor</button>
-        <!-- <button id="apply-btn">Apply Changes</button> -->
+        <button id="apply-btn">Apply Changes</button>
       </div>
 
       <div id="cards-container">
-        <div id="no-monitors-card">No monitors defined</div>
-        <!-- Monitor cards will go here -->
-      </div>
-    </section>
+        <div class="no-monitors-card">No monitors defined</div>
+      </div> -->
     <script type="module" src="js/MainPage.js"></script>
   </body>
 </html>

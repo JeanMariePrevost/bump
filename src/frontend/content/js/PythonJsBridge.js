@@ -39,13 +39,19 @@ export async function getDataFromPython(inputString) {
 
 /**
  * Get an object containing the list of all monitors and their data
+ * @returns {Array<Object>} Array of objects, each containing the state of a monitor under its 'value' property
  */
-export async function requestAllMonitorsData() {
+export async function requestMonitorsList() {
   const response = await pywebview.api.request_all_monitors_data();
   return response;
 }
 
-export async function requestMonitorData(monitorName) {
+/**
+ * Pass a name to retrieve the state of a monitor
+ * @param {string} monitorName
+ * @returns {Object} The monitor, with its state under the 'value' property
+ */
+export async function requestSingleMonitor(monitorName) {
   const response = await pywebview.api.request_monitor_data(monitorName);
   return response;
 }

@@ -40,33 +40,12 @@ function updateNoMonitorsCardVisibility() {
   }
 }
 
-import { sendDataToPython, getDataFromPython, requestAllMonitorsData, requestMonitorData } from "./PythonJsBridge.js";
-
-document.addEventListener("DOMContentLoaded", () => {
-  // for (let i = 0; i < 4; i++) {
-  //   addCard();
-  // }
-  //
-  // Wait for 5 seconds then send an event back to the backend
-  // setTimeout(() => {
-  //   sendDataToPython("js_py_test_event", { data: "Hello from JavaScript!" });
-  // }, 5000);
-  // Test requesting data from the backend after a delay
-  // setTimeout(async () => {
-  //   const response = await testRequestDataFromPython("Hello from JavaScript!");
-  //   console.log("Response from Python:", response);
-  // }, 3000);
-  // Instant request test
-  // (async () => {
-  //   const response = await testRequestDataFromPython("Hello from JavaScript!");
-  //   console.log("Response from Python:", response);
-  // })();
-});
+import { requestMonitorsList } from "./PythonJsBridge.js";
 
 window.addEventListener("pywebviewready", function () {
   console.log("PyWebView is ready!");
   // Test, try requesting and printing the list of all monitors, then grab the name of the 1st, and fetch the info of that monitor
-  requestAllMonitorsData()
+  requestMonitorsList()
     .then((response) => {
       if (!response) {
         console.error("Failed to fetch monitors data");
@@ -86,14 +65,15 @@ window.addEventListener("pywebviewready", function () {
     });
 });
 
-window.addEventListener("py_js_test_event", (event) => {
-  console.log("Event received from Python:");
-  // Print each key-value pair in the event payload
-  for (const key in event.detail) {
-    console.log(`${key}: ${event.detail[key]}`);
-  }
+// Testing out events, they should be globally accessible
+// window.addEventListener("py_js_test_event", (event) => {
+//   console.log("Event received from Python:");
+//   // Print each key-value pair in the event payload
+//   for (const key in event.detail) {
+//     console.log(`${key}: ${event.detail[key]}`);
+//   }
 
-  //extract the "data" key from the event payload
-  const data = event.detail.data;
-  console.log(`data: ${data}`);
-});
+//   //extract the "data" key from the event payload
+//   const data = event.detail.data;
+//   console.log(`data: ${data}`);
+// });
