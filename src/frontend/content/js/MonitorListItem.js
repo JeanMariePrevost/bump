@@ -56,31 +56,34 @@ export class MonitorListItem {
 
       newItem.appendChild(barChart);
 
+      // Request the history data for this monitor to update the bars
+      requestMonitorHistory(this.monitorData.unique_name, 12)
+        .then((response) => {
+          console.log(`Received history data for ${this.monitorData.unique_name}:`, response);
+
+          //DEBUG
+          const len = response.length;
+          const firstElement = response[0];
+
+          for (let i = 0; i < response.length; i++) {
+            const bar = barChart.children[barChart.children.length - 1 - i]; // Make the rightmost bar the most recent
+            if (response[i].value.test_passed === true) {
+              bar.setAttribute("data-status", "up");
+            } else if (response[i].value.test_passed === false) {
+              bar.setAttribute("data-status", "down");
+            } else {
+              bar.setAttribute("data-status", "unknown");
+            }
+          }
+        })
+        .catch((error) => {
+          console.error(`Error while fetching history data for ${this.monitorData.unique_name}:`, error);
+        });
+
       // Add a click event listener to the item
       newItem.addEventListener("click", (event) => {
         console.log(`Clicked on ${this.monitorData.unique_name}`);
-        requestMonitorHistory(this.monitorData.unique_name, 12)
-          .then((response) => {
-            console.log(`Received history data for ${this.monitorData.unique_name}:`, response);
-
-            //DEBUG
-            const len = response.length;
-            const firstElement = response[0];
-
-            for (let i = 0; i < response.length; i++) {
-              const bar = barChart.children[i];
-              if (response[i].value.test_passed === true) {
-                bar.setAttribute("data-status", "up");
-              } else if (response[i].value.test_passed === false) {
-                bar.setAttribute("data-status", "down");
-              } else {
-                bar.setAttribute("data-status", "unknown");
-              }
-            }
-          })
-          .catch((error) => {
-            console.error(`Error while fetching history data for ${this.monitorData.unique_name}:`, error);
-          });
+        // TODO : Open monitor details page
       });
     } else {
       console.error(".monitors-list element not found");
