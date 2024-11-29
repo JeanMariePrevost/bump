@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta
-import json
+from enum import Enum
+import os
 import traceback
 from queries.query import Query
 from queries.query_result import QueryResult
 from serialization import Deserializable
-import os
-from custom_logging import general_logger, monitoring_logger
+from custom_logging import monitoring_logger
 import serialization
+from custom_logging import general_logger
 
 
 class Monitor(Deserializable):
@@ -15,8 +16,8 @@ class Monitor(Deserializable):
         self.unique_name = unique_name
         self.query = query
         self.period_in_seconds = period_in_seconds
-        self.last_query_passed = False
         self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
+        self.last_query_passed = False
 
     def execute(self):
         if not hasattr(self, "query") or self.query is None:
@@ -26,31 +27,35 @@ class Monitor(Deserializable):
         query_result: QueryResult = self.query.execute()
         monitoring_logger.debug(f"Monitor {self.unique_name} executed with result: {query_result}")
 
-        self.last_query_passed = query_result.test_passed  # Needed by the GUI as it doesn't have access to the query results
+        self.last_query_passed = query_result.test_passed  # Needed by the GUI as it doesn't have direct access to the query results
 
-        self.check_if_status_changed(query_result)
+        self.update_satus_variables(query_result)
 
         self.append_query_result_to_history(query_result)
         return query_result
 
-    def check_if_status_changed(self, query_result: QueryResult) -> bool:
-        previous_result = self.get_previous_query_result()
-        if previous_result is not None and query_result.test_passed != previous_result.test_passed:
-            monitoring_logger.warning(f"Monitor {self.unique_name} status changed from {previous_result.test_passed} to {query_result.test_passed}")
-            return True
-        return False
+    def update_satus_variables(self, query_result: QueryResult):
+        # Trigger a status change if the status changed
+        if self.current_status != query_result.test_passed:
+            # TODO - Signal the change
+            monitoring_logger.warning(f"Monitor {self.unique_name} status changed from [{self.current_status}] to [{query_result.test_passed}]")
+        self.current_status = query_result.test_passed
 
-    def get_previous_query_result(self) -> QueryResult:
+    def read_results_from_history(self, count: int) -> list[QueryResult]:
+        resultsList = []
         try:
             target_path = f"data/history/{self.unique_name}.jsonl"
             with open(target_path, "r") as f:
                 lines = f.readlines()
                 if len(lines) > 0:
-                    return serialization.from_encoded_json(lines[-1])
+                    capped_count = min(count, len(lines))  # Avoid reading more entries than we have
+                    for line in lines[-capped_count:]:
+                        resultsList.append(serialization.from_encoded_jsonl(line))
+                    return resultsList
         except Exception as e:
             general_logger.error(f"Error while getting previous query result: {e}")
             traceback.print_exc()
-            return None
+            return []
 
     def execute_if_due(self):
         if datetime.now() > self._next_run_time:
