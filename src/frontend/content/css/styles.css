@@ -32,18 +32,55 @@
   --text-color-400: #b3b3b3;
   --text-color-600: #666666;
   --text-color-800: #333333;
-
-  --status-no-data-color: rgb(188, 188, 188);
-  --status-no-data-color-text: rgb(105, 105, 105);
-  --status-unknown-color: rgb(213, 142, 10);
-  --status-unknown-color-text: rgb(255, 229, 174);
-  --status-good-color: rgb(11, 142, 11);
-  --status-good-color-text: rgb(204, 255, 204);
-  --status-bad-color: rgb(226, 59, 59);
-  --status-bad-color-text: rgb(255, 204, 204);
   --light-border-color: #ccc;
 
-  /* Spacing */
+  /* Status colors */
+  /* Each are defined by their 100 (lightest) to 500 (middle) to 900 (darkest) variants */
+  /* No data : neutral status. Things like "this monitor hasn't even run yet" */
+  --status-no-data-color-100: rgb(231, 231, 231);
+  --status-no-data-color-200: color-mix(in srgb, var(--status-unknown-color-100), var(--status-unknown-color-500) 25%);
+  --status-no-data-color-300: color-mix(in srgb, var(--status-unknown-color-100), var(--status-unknown-color-500) 50%);
+  --status-no-data-color-400: color-mix(in srgb, var(--status-unknown-color-100), var(--status-unknown-color-500) 75%);
+  --status-no-data-color-500: rgb(135, 135, 135);
+  --status-no-data-color-600: color-mix(in srgb, var(--status-unknown-color-500), var(--status-unknown-color-900) 25%);
+  --status-no-data-color-700: color-mix(in srgb, var(--status-unknown-color-500), var(--status-unknown-color-900) 50%);
+  --status-no-data-color-800: color-mix(in srgb, var(--status-unknown-color-500), var(--status-unknown-color-900) 75%);
+  --status-no-data-color-900: rgb(54, 54, 54);
+
+  /* Unknown : things like exceptions and unecpected results / data, but NOT for monitors that are explicitly down */
+  --status-unknown-color-100: rgb(255, 229, 174);
+  --status-unknown-color-200: color-mix(in srgb, var(--status-unknown-color-100), var(--status-unknown-color-500) 25%);
+  --status-unknown-color-300: color-mix(in srgb, var(--status-unknown-color-100), var(--status-unknown-color-500) 50%);
+  --status-unknown-color-400: color-mix(in srgb, var(--status-unknown-color-100), var(--status-unknown-color-500) 75%);
+  --status-unknown-color-500: rgb(213, 142, 10);
+  --status-unknown-color-600: color-mix(in srgb, var(--status-unknown-color-500), var(--status-unknown-color-900) 25%);
+  --status-unknown-color-700: color-mix(in srgb, var(--status-unknown-color-500), var(--status-unknown-color-900) 50%);
+  --status-unknown-color-800: color-mix(in srgb, var(--status-unknown-color-500), var(--status-unknown-color-900) 75%);
+  --status-unknown-color-900: rgb(135, 90, 5);
+
+  /* Good : e.g. monitor up */
+  --status-good-color-100: rgb(204, 255, 204);
+  --status-good-color-200: color-mix(in srgb, var(--status-good-color-100), var(--status-good-color-500) 25%);
+  --status-good-color-300: color-mix(in srgb, var(--status-good-color-100), var(--status-good-color-500) 50%);
+  --status-good-color-400: color-mix(in srgb, var(--status-good-color-100), var(--status-good-color-500) 75%);
+  --status-good-color-500: rgb(11, 142, 11);
+  --status-good-color-600: color-mix(in srgb, var(--status-good-color-500), var(--status-good-color-900) 25%);
+  --status-good-color-700: color-mix(in srgb, var(--status-good-color-500), var(--status-good-color-900) 50%);
+  --status-good-color-800: color-mix(in srgb, var(--status-good-color-500), var(--status-good-color-900) 75%);
+  --status-good-color-900: rgb(0, 90, 0);
+
+  /* Bad : e.g. monitor down */
+  --status-bad-color-100: rgb(255, 204, 204);
+  --status-bad-color-200: color-mix(in srgb, var(--status-bad-color-100), var(--status-bad-color-500) 25%);
+  --status-bad-color-300: color-mix(in srgb, var(--status-bad-color-100), var(--status-bad-color-500) 50%);
+  --status-bad-color-400: color-mix(in srgb, var(--status-bad-color-100), var(--status-bad-color-500) 75%);
+  --status-bad-color-500: rgb(226, 59, 59);
+  --status-bad-color-600: color-mix(in srgb, var(--status-bad-color-500), var(--status-bad-color-900) 25%);
+  --status-bad-color-700: color-mix(in srgb, var(--status-bad-color-500), var(--status-bad-color-900) 50%);
+  --status-bad-color-800: color-mix(in srgb, var(--status-bad-color-500), var(--status-bad-color-900) 75%);
+  --status-bad-color-900: rgb(150, 0, 0);
+
+  /* Spacing and layout*/
   --card-padding: 20px;
 }
 
@@ -160,11 +197,26 @@ Testing shit out from gpt
 }
 
 /* The card that reads "All monitors are up" and such */
-.dashboard-grid-layout .right-column .summary-card {
+.summary-card {
   flex: 0 0 50px; /* Fixed height */
-  /* display: flex; */
-  /* justify-content: center; */
-  /* height: auto; */
+  background-color: var(--status-unknown-color-300);
+  color: var(--status-unknown-color-800);
+}
+
+.summary-card .card-content {
+  color: var(--status-unknown-color-800);
+}
+
+.summary-card[data-status="up"],
+.summary-card[data-status="up"] .card-content {
+  background-color: var(--status-good-color-300);
+  color: var(--status-good-color-800);
+}
+
+.summary-card[data-status="down"],
+.summary-card[data-status="down"] .card-content {
+  background-color: var(--status-bad-color-300);
+  color: var(--status-bad-color-800);
 }
 
 /* The card that displays key recent log entries */

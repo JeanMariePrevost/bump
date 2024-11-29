@@ -1,50 +1,37 @@
 import { MonitorListItem } from "./MonitorListItem.js";
+import { requestMonitorsList } from "./PythonJsBridge.js";
 
-console.log("HELLO WORLD!");
-console.log("main_page.js loaded");
+// window.onload = function () {
+//   console.log("Page fully loaded");
+// };
 
-// Message when the page is fully loaded too
-window.onload = function () {
-  console.log("Page fully loaded");
-};
-
-// Holds a ref of all the cards on the page
-const cards = [];
+// Holds a ref of all the MonitorListItem loaded
+const monitorsInList = [];
 
 /**
- * Creates a "card" element from the given monitor data and adds it to the DOM.
+ * Creates a "monitorListItem" element from the given monitor data, which adds itself to the DOM.
  */
-function addCard(monitorData) {
+function addMonitorToList(monitorData) {
   if (!monitorData) {
     throw new Error("addCard: cannot create a card without monitor data");
   }
 
   console.log("Adding a new card to the page");
-  const card = new MonitorListItem(monitorData);
-  cards.push(card);
+  const newItem = new MonitorListItem(monitorData);
+  monitorsInList.push(newItem);
 
-  updateNoMonitorsCardVisibility();
+  updateNoMonitorsElementVisibility();
 }
 
 /**
- * Updates the visibility of the "no monitors" card based on the number of cards on the page.
+ * Updates the visibility of the "no monitors" element in the list based on the number of cards on the page.
  */
-function updateNoMonitorsCardVisibility() {
-  const noMonitorsCard = document.getElementById("no-monitors-card");
-  if (noMonitorsCard) {
-    if (cards.length > 0) {
-      noMonitorsCard.style.display = "none";
-    } else {
-      noMonitorsCard.style.display = "block";
-    }
-  }
+function updateNoMonitorsElementVisibility() {
+  // TODO: Add a special fake monitor item to the list with a "no monitors" label if monitorsInList.length > 0
 }
 
-import { requestMonitorsList } from "./PythonJsBridge.js";
-
 window.addEventListener("pywebviewready", function () {
-  console.log("PyWebView is ready!");
-  // Test, try requesting and printing the list of all monitors, then grab the name of the 1st, and fetch the info of that monitor
+  // You can now use the pywebview.api object to interact with the Python backend
   requestMonitorsList()
     .then((response) => {
       if (!response) {
@@ -55,10 +42,40 @@ window.addEventListener("pywebviewready", function () {
         return;
       }
 
-      // use addCard for each monitor in response
+      // Populate the monitorsList and count the number of monitors by status
+      let upCount = 0;
+      let downCount = 0;
+      let unknownCount = 0;
       for (let i = 0; i < response.length; i++) {
-        addCard(response[i].value);
+        addMonitorToList(response[i].value);
+        if (response[i].value.last_query_passed === true) {
+          upCount++;
+        } else if (response[i].value.last_query_passed === false) {
+          downCount++;
+        } else {
+          unknownCount++;
+        }
       }
+
+      //Update the summary-card element
+      const summaryCard = document.querySelector(".summary-card");
+      if (upCount > 0 && downCount === 0 && unknownCount === 0) {
+        summaryCard.setAttribute("data-status", "up");
+        summaryCard.querySelector(".summary-card-title").innerText = "All monitors are up";
+      } else if (downCount > 0) {
+        summaryCard.setAttribute("data-status", "down");
+        summaryCard.querySelector(".summary-card-title").innerText = "Some monitors are down";
+      } else if (unknownCount > 0) {
+        // TODO : Need to handle differently here? I don't think so
+        summaryCard.querySelector(".summary-card-title").innerText = "Issues were encountered";
+        summaryCard.setAttribute("data-status", "down");
+      } else if (upCount + downCount + unknownCount === 0) {
+        summaryCard.querySelector(".summary-card-title").innerText = "No monitors found";
+        summaryCard.setAttribute("data-status", "unknown");
+      }
+      summaryCard.querySelector(".summary-card-count").innerText = `${upCount}/${downCount}/${unknownCount}`;
+
+      console.log(`Monitors status counts: up=${upCount}, down=${downCount}, unknown=${unknownCount}`);
     })
     .catch((error) => {
       console.error("Error while fetching all monitors data:", error);
