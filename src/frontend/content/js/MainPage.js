@@ -1,4 +1,4 @@
-import { MonitorCard } from "./MonitorCard.js";
+import { MonitorListItem } from "./MonitorListItem.js";
 
 console.log("HELLO WORLD!");
 console.log("main_page.js loaded");
@@ -20,7 +20,7 @@ function addCard(monitorData) {
   }
 
   console.log("Adding a new card to the page");
-  const card = new MonitorCard(monitorData);
+  const card = new MonitorListItem(monitorData);
   cards.push(card);
 
   updateNoMonitorsCardVisibility();

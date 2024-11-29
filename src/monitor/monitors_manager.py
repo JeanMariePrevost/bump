@@ -6,7 +6,7 @@ from my_utils.simple_queue import QueueEvents
 from serialization import Deserializable
 from custom_logging import general_logger
 
-MONITOR_LOOP_INTERVAL_S = 3
+MONITOR_LOOP_INTERVAL_S = 30
 
 
 class MonitorsManager(Deserializable):
@@ -15,7 +15,7 @@ class MonitorsManager(Deserializable):
         self.monitors: list[Monitor] = []
 
     def add_monitor(self, monitor: Monitor) -> None:
-        # Assert no duplicate names
+        # Ensure no duplicate names
         for m in self.monitors:
             if m.unique_name == monitor.unique_name:
                 raise ValueError(f"Monitor with name {monitor.unique_name} already exists")
@@ -45,8 +45,6 @@ class MonitorsManager(Deserializable):
 
     def start_background_monitoring_thread(self) -> threading.Thread:
         """Starts a background thread that continuously executes due monitors."""
-
-        # self.__bg_monitoring_running = True
         mediator.main_loop_exited.add(self.stop_background_monitoring_thread)
 
         async def background_monitoring_loop():
@@ -67,5 +65,4 @@ class MonitorsManager(Deserializable):
         return thread
 
     def stop_background_monitoring_thread(self) -> None:
-        # self.__bg_monitoring_running = False
         mediator.bg_monitoring_queue.put(QueueEvents.EXIT_APP)

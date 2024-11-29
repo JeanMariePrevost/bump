@@ -15,6 +15,7 @@ class Monitor(Deserializable):
         self.unique_name = unique_name
         self.query = query
         self.period_in_seconds = period_in_seconds
+        self.last_query_passed = False
         self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
 
     def execute(self):
@@ -24,6 +25,8 @@ class Monitor(Deserializable):
         self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
         query_result: QueryResult = self.query.execute()
         monitoring_logger.debug(f"Monitor {self.unique_name} executed with result: {query_result}")
+
+        self.last_query_passed = query_result.test_passed  # Needed by the GUI as it doesn't have access to the query results
 
         self.check_if_status_changed(query_result)
 
