@@ -16,11 +16,10 @@ class MainPage:
 
     def show(self):
         if threading.current_thread() is threading.main_thread():
-            print("Running on the main thread. A-OK.")
+            general_logger.debug("MainPage.show called from the main thread. Proceeding.")
         else:
             general_logger.exception("MainPage.show: Calling from a non-main thread. This is not supported.")
             return
-        general_logger.debug("MainPage.show called.")
         if self._window is not None:
             general_logger.debug("MainPage.show: Window already open, not opening another one.")
             return
