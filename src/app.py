@@ -44,6 +44,12 @@ mediator.register_monitors_manager(monitors_manager)
 async_bg_monitoring_thread = monitors_manager.start_background_monitoring_thread()
 
 
+# Start custom HTTP server in the background
+from bottle_server import BottleServer
+
+BottleServer().start_as_background_thread()
+
+
 print("We started the background monitoring thread. Now we can do other things in the main thread.")
 
 tray_icon = SystemTrayIcon()

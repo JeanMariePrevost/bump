@@ -1,6 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
-
-@import url("https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap");
+@font-face {
+  font-family: "Inter";
+  src: url("assets/fonts/Inter/Inter-VariableFont_opszwght.ttf") format("ttf");
+  font-weight: normal;
+  font-style: normal;
+}
 
 :root {
   --accent-color: #41b445;
@@ -150,8 +153,8 @@ Testing shit out from gpt
 
 .dashboard-grid-layout .right-column .recent-events-card .card-content {
   overflow-y: auto; /* Allow scrolling INTERNALLY to look at log entries */
-  font-family: "Cutive+Mono", monospace;
-  font-weight: 300;
+  font-family: "Courier New", monospace;
+  /* font-weight: 300; */
   color: var(--text-dark-color);
 }
 

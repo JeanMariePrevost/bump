@@ -25,9 +25,18 @@ class MainPage:
             return
 
         # NOTE: pywebview uses the script's current working directory as the base directory for relative paths. E.g. /src/...
+        # self._window: webview.Window = webview.create_window(
+        #     "BUMP - Dashboard",
+        #     "frontend/content/main_page.html",
+        #     js_api=python_js_bridge.get_js_api(),
+        #     text_select=True,
+        #     width=1200,
+        #     height=800,
+        # )
+
         self._window: webview.Window = webview.create_window(
-            "BUMP - Dashboard",
-            "frontend/content/main_page.html",
+            title="BUMP - Dashboard",
+            url=mediator.get_http_server(),
             js_api=python_js_bridge.get_js_api(),
             text_select=True,
             width=1200,

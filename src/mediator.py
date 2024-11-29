@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from bottle import Bottle
 
 from my_utils.simple_queue import SimpleQueue
 from my_utils.signal import Signal
@@ -32,6 +33,7 @@ app_exit_requested = Signal()  # E.g. the user has requested the application to 
 # For shared *safe* info to be accessed anywhere
 __active_gui: MainPage | None = None
 __monitors_manager: MonitorsManager | None = None
+__http_server: Bottle | None = None
 
 
 def register_active_gui(window: MainPage | None):
@@ -58,6 +60,19 @@ def get_monitors_manager() -> MonitorsManager | None:
     if __monitors_manager is None:
         raise ValueError("Monitors manager not set")
     return __monitors_manager
+
+
+def register_http_server(server: Bottle | None):
+    if server.__class__.__name__ != "Bottle":
+        raise ValueError("Invalid type")
+    global __http_server
+    __http_server = server
+
+
+def get_http_server() -> Bottle | None:
+    if __http_server is None:
+        raise ValueError("HTTP server not set")
+    return __http_server
 
 
 # Signals to probably add:
