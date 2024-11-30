@@ -81,3 +81,12 @@
 .monitor-list-item-history-bar[data-status="down"] {
   background-color: var(--status-bad-color-500);
 }
+
+.selected-monitor {
+  background-color: var(--status-no-data-color-100);
+  color: var(--text-color-800);
+}
+
+.selected-monitor > * {
+  color: var(--text-color-900);
+}

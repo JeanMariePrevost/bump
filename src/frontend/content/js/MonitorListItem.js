@@ -85,8 +85,13 @@ export class MonitorListItem {
       // Add a click event listener to the item
       newItem.addEventListener("click", (event) => {
         console.log(`Clicked on ${this.monitorData.unique_name}`);
-        // TODO : Open monitor details page
-        //Trying stuff out
+        // Remove the "selected-monitor" class from all items, place on self
+        const items = document.querySelectorAll(".monitor-list-item");
+        items.forEach((item) => {
+          item.classList.remove("selected-monitor");
+        });
+        newItem.classList.add("selected-monitor");
+
         //Completely remove everything INDE "right-column" and add a new element
         const rightColumn = document.querySelector("div.right-column");
         if (rightColumn) {

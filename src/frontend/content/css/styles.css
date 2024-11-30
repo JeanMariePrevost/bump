@@ -27,12 +27,16 @@
   --nav-background-color: #333;
   --nav-hover-color: #444444;
   --nav-active-color: #393939;
-  --text-color-200: #f4f4f4;
-  --text-color-300: #dadada;
-  --text-color-400: #b3b3b3;
-  --text-color-600: #666666;
-  --text-color-800: #333333;
   --light-border-color: rgba(0, 0, 0, 0.2);
+  --text-color-100: rgb(244, 244, 244);
+  --text-color-200: color-mix(in srgb, var(--text-color-100), var(--text-color-500) 25%);
+  --text-color-300: color-mix(in srgb, var(--text-color-100), var(--text-color-500) 50%);
+  --text-color-400: color-mix(in srgb, var(--text-color-100), var(--text-color-500) 75%);
+  --text-color-500: rgb(120, 120, 120);
+  --text-color-600: color-mix(in srgb, var(--text-color-500), var(--statutext-color-900) 25%);
+  --text-color-700: color-mix(in srgb, var(--text-color-500), var(--statutext-color-900) 50%);
+  --text-color-800: color-mix(in srgb, var(--text-color-500), var(--statutext-color-900) 75%);
+  --text-color-900: rgb(20, 20, 20);
 
   /* Status colors */
   /* Each are defined by their 100 (lightest) to 500 (middle) to 900 (darkest) variants */
@@ -197,7 +201,7 @@ html {
   background-color: var(--tertiary-color);
   padding: 8px 25px;
   font-size: 1.2rem;
-  color: var(--text-color-200);
+  color: var(--text-color-100);
   border-radius: var(--card-border-radius) var(--card-border-radius) 0 0; /* Match the card's border-radius for the top corners */
   margin-top: calc(-1 * var(--card-padding)); /* To "counter" the card's padding */
   margin-left: calc(-1 * var(--card-padding)); /* To "counter" the card's padding */
