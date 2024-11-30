@@ -1,6 +1,8 @@
 // File: /f:/OneDrive/MyDocs/Study/TELUQ/Session 5 - Hiver 2024/INF1430 Final Project/TN3 - Actual Software/bump/src/frontend/content/js/MonitorCard.js
 
 import { requestMonitorHistory } from "./PythonJsBridge.js";
+import { MonitorDetailsColumn } from "./MonitorDetailsColumn.js";
+import { loadTemplate } from "./utils.js";
 
 document.addEventListener("DOMContentLoaded", (event) => {
   console.log("Hello, world! This coming from MonitorCard.js!");
@@ -84,6 +86,16 @@ export class MonitorListItem {
       newItem.addEventListener("click", (event) => {
         console.log(`Clicked on ${this.monitorData.unique_name}`);
         // TODO : Open monitor details page
+        //Trying stuff out
+        //Completely remove everything INDE "right-column" and add a new element
+        const rightColumn = document.querySelector("div.right-column");
+        if (rightColumn) {
+          const newRightColumn = rightColumn.cloneNode(false); // `false` clones only the element, without its children.
+          rightColumn.parentNode.replaceChild(newRightColumn, rightColumn);
+
+          // Add a new element to the right column
+          const monitorDetailsColumn = new MonitorDetailsColumn(".right-column");
+        }
       });
     } else {
       console.error(".monitors-list element not found");
