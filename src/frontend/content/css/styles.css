@@ -168,7 +168,7 @@ Testing shit out from gpt
   margin: 20px auto; /* top/bottom spacing AND center horizontally */
   /* height: 100%; */
   width: 90%; /* Prefered width */
-  max-width: 1200px; /* Don't stretch too much */
+  max-width: 1600px; /* Don't stretch too much */
   overflow-y: hidden;
 }
 
@@ -303,8 +303,36 @@ Log portion of the dashboard
 .recent-events-item {
   margin: 0;
   line-height: 125%;
+  max-height: 1.5rem; /* Initially folded */
+  overflow: hidden; /* Hides content beyond max-height */
+  transition: max-height 0.3s ease; /* Smooth animation for folding/unfolding */
+  cursor: pointer; /* Indicates interactivity */
 }
 
+.expanded {
+  max-height: 50rem; /* Unfolded */
+}
+
+.recent-events-item[data-text-overflows="true"]::before {
+  content: "▼"; /* Down arrow */
+  float: right;
+  transition: transform 0.3s ease;
+}
+
+.recent-events-item.expanded::before {
+  transform: rotate(180deg); /* Up arrow */
+  content: "▲";
+}
+
+.recent-events-item:hover {
+  background-color: var(--background-light-color-hover);
+}
+
+.recent-events-item:active {
+  background-color: var(--background-light-color-active);
+}
+
+/* Color-coded log levels */
 .recent-events-item[data-log-level="debug"] {
   color: darkblue;
 }

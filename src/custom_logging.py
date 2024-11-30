@@ -53,12 +53,12 @@ class LoggerManager:
             # Separate log file for each logger
             log_file = os.path.join(self.log_dir, f"{name}.log")
             file_handler = logging.FileHandler(log_file)
-            file_handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+            file_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"))
             handlers.append(file_handler)
 
         if self.log_to_console:
             console_handler = logging.StreamHandler()
-            console_handler.setFormatter(ColoredFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+            console_handler.setFormatter(ColoredFormatter("%(asctime)s - %(funcName)s - %(levelname)s - %(message)s"))
             handlers.append(console_handler)
 
         for handler in handlers:

@@ -65,6 +65,26 @@ window.addEventListener("pywebviewready", function () {
         }
 
         recentEvents.appendChild(newElement);
+
+        //If the text inside newElement overflows, add a data-text-overflows attribute to it
+        if (newElement.scrollHeight > newElement.clientHeight) {
+          newElement.setAttribute("data-text-overflows", "true");
+        }
+
+        //Folding/unfolding behavior for long log entries
+        newElement.addEventListener("click", () => {
+          if (newElement.getAttribute("data-text-overflows") === "true") {
+            //If it has the class ".expanded", remove it, otherwise, add it
+            newElement.classList.toggle("expanded");
+
+            //If it has the class now has ".expanded", apply a new max-height calculated from its scrollHeight, to fix the animation
+            if (newElement.classList.contains("expanded")) {
+              newElement.style.maxHeight = `${newElement.scrollHeight}px`;
+            } else {
+              newElement.style.maxHeight = "1.5rem";
+            }
+          }
+        });
       }
     })
     .catch((error) => {
