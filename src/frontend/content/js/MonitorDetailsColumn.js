@@ -32,26 +32,14 @@ export class MonitorDetailsColumn {
     }
 
     // Fetch the template
-    const template = await loadTemplate("monitor-details-template.html");
-    if (!template) {
+    const monitorDeailsDiv = await loadTemplate("monitor-details-template.html");
+    if (!monitorDeailsDiv) {
       console.error("Failed to load template.");
       return;
     }
-    console.log("Template loaded:", template);
+    console.log("Template loaded:", monitorDeailsDiv);
 
     // Example: Render based on state
-    this.element.innerHTML = `
-        <h2>Monitor Details</h2>
-        <p>Status: ${this.state.status || "Unknown"}</p>
-        <p>Last Updated: ${this.state.lastUpdated || "Never"}</p>
-      `;
-
-    // Example: Add dynamic buttons or interactive elements
-    const refreshButton = document.createElement("button");
-    refreshButton.textContent = "Refresh";
-    refreshButton.addEventListener("click", () => {
-      this.setState({ lastUpdated: new Date().toLocaleString() });
-    });
-    this.element.appendChild(refreshButton);
+    this.element.appendChild(monitorDeailsDiv);
   }
 }
