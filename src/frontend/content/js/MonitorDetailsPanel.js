@@ -84,4 +84,36 @@ export class MonitorDetailsPanel extends BaseComponent {
     // Set the monitor name
     monitorNameElement.textContent = monitorData.value.unique_name;
   }
+
+  _udpateStatsCards(monitorData) {
+    console.log("Updating stats cards");
+    console.log("Monitor data:", monitorData);
+    // For reference:
+    //   <div class="monitor-details-stats-container">
+    //   <div class="card monitor-details-status">
+    //     <div class="card-content">
+    //       <div class="stat-card-value-text">UP</div>
+    //       <div class="stat-card-label">Status</div>
+    //     </div>
+    //   </div>
+    //   <div class="card monitor-details-duration">
+    //     <div class="card-content">
+    //       <div class="stat-card-value-text">0s</div>
+    //       <div class="stat-card-label">Since</div>
+    //     </div>
+    //   </div>
+    //   <div class="card monitor-details-status">
+    //     <div class="card-content">
+    //       <div class="stat-card-value-text">0%</div>
+    //       <div class="stat-card-label">7-days uptime</div>
+    //     </div>
+    //   </div>
+    //   <div class="card monitor-details-status">
+    //     <div class="card-content">
+    //       <div class="stat-card-value-text">0ms</div>
+    //       <div class="stat-card-label">Avg latency</div>
+    //     </div>
+    //   </div>
+    // </div>
+  }
 }

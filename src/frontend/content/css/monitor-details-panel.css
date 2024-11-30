@@ -1,3 +1,11 @@
+.monitor-details-column {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  overflow: hidden;
+  gap: 10px;
+}
+
 /* The card that reads "All monitors are up" and such */
 .monitor-details-header-card {
   flex: 0 0 50px; /* Fixed height */
@@ -67,4 +75,19 @@
 
 .monitor-action-link:active {
   background-color: rgba(0, 0, 0, 0.2);
+}
+
+.monitor-details-stats-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly; /* Distribute children evenly with equal spacing */
+  align-items: center; /* Align items vertically in the center */
+  width: 100%; /* Ensure the container takes up the full width */
+  gap: 15px; /* Space between children */
+  cursor: default;
+}
+
+.monitor-details-stats-container > * {
+  flex: 1; /* Each child takes up an equal portion of the available width */
+  text-align: center; /* Optional: Center the content of each child */
 }

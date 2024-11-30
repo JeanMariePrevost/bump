@@ -32,7 +32,7 @@
   --text-color-400: #b3b3b3;
   --text-color-600: #666666;
   --text-color-800: #333333;
-  --light-border-color: #ccc;
+  --light-border-color: rgba(0, 0, 0, 0.2);
 
   /* Status colors */
   /* Each are defined by their 100 (lightest) to 500 (middle) to 900 (darkest) variants */
@@ -82,6 +82,7 @@
 
   /* Spacing and layout*/
   --card-padding: 20px;
+  --card-border-radius: 5px;
 }
 
 /* Reset some basic styles */
@@ -185,7 +186,8 @@ html {
   background-color: var(--background-fullbright-color);
   padding: var(--card-padding);
   /* margin: 10px 0; */
-  border-radius: 5px;
+  border: 1px solid var(--light-border-color);
+  border-radius: var(--card-border-radius);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.2s ease-out; /* Animate cards loading or being created */
 }
@@ -196,7 +198,7 @@ html {
   padding: 8px 25px;
   font-size: 1.2rem;
   color: var(--text-color-200);
-  border-radius: 5px 8px 0 0; /* Match the card's border-radius for the top corners */
+  border-radius: var(--card-border-radius) var(--card-border-radius) 0 0; /* Match the card's border-radius for the top corners */
   margin-top: calc(-1 * var(--card-padding)); /* To "counter" the card's padding */
   margin-left: calc(-1 * var(--card-padding)); /* To "counter" the card's padding */
   margin-right: calc(-1 * var(--card-padding)); /* To "counter" the card's padding */
