@@ -1,6 +1,6 @@
 import { MonitorListItem } from "./MonitorListItem.js";
 import { requestMonitorsList, requestLogEntries } from "./PythonJsBridge.js";
-import { DashboardColumn } from "./DashboardColumn.js";
+import { DashboardPanel } from "./DashboardPanel.js";
 
 // Holds a ref of all the MonitorListItem loaded
 const monitorsInList = [];
@@ -31,7 +31,7 @@ window.addEventListener("pywebviewready", function () {
   // You can now use the pywebview.api object to interact with the Python backend
 
   // Load the right column's content
-  const dashboardColumn = new DashboardColumn(".right-column");
+  const dashboardColumn = new DashboardPanel(".right-column");
 
   // Testing out the request of log entries
   requestLogEntries(30)
