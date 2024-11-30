@@ -55,14 +55,14 @@ class JsApi:
         # encodedJson = serialization.to_dict_encoded_with_types(history)
         return serialization.to_dict_encoded_with_types(history)
 
-    def request_log_entries(self, max_number_of_entries: int, level: str = "INFO", include_general: bool = True, include_monitoring: bool = True):
+    def request_log_entries(self, max_number_of_entries: int, min_level: str = "INFO", include_general: bool = True, include_monitoring: bool = True):
         print(f"Received request for log entries")
         # Parse BOTH log files for entries of a given level or higher
         log_entries = []
         if include_general:
-            log_entries += custom_logging.read_log_entries("logs/general.log", max_number_of_entries, level)
+            log_entries += custom_logging.read_log_entries("logs/general.log", max_number_of_entries, min_level)
         if include_monitoring:
-            log_entries += custom_logging.read_log_entries("logs/monitoring.log", max_number_of_entries, level)
+            log_entries += custom_logging.read_log_entries("logs/monitoring.log", max_number_of_entries, min_level)
 
         # Sort alphanumerically descending since they start with a timestamp
         log_entries.sort(reverse=True)

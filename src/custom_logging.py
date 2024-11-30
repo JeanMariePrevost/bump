@@ -15,7 +15,23 @@ LEVEL_COLORS = {
 }
 
 
-class ColoredFormatter(logging.Formatter):
+class DynamicFormatter(logging.Formatter):
+    """Custom formatter to dynamically change the log format based on the log level."""
+
+    FORMATS = {
+        logging.INFO: "%(asctime)s -> %(message)s",
+        logging.WARNING: "%(asctime)s [%(levelname)s] (%(module)s.%(funcName)s:ln%(lineno)d) -> %(message)s",  # TODO : Simplify in production?
+        "default": "%(asctime)s [%(levelname)s] (%(module)s.%(funcName)s:ln%(lineno)d) -> %(message)s",
+    }
+
+    def format(self, record):
+        # Choose the format based on the log level
+        log_fmt = self.FORMATS.get(record.levelno, self.FORMATS["default"])
+        formatter = logging.Formatter(log_fmt)
+        return formatter.format(record)
+
+
+class ColoredFormatter(DynamicFormatter):
     """Custom formatter to add colors to the entire log string."""
 
     def format(self, record):
@@ -53,12 +69,12 @@ class LoggerManager:
             # Separate log file for each logger
             log_file = os.path.join(self.log_dir, f"{name}.log")
             file_handler = logging.FileHandler(log_file)
-            file_handler.setFormatter(logging.Formatter("%(asctime)s - %(levelname)s - %(funcName)s - %(message)s"))
+            file_handler.setFormatter(DynamicFormatter())
             handlers.append(file_handler)
 
         if self.log_to_console:
             console_handler = logging.StreamHandler()
-            console_handler.setFormatter(ColoredFormatter("%(asctime)s - %(funcName)s - %(levelname)s - %(message)s"))
+            console_handler.setFormatter(ColoredFormatter("%(asctime)s - %(module)s - %(funcName)s - %(lineno)d - %(message)s"))
             handlers.append(console_handler)
 
         for handler in handlers:
@@ -82,22 +98,24 @@ monitoring_logger: logging.Logger = logger_manager.get_logger("monitoring")
 # monitoring_logger.debug("This is a monitoring-specific debug log.")
 
 
-def read_log_entries(log_file_path: str, mnumber_of_entries: int, level: str = "INFO"):
+def read_log_entries(log_file_path: str, mnumber_of_entries: int, min_level: str = "INFO"):
     """Reads and returns the last `mnumber_of_entries` log entries from the specified log file with the specified level."""
     log_entries = []
 
     levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-    if level not in levels:
-        general_logger.error(f"Invalid log level: {level}")
+
+    if min_level not in levels:
+        general_logger.error(f"Invalid log level: {min_level}")
         return log_entries
-    levels = levels[levels.index(level) :]  # Get all levels from the specified level to the end
+    levels = levels[levels.index(min_level) :]  # Get all levels from the specified level to the end
 
     try:
         with open(log_file_path, "r") as f:
             lines = f.readlines()
             count = 0
             for line in reversed(lines):
-                if any(l in line for l in levels):
+                line_log_level = extract_log_level_from_entry(line)
+                if line_log_level in levels:
                     log_entries.append(line)
                     count += 1
                     if count >= mnumber_of_entries:
@@ -106,3 +124,13 @@ def read_log_entries(log_file_path: str, mnumber_of_entries: int, level: str = "
         general_logger.error(f"Error while reading log file: {e}")
     return log_entries
     # return log_entries[::-1]  # Reverse to maintain original order?
+
+
+def extract_log_level_from_entry(log_entry: str) -> str:
+    """Extracts the log level from a log entry."""
+    levels_patterns = ["[DEBUG]", "[INFO]", "[WARNING]", "[ERROR]", "[CRITICAL]"]
+    level_if_unknown = "INFO"
+    for level in levels_patterns:
+        if level in log_entry:
+            return level[1:-1]  # Remove brackets
+    return level_if_unknown

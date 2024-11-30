@@ -61,7 +61,8 @@ window.addEventListener("pywebviewready", function () {
         } else if (response[i].includes("DEBUG")) {
           newElement.setAttribute("data-log-level", "debug");
         } else {
-          newElement.setAttribute("data-log-level", "unknown");
+          // Default to "INFO"
+          newElement.setAttribute("data-log-level", "info");
         }
 
         recentEvents.appendChild(newElement);
@@ -81,7 +82,7 @@ window.addEventListener("pywebviewready", function () {
             if (newElement.classList.contains("expanded")) {
               newElement.style.maxHeight = `${newElement.scrollHeight}px`;
             } else {
-              newElement.style.maxHeight = "1.5rem";
+              newElement.style.maxHeight = "1.4rem";
             }
           }
         });

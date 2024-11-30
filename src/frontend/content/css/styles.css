@@ -303,10 +303,13 @@ Log portion of the dashboard
 .recent-events-item {
   margin: 0;
   line-height: 125%;
-  max-height: 1.5rem; /* Initially folded */
+  min-height: 1.4rem;
+  max-height: 1.4rem; /* Initially folded */
   overflow: hidden; /* Hides content beyond max-height */
   transition: max-height 0.3s ease; /* Smooth animation for folding/unfolding */
   cursor: pointer; /* Indicates interactivity */
+  overflow-wrap: anywhere;
+  word-break: break-all;
 }
 
 .expanded {
