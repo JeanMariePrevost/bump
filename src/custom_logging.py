@@ -80,3 +80,29 @@ monitoring_logger: logging.Logger = logger_manager.get_logger("monitoring")
 
 # general_logger.info("This is a general log.")
 # monitoring_logger.debug("This is a monitoring-specific debug log.")
+
+
+def read_log_entries(log_file_path: str, mnumber_of_entries: int, level: str = "INFO"):
+    """Reads and returns the last `mnumber_of_entries` log entries from the specified log file with the specified level."""
+    log_entries = []
+
+    levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+    if level not in levels:
+        general_logger.error(f"Invalid log level: {level}")
+        return log_entries
+    levels = levels[levels.index(level) :]  # Get all levels from the specified level to the end
+
+    try:
+        with open(log_file_path, "r") as f:
+            lines = f.readlines()
+            count = 0
+            for line in reversed(lines):
+                if any(l in line for l in levels):
+                    log_entries.append(line)
+                    count += 1
+                    if count >= mnumber_of_entries:
+                        break
+    except Exception as e:
+        general_logger.error(f"Error while reading log file: {e}")
+    return log_entries
+    # return log_entries[::-1]  # Reverse to maintain original order?

@@ -2,6 +2,7 @@ import json
 import webview
 
 from custom_logging import general_logger
+import custom_logging
 import mediator
 import serialization
 
@@ -53,6 +54,21 @@ class JsApi:
         history = targetMonitor.read_results_from_history(max_number_of_entries)
         # encodedJson = serialization.to_dict_encoded_with_types(history)
         return serialization.to_dict_encoded_with_types(history)
+
+    def request_log_entries(self, max_number_of_entries: int, level: str = "INFO", include_general: bool = True, include_monitoring: bool = True):
+        print(f"Received request for log entries")
+        # Parse BOTH log files for entries of a given level or higher
+        log_entries = []
+        if include_general:
+            log_entries += custom_logging.read_log_entries("logs/general.log", max_number_of_entries, level)
+        if include_monitoring:
+            log_entries += custom_logging.read_log_entries("logs/monitoring.log", max_number_of_entries, level)
+
+        # Sort alphanumerically descending since they start with a timestamp
+        log_entries.sort(reverse=True)
+
+        # Return the last max_number_of_entries
+        return log_entries[-max_number_of_entries:]
 
 
 def get_js_api():

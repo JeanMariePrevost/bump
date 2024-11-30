@@ -1,5 +1,5 @@
 import { MonitorListItem } from "./MonitorListItem.js";
-import { requestMonitorsList } from "./PythonJsBridge.js";
+import { requestMonitorsList, requestLogEntries } from "./PythonJsBridge.js";
 
 // window.onload = function () {
 //   console.log("Page fully loaded");
@@ -32,6 +32,30 @@ function updateNoMonitorsElementVisibility() {
 
 window.addEventListener("pywebviewready", function () {
   // You can now use the pywebview.api object to interact with the Python backend
+
+  // Testing out the request of log entries
+  requestLogEntries(30)
+    .then((response) => {
+      if (!response) {
+        console.error("Failed to fetch log entries");
+        return;
+      }
+
+      console.log("Log entries received:", response);
+
+      // Add each to .recent-events-card .recent-events
+      const recentEvents = document.querySelector(".recent-events");
+      for (let i = 0; i < response.length; i++) {
+        const newElement = document.createElement("div");
+        newElement.className = "recent-events-item";
+        newElement.innerHTML = `<span class="recent-events-item-timestamp">${response[i]}`;
+        recentEvents.appendChild(newElement);
+      }
+    })
+    .catch((error) => {
+      console.error("Error while fetching log entries:", error);
+    });
+
   requestMonitorsList()
     .then((response) => {
       if (!response) {

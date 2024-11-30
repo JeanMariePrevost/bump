@@ -47,6 +47,16 @@ export async function requestMonitorHistory(monitorName, numberOfResults) {
   return response;
 }
 
+/**
+ * Request a number of application log entries
+ * @param {number} numberOfEntries
+ * @returns {Promise<Array<Object>>} Array of objects, each containing the log entry under its 'value' property
+ */
+export async function requestLogEntries(numberOfEntries) {
+  const response = await pywebview.api.request_log_entries(numberOfEntries);
+  return response;
+}
+
 //
 //
 //
