@@ -48,7 +48,22 @@ window.addEventListener("pywebviewready", function () {
       for (let i = 0; i < response.length; i++) {
         const newElement = document.createElement("div");
         newElement.className = "recent-events-item";
-        newElement.innerHTML = `<span class="recent-events-item-timestamp">${response[i]}`;
+        newElement.innerText = response[i];
+        //Set a data-log-level attribute to the element based on whether the entry contains "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
+        if (response[i].includes("CRITICAL")) {
+          newElement.setAttribute("data-log-level", "critical");
+        } else if (response[i].includes("ERROR")) {
+          newElement.setAttribute("data-log-level", "error");
+        } else if (response[i].includes("WARNING")) {
+          newElement.setAttribute("data-log-level", "warning");
+        } else if (response[i].includes("INFO")) {
+          newElement.setAttribute("data-log-level", "info");
+        } else if (response[i].includes("DEBUG")) {
+          newElement.setAttribute("data-log-level", "debug");
+        } else {
+          newElement.setAttribute("data-log-level", "unknown");
+        }
+
         recentEvents.appendChild(newElement);
       }
     })
