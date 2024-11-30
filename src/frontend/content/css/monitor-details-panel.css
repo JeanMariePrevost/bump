@@ -8,7 +8,9 @@
 
 /* The card that reads "All monitors are up" and such */
 .monitor-details-header-card {
-  flex: 0 0 50px; /* Fixed height */
+  flex: 0 0 40px; /* Fixed height */
+  padding-top: 0;
+  padding-bottom: 0;
   background-color: var(--status-unknown-color-300);
   color: var(--status-unknown-color-800);
   position: relative; /* For absolute positioning of the title and count */
@@ -22,24 +24,6 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-}
-
-.monitor-details-header-card,
-.monitor-details-header-card .card-content {
-  background-color: var(--status-no-data-color-300);
-  color: var(--status-no-data-color-800);
-}
-
-.monitor-details-header-card[data-status="up"],
-.monitor-details-header-card[data-status="up"] .card-content {
-  background-color: var(--status-good-color-300);
-  color: var(--status-good-color-800);
-}
-
-.monitor-details-header-card[data-status="down"],
-.monitor-details-header-card[data-status="down"] .card-content {
-  background-color: var(--status-bad-color-300);
-  color: var(--status-bad-color-800);
 }
 
 .monitor-details-title {
@@ -87,7 +71,40 @@
   cursor: default;
 }
 
+/* The cards directly inside the stats container */
 .monitor-details-stats-container > * {
   flex: 1; /* Each child takes up an equal portion of the available width */
   text-align: center; /* Optional: Center the content of each child */
+  overflow: hidden;
+  height: 90px;
+  padding: 0;
+}
+
+.monitor-details-duration .stat-card-value-text {
+  font-size: 1rem;
+}
+
+.monitor-details-stats-container .card-content {
+  height: 100%;
+  position: relative;
+  color: var(--text-color-600);
+}
+
+.stat-card-value-text {
+  font-size: 1.5rem;
+  /* fully center in parent */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.stat-card-label {
+  /* bottom-right corner */
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  font-size: 0.8rem;
+  /* make less opaque */
+  opacity: 0.5;
 }

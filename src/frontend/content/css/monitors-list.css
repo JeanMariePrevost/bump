@@ -54,6 +54,7 @@
   white-space: nowrap; /* Prevents text wrapping */
   overflow: hidden; /* Hides any text that overflows */
   text-overflow: ellipsis; /* Displays an ellipsis (...) for truncated text */
+  color: var(--text-color-600);
 }
 
 .monitor-list-item-history {
@@ -70,7 +71,7 @@
   height: 90%;
   width: 0.3rem;
   border-radius: 0.2rem;
-  background-color: var(--status-no-data-color);
+  background-color: var(--status-no-data-color-200);
 }
 
 .monitor-list-item-history-bar[data-status="up"] {

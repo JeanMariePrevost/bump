@@ -218,3 +218,27 @@ Utility classes
 .height-100 {
   height: 100%;
 }
+
+.color-by-status,
+.color-by-status .card-content {
+  background-color: var(--status-no-data-color-300);
+  color: var(--status-no-data-color-800);
+}
+
+.color-by-status[data-status="up"],
+.color-by-status[data-status="up"] .card-content {
+  background-color: var(--status-good-color-300);
+  color: var(--status-good-color-800);
+}
+
+.color-by-status[data-status="down"],
+.color-by-status[data-status="down"] .card-content {
+  background-color: var(--status-bad-color-300);
+  color: var(--status-bad-color-800);
+}
+
+.color-by-status[data-status="unknown"],
+.color-by-status[data-status="unknown"] .card-content {
+  background-color: var(--status-unknown-color-300);
+  color: var(--status-unknown-color-800);
+}

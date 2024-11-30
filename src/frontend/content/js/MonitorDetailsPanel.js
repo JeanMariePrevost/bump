@@ -102,8 +102,14 @@ export class MonitorDetailsPanel extends BaseComponent {
       monitorStatus = "down";
     }
 
-    const timeAtLastStatusChange = monitorData.value?.time_at_last_status_change?.value ?? null;
-    const uptimePercentage = monitorData.value?.stats_avg_uptime ?? 0;
+    let timeAtLastStatusChange = monitorData.value?.time_at_last_status_change?.value ?? null;
+    if (timeAtLastStatusChange) {
+      // Convert to human-readable format
+      const date = new Date(timeAtLastStatusChange);
+      timeAtLastStatusChange = `${date.toLocaleDateString()}<br>${date.toLocaleTimeString()}`;
+    }
+
+    const uptimePercentage = monitorData.value?.stats_avg_uptime * 100 ?? 0;
     const avgLatency = monitorData.value?.stats_avg_latency * 1000 ?? null; // Convert to ms
 
     // Update the stats cards
@@ -115,22 +121,22 @@ export class MonitorDetailsPanel extends BaseComponent {
     // Update the status card
     statusCard.setAttribute("data-status", monitorStatus);
     const statusValue = statusCard.querySelector(".stat-card-value-text");
-    statusValue.textContent = monitorStatus;
+    statusValue.textContent = monitorStatus.toUpperCase();
 
     // Update the duration card
     durationCard.setAttribute("data-status", monitorStatus);
     const durationValue = durationCard.querySelector(".stat-card-value-text");
-    durationValue.textContent = timeAtLastStatusChange;
+    durationValue.innerHTML = timeAtLastStatusChange; // Use innerHTML to render the <br> tag
 
     // Update the uptime card
     //TODO : Color-code?
     const uptimeValue = uptimeCard.querySelector(".stat-card-value-text");
-    uptimeValue.textContent = `${uptimePercentage}%`;
+    uptimeValue.textContent = `${uptimePercentage.toFixed(2)}%`;
 
     // Update the latency card
     //TODO : Color-code?
     const latencyValue = latencyCard.querySelector(".stat-card-value-text");
-    latencyValue.textContent = `${avgLatency}ms`;
+    latencyValue.textContent = `${avgLatency.toFixed(2)}ms`;
 
     // For reference:
     //   <div class="monitor-details-stats-container">
