@@ -5,6 +5,6 @@ import { BaseComponent } from "./BaseComponent.js";
  */
 export class DashboardPanel extends BaseComponent {
   constructor(parentSelector) {
-    super(parentSelector, "dashboard-column", "fragments/dashboard.html");
+    super(parentSelector, "dashboard-column", "fragments/dashboard-panel.html");
   }
 }

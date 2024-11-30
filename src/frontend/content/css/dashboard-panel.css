@@ -1,0 +1,131 @@
+/* Main dashboard container */
+.dashboard-column {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  gap: 1rem; /* Maintain spacing between children */
+  height: 100%; /* Ensure it fills its parent's space */
+  overflow: hidden; /* Prevent scrolling on this container */
+}
+
+/* The card that reads "All monitors are up" and such */
+.summary-card {
+  flex: 0 0 50px; /* Fixed height */
+  background-color: var(--status-unknown-color-300);
+  color: var(--status-unknown-color-800);
+  position: relative; /* For absolute positioning of the title and count */
+  user-select: none;
+  cursor: default;
+}
+
+.summary-card .summary-card-count {
+  font-size: larger;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}
+
+.summary-card .summary-card-title {
+  font-size: larger;
+  position: absolute;
+  left: 30px;
+  top: 50%;
+  transform: translate(0, -50%); /* Compensate for the title's own height */
+}
+
+.summary-card .card-content {
+  color: var(--status-unknown-color-800);
+}
+
+.summary-card[data-status="up"],
+.summary-card[data-status="up"] .card-content {
+  background-color: var(--status-good-color-300);
+  color: var(--status-good-color-800);
+}
+
+.summary-card[data-status="down"],
+.summary-card[data-status="down"] .card-content {
+  background-color: var(--status-bad-color-300);
+  color: var(--status-bad-color-800);
+}
+
+/* 
+******************************************************************************
+Log portion of the dashboard
+******************************************************************************
+*/
+
+.recent-events-card {
+  flex: 1; /* Fill the remaining space */
+  overflow-y: hidden;
+  display: flex; /* Optional: Flex layout for inner content if needed */
+  flex-direction: column; /* Keep logs stacked vertically */
+}
+
+.recent-events-card .card-content {
+  overflow-y: auto; /* Allow scrolling INTERNALLY to look at log entries */
+  font-family: "Courier New", monospace;
+  /* font-weight: 300; */
+  color: var(--text-color-800);
+  margin-top: 0.5rem;
+  margin-right: calc(-1 * var(--card-padding)); /* To "counter" the card's padding and have the scrollbar at the right edge */
+}
+/* 
+  .recent-events-card .card-content p {
+    margin: 0;
+    line-height: 125%;
+  } */
+
+.recent-events-item {
+  margin: 0;
+  line-height: 125%;
+  min-height: 1.4rem;
+  max-height: 1.4rem; /* Initially folded */
+  overflow: hidden; /* Hides content beyond max-height */
+  transition: max-height 0.3s ease; /* Smooth animation for folding/unfolding */
+  cursor: pointer; /* Indicates interactivity */
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+.expanded {
+  max-height: 50rem; /* Unfolded */
+}
+
+.recent-events-item[data-text-overflows="true"]::before {
+  content: "▼"; /* Down arrow */
+  float: right;
+  transition: transform 0.3s ease;
+}
+
+.recent-events-item.expanded::before {
+  transform: rotate(180deg); /* Up arrow */
+  content: "▲";
+}
+
+.recent-events-item:hover {
+  background-color: var(--background-light-color-hover);
+}
+
+.recent-events-item:active {
+  background-color: var(--background-light-color-active);
+}
+
+/* Color-coded log levels */
+.recent-events-item[data-log-level="debug"] {
+  color: darkblue;
+}
+
+.recent-events-item[data-log-level="info"] {
+  color: var(--status-good-color-600);
+}
+
+.recent-events-item[data-log-level="warning"] {
+  color: var(--status-unknown-color-500);
+  font-weight: 700;
+}
+
+.recent-events-item[data-log-level="error"],
+.recent-events-item[data-log-level="critical"] {
+  color: var(--status-bad-color-500);
+  font-weight: 700;
+}

@@ -5,6 +5,6 @@ import { BaseComponent } from "./BaseComponent.js";
  */
 export class MonitorDetailsColumn extends BaseComponent {
   constructor(parentSelector) {
-    super(parentSelector, "monitor-details-column", "fragments/monitor-details.html");
+    super(parentSelector, "monitor-details-column", "fragments/monitor-details-panel.html");
   }
 }
