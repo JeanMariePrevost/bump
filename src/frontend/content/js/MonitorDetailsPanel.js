@@ -17,6 +17,7 @@ export class MonitorDetailsPanel extends BaseComponent {
     // Get the monitor data
     requestSingleMonitor(this.monitor_unique_name).then((monitorData) => {
       this._updateHeaderCard(monitorData);
+      this._udpateStatsCards(monitorData);
     });
 
     // Add event listeners to the action-links
@@ -87,7 +88,50 @@ export class MonitorDetailsPanel extends BaseComponent {
 
   _udpateStatsCards(monitorData) {
     console.log("Updating stats cards");
+    if (!monitorData) {
+      console.warn("Monitor data is not available.");
+      return;
+    }
     console.log("Monitor data:", monitorData);
+
+    // Prepare the data for the stats cards
+    let monitorStatus = "unknown";
+    if (monitorData.value?.last_query_passed === true) {
+      monitorStatus = "up";
+    } else if (monitorData.value?.last_query_passed === false) {
+      monitorStatus = "down";
+    }
+
+    const timeAtLastStatusChange = monitorData.value?.time_at_last_status_change?.value ?? null;
+    const uptimePercentage = monitorData.value?.stats_avg_uptime ?? 0;
+    const avgLatency = monitorData.value?.stats_avg_latency * 1000 ?? null; // Convert to ms
+
+    // Update the stats cards
+    const statusCard = this.element.querySelector(".monitor-details-status");
+    const durationCard = this.element.querySelector(".monitor-details-duration");
+    const uptimeCard = this.element.querySelector(".monitor-details-uptime");
+    const latencyCard = this.element.querySelector(".monitor-details-latency");
+
+    // Update the status card
+    statusCard.setAttribute("data-status", monitorStatus);
+    const statusValue = statusCard.querySelector(".stat-card-value-text");
+    statusValue.textContent = monitorStatus;
+
+    // Update the duration card
+    durationCard.setAttribute("data-status", monitorStatus);
+    const durationValue = durationCard.querySelector(".stat-card-value-text");
+    durationValue.textContent = timeAtLastStatusChange;
+
+    // Update the uptime card
+    //TODO : Color-code?
+    const uptimeValue = uptimeCard.querySelector(".stat-card-value-text");
+    uptimeValue.textContent = `${uptimePercentage}%`;
+
+    // Update the latency card
+    //TODO : Color-code?
+    const latencyValue = latencyCard.querySelector(".stat-card-value-text");
+    latencyValue.textContent = `${avgLatency}ms`;
+
     // For reference:
     //   <div class="monitor-details-stats-container">
     //   <div class="card monitor-details-status">

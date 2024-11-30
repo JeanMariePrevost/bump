@@ -43,7 +43,9 @@ class JsApi:
 
     def request_monitor_data(self, unique_name: str):
         print(f"Received request for monitor data: {unique_name}")
-        return serialization.to_dict_encoded_with_types(mediator.get_monitors_manager().get_monitor_by_name(unique_name))
+        targetMonitor = mediator.get_monitors_manager().get_monitor_by_name(unique_name)
+        targetMonitor.recalculate_stats()  # Send the frontend the latest stats for monitor details
+        return serialization.to_dict_encoded_with_types(targetMonitor)
 
     def request_monitor_history(self, unique_name: str, max_number_of_entries: int):
         print(f"Received request for monitor history: {unique_name}")

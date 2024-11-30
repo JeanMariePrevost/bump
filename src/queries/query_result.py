@@ -28,3 +28,6 @@ class QueryResult(Deserializable):
     def __str__(self):
         status = "Passed" if self.test_passed else "Failed"
         return f"{status} - Start: {self.start_time}, End: {self.end_time}, Retries: {self.retries}, Code/Status: {self.code_or_status}, Message: {self.message}, Reason: {self.reason}, Exception Type: {self.exception_type}"
+
+    def calcualte_latency(self) -> float:
+        return (self.end_time - self.start_time).total_seconds()
