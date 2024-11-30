@@ -1,6 +1,6 @@
 import { loadFragment } from "./utils.js";
 
-export class MonitorDetailsColumn {
+export class DashboardColumn {
   constructor(parentSelector) {
     this.parentSelector = parentSelector;
     this.element = null; // Reference to the root element
@@ -18,7 +18,7 @@ export class MonitorDetailsColumn {
     }
 
     this.element = document.createElement("div");
-    this.element.classList.add("monitor-details-column");
+    this.element.classList.add("dashboard-column");
     parent.appendChild(this.element);
 
     this.render();
@@ -27,7 +27,7 @@ export class MonitorDetailsColumn {
   // Builds the content of the element based on its state
   async render() {
     // Fetch the template
-    const monitorDeailsDiv = await loadFragment("fragments/monitor-details.html");
+    const monitorDeailsDiv = await loadFragment("fragments/dashboard.html");
     if (!monitorDeailsDiv) {
       console.error("Failed to load template.");
       return;

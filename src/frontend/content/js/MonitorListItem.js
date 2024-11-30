@@ -2,7 +2,7 @@
 
 import { requestMonitorHistory } from "./PythonJsBridge.js";
 import { MonitorDetailsColumn } from "./MonitorDetailsColumn.js";
-import { loadTemplate } from "./utils.js";
+import { loadFragment } from "./utils.js";
 
 document.addEventListener("DOMContentLoaded", (event) => {
   console.log("Hello, world! This coming from MonitorCard.js!");

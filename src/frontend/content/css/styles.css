@@ -354,3 +354,16 @@ Log portion of the dashboard
   color: var(--status-bad-color-500);
   font-weight: 700;
 }
+
+/*
+
+Dashboard portion of the dashboard, transitionning away from hard-coded into the page
+
+*/
+.dashboard-column {
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  gap: 1rem; /* Maintain spacing between children */
+  height: 100%; /* Ensure it fills its parent's space */
+  overflow: hidden; /* Prevent scrolling on this container */
+}
