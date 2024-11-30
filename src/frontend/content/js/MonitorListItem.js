@@ -1,7 +1,7 @@
 // File: /f:/OneDrive/MyDocs/Study/TELUQ/Session 5 - Hiver 2024/INF1430 Final Project/TN3 - Actual Software/bump/src/frontend/content/js/MonitorCard.js
 
 import { requestMonitorHistory } from "./PythonJsBridge.js";
-import { MonitorDetailsColumn } from "./MonitorDetailsPanel.js";
+import { MonitorDetailsPanel } from "./MonitorDetailsPanel.js";
 import { loadFragment } from "./utils.js";
 
 document.addEventListener("DOMContentLoaded", (event) => {
@@ -94,7 +94,7 @@ export class MonitorListItem {
           rightColumn.parentNode.replaceChild(newRightColumn, rightColumn);
 
           // Add a new element to the right column
-          const monitorDetailsColumn = new MonitorDetailsColumn(".right-column");
+          const monitorDetailsColumn = new MonitorDetailsPanel(".right-column", this.monitorData.unique_name);
         }
       });
     } else {

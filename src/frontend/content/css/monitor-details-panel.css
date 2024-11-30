@@ -36,13 +36,18 @@
 
 .monitor-details-title {
   font-size: larger;
+  /* trim overflow and display ellipsis */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .monitor-actions-container {
+  flex-shrink: 0;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 6px;
   /* align-items: center; */
   /* flex: 1 1 auto; */
   /* padding-right: 10px; */
