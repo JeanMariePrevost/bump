@@ -12,7 +12,9 @@ export class BaseComponent {
     this.element = null; // "this" element in the DOM
 
     this._initElement(className);
-    this._renderFragment(fragmentPath);
+    this._renderFragment(fragmentPath).then(() => {
+      this._onElementReady();
+    });
   }
 
   // Initializes and attaches its element to the DOM
@@ -40,6 +42,11 @@ export class BaseComponent {
     // Add the loaded content to the element
     this.element.appendChild(monitorDeailsDiv);
   }
+
+  /**
+   * Hook for subclasses after the fragment has been loaded and added to the DOM.
+   */
+  _onElementReady() {}
 
   /**
    * Clean up the element safely, removing it from the DOM and removing any event listeners

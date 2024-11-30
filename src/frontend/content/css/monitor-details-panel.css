@@ -1,0 +1,65 @@
+/* The card that reads "All monitors are up" and such */
+.monitor-details-header-card {
+  flex: 0 0 50px; /* Fixed height */
+  background-color: var(--status-unknown-color-300);
+  color: var(--status-unknown-color-800);
+  position: relative; /* For absolute positioning of the title and count */
+  user-select: none;
+  cursor: default;
+}
+
+.monitor-details-header-card .card-content {
+  /* Center and distribute contents */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.monitor-details-header-card,
+.monitor-details-header-card .card-content {
+  background-color: var(--status-no-data-color-300);
+  color: var(--status-no-data-color-800);
+}
+
+.monitor-details-header-card[data-status="up"],
+.monitor-details-header-card[data-status="up"] .card-content {
+  background-color: var(--status-good-color-300);
+  color: var(--status-good-color-800);
+}
+
+.monitor-details-header-card[data-status="down"],
+.monitor-details-header-card[data-status="down"] .card-content {
+  background-color: var(--status-bad-color-300);
+  color: var(--status-bad-color-800);
+}
+
+.monitor-details-title {
+  font-size: larger;
+}
+
+.monitor-actions-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 10px;
+  /* align-items: center; */
+  /* flex: 1 1 auto; */
+  /* padding-right: 10px; */
+}
+
+.monitor-action-link {
+  cursor: pointer;
+  text-decoration: underline;
+  background-color: rgba(0, 0, 0, 0);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.monitor-action-link:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.monitor-action-link:active {
+  background-color: rgba(0, 0, 0, 0.2);
+}
