@@ -1,5 +1,6 @@
 import { BaseComponent } from "./BaseComponent.js";
 import { requestSingleMonitor, requestMonitorHistory } from "./PythonJsBridge.js";
+import { MonitorEditPanel } from "./MonitorEditPanel.js";
 
 /**
  * Handles the monitor details right-column panel
@@ -55,6 +56,9 @@ export class MonitorDetailsPanel extends BaseComponent {
       case "edit":
         console.log("Edit action clicked");
         // TODO: Implement edit action
+        // Remove self and instantiate a MonitorEditPanel
+        this.destroy();
+        new MonitorEditPanel(".right-column", this.monitor_unique_name);
         break;
       case "duplicate":
         console.log("Duplicate action clicked");

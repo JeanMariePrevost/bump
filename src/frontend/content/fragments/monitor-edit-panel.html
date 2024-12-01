@@ -1,0 +1,85 @@
+<!--
+This section represents the right column of the screen that appears when you click on a monitor.
+-->
+<!-- Title and main actions card -->
+<div class="card monitor-details-header-card">
+  <div class="card-content">
+    <div class="monitor-details-title">Monitor Name Goes Here</div>
+    <div class="monitor-actions-container">
+      <span class="monitor-action-link" data-action="pause">❙❙ Pause</span>
+      <span class="monitor-action-link" data-action="edit">✎ Edit</span>
+      <span class="monitor-action-link" data-action="duplicate">❐ Duplicate</span>
+      <span class="monitor-action-link" data-action="delete">✕ Delete</span>
+    </div>
+  </div>
+</div>
+
+<!-- Single form with all input fields -->
+<div class="card monitor-edit-card">
+  <div class="card-title">Monitor Settings</div>
+  <div class="card-content">
+    <form class="settings-form">
+      <!-- Name -->
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" placeholder="Enter monitor name" />
+      </div>
+
+      <!-- URL -->
+      <div class="form-group">
+        <label for="url">URL</label>
+        <input type="text" id="url" name="url" placeholder="Enter URL" />
+      </div>
+
+      <!-- Interval -->
+      <div class="form-group">
+        <label for="interval">Interval (in seconds)</label>
+        <input type="text" id="interval" name="interval" placeholder="Enter interval" />
+      </div>
+
+      <!-- Condition -->
+      <div class="form-group">
+        <label for="condition">Condition</label>
+        <select id="condition" name="condition">
+          <option value="status">Status Code</option>
+          <option value="response_time">Response Time</option>
+          <option value="content_match">Content Match</option>
+        </select>
+      </div>
+
+      <!-- Retries -->
+      <div class="form-group">
+        <label for="retries">Retries</label>
+        <input type="text" id="retries" name="retries" placeholder="Number of retries" />
+      </div>
+
+      <!-- Retries Interval -->
+      <div class="form-group">
+        <label for="retries-interval">Retries Interval (in seconds)</label>
+        <input type="text" id="retries-interval" name="retries-interval" placeholder="Interval between retries" />
+      </div>
+
+      <!-- Threshold -->
+      <div class="form-group threshold-group">
+        <label for="threshold">Threshold</label>
+        <div class="threshold-wrapper">
+          <select id="threshold" name="threshold">
+            <option value="time">Time</option>
+            <option value="count">Count</option>
+          </select>
+          <input type="text" id="threshold-value" name="threshold-value" placeholder="Enter value" />
+        </div>
+      </div>
+
+      <!-- Alert Profile -->
+      <div class="form-group">
+        <label for="alert-profile">Alert Profile</label>
+        <select id="alert-profile" name="alert-profile">
+          <option value="email">Email</option>
+          <option value="sms">SMS</option>
+          <option value="webhook">Webhook</option>
+        </select>
+      </div>
+    </form>
+  </div>
+</div>
