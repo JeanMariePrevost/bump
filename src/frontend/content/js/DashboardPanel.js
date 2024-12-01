@@ -3,35 +3,26 @@ import { requestLogEntries } from "./PythonJsBridge.js";
 
 /**
  * Handles the dashboard right-column panel
+ * @param {string} parentSelector - The selector for the parent element to append the panel to
+ * @param {Object[]} monitorListthis.monitorListResponseDataData - The this.monitorListResponseData object from the monitor list request
  */
 export class DashboardPanel extends BaseComponent {
-  constructor(parentSelector, upCount, downCount, unknownCount) {
+  constructor(parentSelector, monitorListResponseDataData) {
     super(parentSelector, "dashboard-column", "fragments/dashboard-panel.html");
-    this.upCount = upCount;
-    this.downCount = downCount;
-    this.unknownCount = unknownCount;
+    this.monitorListResponseData = monitorListResponseDataData;
   }
 
   _onElementReady() {
-    //Update the summary-card element's counts and status based
-    const summaryCard = document.querySelector(".summary-card");
-    if (this.upCount > 0 && this.downCount === 0 && this.unknownCount === 0) {
-      summaryCard.setAttribute("data-status", "up");
-      summaryCard.querySelector(".summary-card-title").innerText = "All monitors are up";
-    } else if (this.downCount > 0) {
-      summaryCard.setAttribute("data-status", "down");
-      summaryCard.querySelector(".summary-card-title").innerText = "Some monitors are down";
-    } else if (this.unknownCount > 0) {
-      // TODO : Need to handle differently here? I don't think so
-      summaryCard.querySelector(".summary-card-title").innerText = "Issues were encountered";
-      summaryCard.setAttribute("data-status", "down");
-    } else if (this.upCount + this.downCount + this.unknownCount === 0) {
-      summaryCard.querySelector(".summary-card-title").innerText = "No monitors found";
-      summaryCard.setAttribute("data-status", "unknown");
+    if (!this.monitorListResponseData) {
+      console.error("No monitor list data provided to the DashboardPanel");
+      return;
+    } else if (this.monitorListResponseData.length === 0) {
+      console.log("Config contains no monitors");
+      return;
     }
-    summaryCard.querySelector(".summary-card-count").innerText = `${this.upCount} / ${this.downCount} / ${this.unknownCount}`;
 
-    console.log(`Monitors status counts: up=${this.upCount}, down=${this.downCount}, unknown=${this.unknownCount}`);
+    // Count the up/down/unknowns
+    this.#updateSummaryCard(this.monitorListResponseData);
 
     // Fill the recent events with log entries
     requestLogEntries(30)
@@ -91,5 +82,40 @@ export class DashboardPanel extends BaseComponent {
       .catch((error) => {
         console.error("Error while fetching log entries:", error);
       });
+  }
+
+  #updateSummaryCard(monitorListResponseData) {
+    let upCount = 0;
+    let downCount = 0;
+    let unknownCount = 0;
+    for (let i = 0; i < monitorListResponseData.length; i++) {
+      if (monitorListResponseData[i].value.last_query_passed === true) {
+        upCount++;
+      } else if (monitorListResponseData[i].value.last_query_passed === false) {
+        downCount++;
+      } else {
+        unknownCount++;
+      }
+    }
+
+    //Update the summary-card element's counts and status based
+    const summaryCard = document.querySelector(".summary-card");
+    if (upCount > 0 && downCount === 0 && unknownCount === 0) {
+      summaryCard.setAttribute("data-status", "up");
+      summaryCard.querySelector(".summary-card-title").innerText = "All monitors are up";
+    } else if (downCount > 0) {
+      summaryCard.setAttribute("data-status", "down");
+      summaryCard.querySelector(".summary-card-title").innerText = "Some monitors are down";
+    } else if (unknownCount > 0) {
+      // TODO : Need to handle differently here? I don't think so
+      summaryCard.querySelector(".summary-card-title").innerText = "Issues were encountered";
+      summaryCard.setAttribute("data-status", "down");
+    } else if (upCount + downCount + unknownCount === 0) {
+      summaryCard.querySelector(".summary-card-title").innerText = "No monitors found";
+      summaryCard.setAttribute("data-status", "unknown");
+    }
+    summaryCard.querySelector(".summary-card-count").innerText = `${upCount} / ${downCount} / ${unknownCount}`;
+
+    console.log(`Monitors status counts: up=${upCount}, down=${downCount}, unknown=${unknownCount}`);
   }
 }

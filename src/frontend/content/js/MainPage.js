@@ -41,22 +41,12 @@ window.addEventListener("pywebviewready", function () {
         return;
       }
 
-      // Populate the monitorsList and count the number of monitors by status and also use the same request to count the number of monitors up/down/unknown
-      let upCount = 0;
-      let downCount = 0;
-      let unknownCount = 0;
+      const dashboardColumn = new DashboardPanel(".right-column", response);
+
+      // Populate the monitorsList
       for (let i = 0; i < response.length; i++) {
-        addMonitorToList(response[i].value); // Add a new MonitorListItem in the list
-        if (response[i].value.last_query_passed === true) {
-          upCount++;
-        } else if (response[i].value.last_query_passed === false) {
-          downCount++;
-        } else {
-          unknownCount++;
-        }
+        addMonitorToList(response[i].value); // TODO: Move to a component?
       }
-      // Load the right column's content
-      const dashboardColumn = new DashboardPanel(".right-column", upCount, downCount, unknownCount);
     })
     .catch((error) => {
       console.error("Error while fetching all monitors data:", error);
