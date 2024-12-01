@@ -279,3 +279,11 @@ Utility classes
 .text-color-by-status[data-status="unknown"] .card-content {
   color: var(--status-unknown-color-800);
 }
+
+.validation-error {
+  background-color: var(--status-bad-color-200);
+}
+
+.validation-error-message {
+  color: var(--status-bad-color-800);
+}
