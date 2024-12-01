@@ -3,7 +3,7 @@ This section represents the right column of the screen that appears when you cli
 -->
 <div class="monitor-details-column">
   <!-- Title and main actions card -->
-  <div class="card monitor-details-header-card color-by-status">
+  <div class="card monitor-details-header-card">
     <div class="card-content">
       <div class="monitor-details-title">Monitor Name Goes Here</div>
       <div class="monitor-actions-container">
@@ -26,7 +26,7 @@ This section represents the right column of the screen that appears when you cli
     <div class="card monitor-details-duration color-by-status">
       <div class="card-content">
         <div class="stat-card-value-text">0s</div>
-        <div class="stat-card-label">Since</div>
+        <div class="stat-card-label">Last Change</div>
       </div>
     </div>
     <div class="card monitor-details-uptime">
@@ -45,23 +45,27 @@ This section represents the right column of the screen that appears when you cli
 
   <!-- Chart card -->
   <div class="card monitor-details-chart-container">
-    <div class="card-title">Timeline</div>
+    <div class="card-title">Availability History</div>
     <div class="card-content">
       <div class="monitor-details-chart">To be implemented</div>
+      <div class="monitor-details-chart-x-axis">
+        <div class="monitor-details-chart-left-time"></div>
+        <div class="monitor-details-chart-right-time"></div>
+      </div>
       <div class="monitor-details-chart-tooltip opacity-0">
-        <div class="monitor-details-chart-tooltip-time">Time: YYYY-MM-DD...</div>
-        <div class="monitor-details-chart-tooltip-status">Status: UP</div>
-        <div class="monitor-details-chart-tooltip-started">Since: YYYY-MM-DD...</div>
-        <div class="monitor-details-chart-tooltip-message">E.g. "404" or something</div>
+        <div class="monitor-details-chart-tooltip-time">Time:</div>
+        <div class="monitor-details-chart-tooltip-status">Status:</div>
+        <div class="monitor-details-chart-tooltip-started">Since:</div>
+        <div class="monitor-details-chart-tooltip-message"></div>
       </div>
     </div>
   </div>
 
   <!-- Monitor-specific logs -->
   <div class="card monitor-details-logs-container">
-    <div class="card-title">Monitor Events</div>
+    <div class="card-title">Monitor Events Log</div>
     <div class="card-content">
-      <div class="monitor-details-logs">To be implemented</div>
+      <div class="recent-events"></div>
     </div>
   </div>
 </div>

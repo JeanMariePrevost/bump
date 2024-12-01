@@ -4,15 +4,16 @@
   flex: 1 1 auto;
   overflow: hidden;
   gap: 10px;
+  height: 100%;
 }
 
 /* The card that reads "All monitors are up" and such */
 .monitor-details-header-card {
-  flex: 0 0 40px; /* Fixed height */
+  flex: 0 0 50px; /* Fixed height */
   padding-top: 0;
   padding-bottom: 0;
-  background-color: var(--status-unknown-color-300);
-  color: var(--status-unknown-color-800);
+  /* background-color: var(--status-unknown-color-300); */
+  /* color: var(--status-unknown-color-800); */
   position: relative; /* For absolute positioning of the title and count */
   user-select: none;
   cursor: default;
@@ -24,6 +25,7 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  height: 100%;
 }
 
 .monitor-details-title {
@@ -110,19 +112,24 @@
 }
 
 .monitor-details-chart {
-  display: flex; /* Arrange children in a row */
-  width: 100%; /* Full width of the container */
-  height: 50px; /* Height of the timeline */
-  border: 1px solid #ccc; /* Optional border for visualization */
-  overflow: hidden; /* Ensure segments don't exceed container bounds */
+  display: flex;
+  width: 100%;
+  height: 50px;
+  border: 1px solid var(--light-border-color);
+  overflow: hidden;
+  margin-top: 10px;
+  position: relative;
+}
+
+.monitor-details-chart-x-axis {
+  display: flex;
+  justify-content: space-between; /* Push items to left and right */
+  align-items: center;
+  padding-top: 3px;
 }
 
 .monitor-details-chart-bar {
   flex: 1 1 auto;
-  /* overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 10px; */
 }
 
 .monitor-details-chart-tooltip {
@@ -137,4 +144,20 @@
 
   text-wrap: nowrap;
   transition: opacity 0.15s ease;
+}
+
+.monitor-details-logs-container {
+  flex: 1; /* Fill the remaining space */
+  overflow-y: hidden;
+  display: flex; /* Optional: Flex layout for inner content if needed */
+  flex-direction: column; /* Keep logs stacked vertically */
+}
+
+.monitor-details-logs-container .card-content {
+  overflow-y: auto; /* Allow scrolling INTERNALLY to look at log entries */
+  font-family: "Courier New", monospace;
+  /* font-weight: 300; */
+  color: var(--text-color-800);
+  margin-top: 0.5rem;
+  margin-right: calc(-1 * var(--card-padding)); /* To "counter" the card's padding and have the scrollbar at the right edge */
 }

@@ -212,7 +212,7 @@ html {
 .card-content {
   font-size: 1rem;
   /* color: var(--text-color-800); */
-  color: var(--text-color-400);
+  color: var(--text-color-500);
 }
 
 /* 
@@ -257,5 +257,25 @@ Utility classes
 .color-by-status[data-status="unknown"],
 .color-by-status[data-status="unknown"] .card-content {
   background-color: var(--status-unknown-color-300);
+  color: var(--status-unknown-color-800);
+}
+
+.text-color-by-status,
+.text-color-by-status .card-content {
+  color: var(--status-no-data-color-800);
+}
+
+.text-color-by-status[data-status="up"],
+.text-color-by-status[data-status="up"] .card-content {
+  color: var(--status-good-color-800);
+}
+
+.text-color-by-status[data-status="down"],
+.text-color-by-status[data-status="down"] .card-content {
+  color: var(--status-bad-color-800);
+}
+
+.text-color-by-status[data-status="unknown"],
+.text-color-by-status[data-status="unknown"] .card-content {
   color: var(--status-unknown-color-800);
 }
