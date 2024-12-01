@@ -21,7 +21,17 @@
   font-size: larger;
   position: absolute;
   right: 10px;
-  bottom: 10px;
+  /* bottom: 26px; */
+  top: 50%;
+  transform: translate(0, -50%); /* Compensate for the element's own height */
+}
+
+.summary-card .summary-card-count-label {
+  /* font-size: small; */
+  position: absolute;
+  right: 10px;
+  bottom: 6px;
+  opacity: 0.4;
 }
 
 .summary-card .summary-card-title {
@@ -29,7 +39,7 @@
   position: absolute;
   left: 30px;
   top: 50%;
-  transform: translate(0, -50%); /* Compensate for the title's own height */
+  transform: translate(0, -50%); /* Compensate for the element's own height */
 }
 
 .summary-card .card-content {
