@@ -99,6 +99,7 @@ html {
   margin: 0;
   padding: 0;
   background-color: var(--background-light-color);
+  overflow-x: hidden;
 }
 
 /* Full page area, including the navbar and the content */
@@ -221,6 +222,10 @@ Utility classes
 */
 .height-100 {
   height: 100%;
+}
+
+.hidden {
+  display: none;
 }
 
 .color-by-status,

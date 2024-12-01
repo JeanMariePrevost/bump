@@ -108,3 +108,32 @@
   /* make less opaque */
   opacity: 0.5;
 }
+
+.monitor-details-chart {
+  display: flex; /* Arrange children in a row */
+  width: 100%; /* Full width of the container */
+  height: 50px; /* Height of the timeline */
+  border: 1px solid #ccc; /* Optional border for visualization */
+  overflow: hidden; /* Ensure segments don't exceed container bounds */
+}
+
+.monitor-details-chart-bar {
+  flex: 1 1 auto;
+  /* overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px; */
+}
+
+.monitor-details-chart-tooltip {
+  position: absolute;
+  background-color: var(--background-light-color);
+  border: 1px solid var(--light-border-color);
+  padding: 5px;
+  border-radius: 5px;
+  z-index: 1000;
+  /* display: none; */
+  /* Make this NOT capture mouse events, so the mouseleave event can be triggered */
+  pointer-events: none;
+  text-wrap: nowrap;
+}
