@@ -21,10 +21,11 @@ export class DashboardPanel extends BaseComponent {
       return;
     }
 
-    // Count the up/down/unknowns
     this.#updateSummaryCard(this.monitorListResponseData);
+    this.#updateRecentEvents();
+  }
 
-    // Fill the recent events with log entries
+  #updateRecentEvents() {
     requestLogEntries(30)
       .then((response) => {
         if (!response) {
