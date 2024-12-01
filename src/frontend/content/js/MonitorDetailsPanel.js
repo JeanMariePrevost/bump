@@ -251,7 +251,8 @@ export class MonitorDetailsPanel extends BaseComponent {
               tooltip.style.top = `${top}px`;
               tooltip.style.left = `${left}px`;
 
-              tooltip.classList.remove("hidden");
+              tooltip.classList.remove("opacity-0");
+              tooltip.classList.add("opacity-100");
             }
           });
 
@@ -259,7 +260,8 @@ export class MonitorDetailsPanel extends BaseComponent {
             const tooltip = document.querySelector(".monitor-details-chart-tooltip");
             console.log("Mouse left bar" + event.target);
             if (tooltip && tooltip.getAttribute("data-target-index") === event.target.getAttribute("data-index")) {
-              tooltip.classList.add("hidden");
+              tooltip.classList.remove("opacity-100");
+              tooltip.classList.add("opacity-0");
             }
           });
 

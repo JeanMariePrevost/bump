@@ -132,8 +132,9 @@
   padding: 5px;
   border-radius: 5px;
   z-index: 1000;
-  /* display: none; */
   /* Make this NOT capture mouse events, so the mouseleave event can be triggered */
   pointer-events: none;
+
   text-wrap: nowrap;
+  transition: opacity 0.15s ease;
 }
