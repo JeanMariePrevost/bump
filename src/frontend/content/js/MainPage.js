@@ -30,9 +30,7 @@ function updateNoMonitorsElementVisibility() {
 window.addEventListener("pywebviewready", function () {
   // You can now use the pywebview.api object to interact with the Python backend
 
-  // Load the right column's content
-  const dashboardColumn = new DashboardPanel(".right-column");
-
+  // Build the currently "hard-coded" monitor list of the main page
   requestMonitorsList()
     .then((response) => {
       if (!response) {
@@ -43,12 +41,12 @@ window.addEventListener("pywebviewready", function () {
         return;
       }
 
-      // Populate the monitorsList and count the number of monitors by status
+      // Populate the monitorsList and count the number of monitors by status and also use the same request to count the number of monitors up/down/unknown
       let upCount = 0;
       let downCount = 0;
       let unknownCount = 0;
       for (let i = 0; i < response.length; i++) {
-        addMonitorToList(response[i].value);
+        addMonitorToList(response[i].value); // Add a new MonitorListItem in the list
         if (response[i].value.last_query_passed === true) {
           upCount++;
         } else if (response[i].value.last_query_passed === false) {
@@ -57,26 +55,8 @@ window.addEventListener("pywebviewready", function () {
           unknownCount++;
         }
       }
-
-      //Update the summary-card element
-      const summaryCard = document.querySelector(".summary-card");
-      if (upCount > 0 && downCount === 0 && unknownCount === 0) {
-        summaryCard.setAttribute("data-status", "up");
-        summaryCard.querySelector(".summary-card-title").innerText = "All monitors are up";
-      } else if (downCount > 0) {
-        summaryCard.setAttribute("data-status", "down");
-        summaryCard.querySelector(".summary-card-title").innerText = "Some monitors are down";
-      } else if (unknownCount > 0) {
-        // TODO : Need to handle differently here? I don't think so
-        summaryCard.querySelector(".summary-card-title").innerText = "Issues were encountered";
-        summaryCard.setAttribute("data-status", "down");
-      } else if (upCount + downCount + unknownCount === 0) {
-        summaryCard.querySelector(".summary-card-title").innerText = "No monitors found";
-        summaryCard.setAttribute("data-status", "unknown");
-      }
-      summaryCard.querySelector(".summary-card-count").innerText = `${upCount} / ${downCount} / ${unknownCount}`;
-
-      console.log(`Monitors status counts: up=${upCount}, down=${downCount}, unknown=${unknownCount}`);
+      // Load the right column's content
+      const dashboardColumn = new DashboardPanel(".right-column", upCount, downCount, unknownCount);
     })
     .catch((error) => {
       console.error("Error while fetching all monitors data:", error);

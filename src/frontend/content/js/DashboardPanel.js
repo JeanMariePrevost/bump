@@ -5,12 +5,35 @@ import { requestLogEntries } from "./PythonJsBridge.js";
  * Handles the dashboard right-column panel
  */
 export class DashboardPanel extends BaseComponent {
-  constructor(parentSelector) {
+  constructor(parentSelector, upCount, downCount, unknownCount) {
     super(parentSelector, "dashboard-column", "fragments/dashboard-panel.html");
+    this.upCount = upCount;
+    this.downCount = downCount;
+    this.unknownCount = unknownCount;
   }
 
   _onElementReady() {
-    // Testing out the request of log entries
+    //Update the summary-card element's counts and status based
+    const summaryCard = document.querySelector(".summary-card");
+    if (this.upCount > 0 && this.downCount === 0 && this.unknownCount === 0) {
+      summaryCard.setAttribute("data-status", "up");
+      summaryCard.querySelector(".summary-card-title").innerText = "All monitors are up";
+    } else if (this.downCount > 0) {
+      summaryCard.setAttribute("data-status", "down");
+      summaryCard.querySelector(".summary-card-title").innerText = "Some monitors are down";
+    } else if (this.unknownCount > 0) {
+      // TODO : Need to handle differently here? I don't think so
+      summaryCard.querySelector(".summary-card-title").innerText = "Issues were encountered";
+      summaryCard.setAttribute("data-status", "down");
+    } else if (this.upCount + this.downCount + this.unknownCount === 0) {
+      summaryCard.querySelector(".summary-card-title").innerText = "No monitors found";
+      summaryCard.setAttribute("data-status", "unknown");
+    }
+    summaryCard.querySelector(".summary-card-count").innerText = `${this.upCount} / ${this.downCount} / ${this.unknownCount}`;
+
+    console.log(`Monitors status counts: up=${this.upCount}, down=${this.downCount}, unknown=${this.unknownCount}`);
+
+    // Fill the recent events with log entries
     requestLogEntries(30)
       .then((response) => {
         if (!response) {
