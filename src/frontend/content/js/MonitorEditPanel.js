@@ -273,6 +273,7 @@ export class MonitorEditPanel extends BaseComponent {
       form["alert-profile"].value = "Not yet implemented"; // TODO: Implement alert profiles defined by the user
 
       this.#resetFormValidation(form);
+      this.#updateConditionValueFieldFromQueryType(form, form["query-type"].value);
     });
   }
 }
