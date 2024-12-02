@@ -53,7 +53,7 @@ class Monitor(Deserializable):
     def read_results_from_history(self, count: int) -> list[QueryResult]:
         resultsList = []
         try:
-            target_path = f"data/history/{self.unique_name}.jsonl"
+            target_path = self.get_history_file_path()
             with open(target_path, "r") as f:
                 lines = f.readlines()
                 if len(lines) > 0:
@@ -69,7 +69,7 @@ class Monitor(Deserializable):
     def read_results_from_history_days(self, days_to_read: int) -> list[QueryResult]:
         resultsList = []
         try:
-            target_path = f"data/history/{self.unique_name}.jsonl"
+            target_path = self.get_history_file_path()
             with open(target_path, "r") as f:
                 lines = f.readlines()
                 if len(lines) > 0:
@@ -92,7 +92,7 @@ class Monitor(Deserializable):
 
     def append_query_result_to_history(self, query_result):
         try:
-            target_path = f"data/history/{self.unique_name}.jsonl"
+            target_path = self.get_history_file_path()
             # create the whole path if it doesn't exist
             os.makedirs(os.path.dirname(target_path), exist_ok=True)
             encoded_query_result = serialization.to_encoded_jsonl(query_result)
@@ -121,6 +121,9 @@ class Monitor(Deserializable):
             self.stats_avg_uptime = 0
             self.stats_avg_latency = 0
             self.time_at_last_status_change = datetime.now()
+
+    def get_history_file_path(self):
+        return f"data/history/{self.unique_name}.jsonl"
 
     def validate_and_apply_config_from_frontend(self, config: dict) -> None:
         """
@@ -191,3 +194,14 @@ class Monitor(Deserializable):
         # targetMonitor.stats_avg_uptime = 0
         # targetMonitor.stats_avg_latency = 0
         targetMonitor._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
+
+        # Special considerations for monitor renames
+        try:
+            if targetMonitor.unique_name != config["original_name"]:
+                # Rename the history file if it exists
+                old_history_path = f"data/history/{config['original_name']}.jsonl"
+                if os.path.exists(old_history_path):
+                    os.rename(old_history_path, f"data/history/{targetMonitor.unique_name}.jsonl")
+        except Exception as e:
+            general_logger.error(f"Error while renaming monitor history file: {e}")
+            traceback.print_exc()
