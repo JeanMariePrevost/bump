@@ -49,15 +49,23 @@ This section represents the right column of the screen that appears when you cli
 
       <!-- Retries -->
       <div class="form-group">
-        <label for="retries">Retries</label>
-        <input type="text" id="retries" name="retries" placeholder="Number of retries" />
+        <div class="form-group-row">
+          <div>
+            <label for="retries">Retries</label>
+            <input type="text" id="retries" name="retries" placeholder="Number of retries" />
+          </div>
+          <div>
+            <label for="retries-interval">Retries Interval (in seconds)</label>
+            <input type="text" id="retries-interval" name="retries-interval" placeholder="Interval between retries" />
+          </div>
+        </div>
       </div>
 
       <!-- Retries Interval -->
-      <div class="form-group">
+      <!-- <div class="form-group">
         <label for="retries-interval">Retries Interval (in seconds)</label>
         <input type="text" id="retries-interval" name="retries-interval" placeholder="Interval between retries" />
-      </div>
+      </div> -->
 
       <!-- Threshold -->
       <div class="form-group threshold-group">

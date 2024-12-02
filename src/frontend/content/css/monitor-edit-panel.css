@@ -14,8 +14,9 @@
 }
 
 .monitor-edit-card .card-content {
-  overflow-y: scroll;
+  overflow-y: auto;
   height: 100%;
+  /* padding-top: 10px; */
 }
 
 .horizontal-flex-container > * {
@@ -32,12 +33,18 @@
   gap: 12px;
   /* margin-top: 10px; */
   /* margin-right: 15px; */
-  padding: 20px 15px 25px 5px;
+  /* padding: 20px 15px 25px 5px; */
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
+}
+
+.form-group-row {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
 }
 
 .form-group label {

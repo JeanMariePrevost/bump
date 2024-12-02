@@ -25,6 +25,8 @@
   justify-content: space-between;
   align-items: center;
   height: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .monitor-details-title {

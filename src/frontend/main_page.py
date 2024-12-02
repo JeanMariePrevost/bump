@@ -6,6 +6,9 @@ import mediator
 import python_js_bridge
 from custom_logging import general_logger
 
+DEFAULT_WINDOW_WIDTH = 1200
+DEFAULT_WINDOW_HEIGHT = 800
+
 
 class MainPage:
     def __init__(self) -> None:
