@@ -20,3 +20,34 @@ export async function loadFragment(url) {
     return null;
   }
 }
+
+/**
+ * Lookup table for query option names to backend classes equivalence.
+ */
+export const queryTypeMapping = {
+  http_simple: "queries.http_query.HttpQuery",
+  http_content: "queries.http_content_query.HttpContentQuery",
+  http_headers: "queries.http_headers_query.HttpHeadersQuery",
+  http_status_code: "queries.http_status_code_query.HttpStatusCodeQuery",
+  http_regex: "queries.http_regex_query.HttpRegexQuery",
+  rendered_content_regex: "queries.rendered_content_regex_query.RenderedContentRegexQuery",
+};
+
+/**
+ * Converts a frontend query option key to its backend class name.
+ * @param {string} queryType - The frontend key.
+ * @returns {string|null} - The backend class name, or null if the key doesn't exist.
+ */
+export function queryTypeNameToBackendClass(queryType) {
+  return queryTypeMapping[queryType] || null;
+}
+
+/**
+ * Converts a backend class name to its frontend query option key.
+ * @param {string} backendValue - The backend class name.
+ * @returns {string|null} - The frontend key, or null if the class name doesn't exist.
+ */
+export function backendQueryClassToQueryTypeName(backendValue) {
+  const entry = Object.entries(queryTypeMapping).find(([, value]) => value === backendValue);
+  return entry ? entry[0] : null;
+}

@@ -45,12 +45,23 @@ This section represents the right column of the screen that appears when you cli
 
       <!-- Condition -->
       <div class="form-group">
-        <label for="condition">Condition</label>
-        <select id="condition" name="condition">
-          <option value="status">Status Code</option>
-          <option value="response_time">Response Time</option>
-          <option value="content_match">Content Match</option>
-        </select>
+        <div class="form-group-row">
+          <div>
+            <label for="query-type">Query Type</label>
+            <select id="query-type" name="query-type">
+              <option value="http_simple" title='A basic HTTP "ping" with no content matching'>HTTP Simple</option>
+              <option value="http_content" title="Looks for text in the HTTP response">HTTP Content</option>
+              <option value="http_headers" title="Looks for a key-value pair in the HTTP response headers">HTTP Headers</option>
+              <option value="http_status_code" title="Check for a specific HTTP status code">HTTP Status Code</option>
+              <option value="http_regex" title="Looks for a pattern in the HTTP response">HTTP Regex</option>
+              <option value="rendered_content_regex" title="Looks for a pattern in the rendered response (extra overhead)">Rendered Page Content Regex</option>
+            </select>
+          </div>
+          <div>
+            <label for="condition-value">Condition</label>
+            <input type="text" id="condition-value" name="condition-value" placeholder="Enter value" />
+          </div>
+        </div>
       </div>
 
       <!-- Retries -->

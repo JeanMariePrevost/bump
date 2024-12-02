@@ -1,5 +1,6 @@
 import { BaseComponent } from "./BaseComponent.js";
-import { requestSingleMonitor } from "./PythonJsBridge.js";
+import { requestSingleMonitor, submitMonitorConfig } from "./PythonJsBridge.js";
+import { backendQueryClassToQueryTypeName } from "./utils.js";
 
 /**
  * Handles the monitor editing form in the right-column panel
@@ -52,6 +53,34 @@ export class MonitorEditPanel extends BaseComponent {
       case "apply-edits":
         console.log("Apply edits action clicked");
         // TODO: Implement apply edits action
+        // Collect the form data
+        const form = document.querySelector(".settings-form");
+        const monitorConfig = {
+          unique_name: form.name.value,
+          query: {
+            type: form.condition.value,
+            value: {
+              url: form.url.value,
+              _retries: form.retries.value,
+            },
+          },
+          period_in_seconds: form.interval.value,
+        };
+        submitMonitorConfig(monitorConfig)
+          .then((response) => {
+            if (response) {
+              console.log("Backend accepted monitor config");
+              // Reload the form with the new monitor data
+              this.#resetForm(); // WARNING: This willbreak on name changes, implement proper solution
+              //TODO - do this through events? Or at least have the MonitorList refresh itself? But then to we need to re-select?
+            } else {
+              console.error("Backend rejected monitor config");
+              // TODO: Display an error message to the user, can we do easy dialogs?
+            }
+          })
+          .catch((error) => {
+            console.error("Failed to submit monitor config:", error);
+          });
         break;
       case "revert-edits":
         console.log("Revert edits action clicked");
@@ -71,6 +100,62 @@ export class MonitorEditPanel extends BaseComponent {
     console.log("Form changed");
     const form = event.target.form;
     this.#applyFormValidation(form);
+
+    if (event.target.name === "query-type") {
+      // If it's the query-type being changed, update the condition-value element's placeholder and tooltip to show the expected structure
+      this.#updateConditionValueFieldFromQueryType(form, event.target.value);
+    }
+  }
+
+  /**
+   * Update the condition-value field based on the query type, e.g. disabling it, setting its tooltip, etc.
+   * @param {HTMLFormElement} form The form element containing the condition-value field
+   * @param {string} queryType The query type selected by the user
+   */
+  #updateConditionValueFieldFromQueryType(form, queryType) {
+    const conditionValueField = form["condition-value"];
+
+    // Apply the item's tooltip to the dropdown itself
+    form["query-type"].title = form["query-type"].selectedOptions[0].title;
+
+    // Reset the condition-value field
+    conditionValueField.disabled = false;
+    conditionValueField.value = "";
+
+    // Update the condition-value field based on the query type
+    switch (queryType) {
+      case "http_simple":
+        // Special case, empty the condition-value field and disable it
+        conditionValueField.disabled = true;
+        conditionValueField.placeholder = "No condition needed";
+        conditionValueField.title = "Requires no additional parameters";
+        break;
+      case "http_content":
+        conditionValueField.placeholder = 'e.g. "Welcome to"';
+        conditionValueField.title = "The text to look for in the response";
+        break;
+      case "http_headers":
+        conditionValueField.placeholder = 'e.g. "Content-Type: text/html"';
+        conditionValueField.title = "The key-value pair to look for in the response headers";
+        break;
+      case "http_status_code":
+        conditionValueField.placeholder = 'e.g. "200"';
+        conditionValueField.title = "The HTTP status code to look for in the response";
+        break;
+      case "http_regex":
+        conditionValueField.placeholder = 'e.g. "[Ww]elcome to.*"';
+        conditionValueField.title = "The regex pattern to look for in the response";
+        break;
+      case "rendered_content_regex":
+        conditionValueField.placeholder = 'e.g. "[Ww]elcome to.*"';
+        conditionValueField.title = "The regex pattern to look for in the rendered page content";
+        break;
+      default:
+        console.warn(`Unknown query type: ${queryType}`);
+        conditionValueField.placeholder = "ERROR: Unknown query type";
+        conditionValueField.title = "Could not resolve query type " + queryType;
+        break;
+    }
   }
 
   #applyFormValidation(form) {
@@ -174,7 +259,9 @@ export class MonitorEditPanel extends BaseComponent {
       form.name.value = monitorData.value.unique_name;
       form.url.value = monitorData.value.query.value.url;
       form.interval.value = monitorData.value.period_in_seconds;
-      form.condition.value = monitorData.value.query.type; // TODO Implement a way to comminucate this with the backed? Predefined strings? Use an "adapter"?
+      form["query-type"].value = backendQueryClassToQueryTypeName(monitorData.value.query.type);
+
+      form["condition-value"].value = ""; //Needs conversion between backend and frontend value here, introduce a pre-computed string equivalent to the queries various settings un python?
       form.retries.value = monitorData.value.query.value._retries;
       form["retries-interval"].value = "Not yet implemented"; // TODO: Implement retries_interval
       form.threshold.value = "Not yet implemented"; // TODO: Implement thresholds (e.g. "tolerate 1", or "2 out of 5"...)
@@ -211,9 +298,29 @@ class FormValidator {
       errors.interval = "Interval must be a positive integer.";
     }
 
-    // if (!this._nonEmpty(this.form.condition.value)) {
-    //   errors.condition = "Condition must be selected.";
-    // }
+    switch (this.form["query-type"].value) {
+      case "http_simple":
+        // No additional validation needed
+        break;
+      case "http_content":
+      case "http_status_code":
+      case "http_regex":
+      case "rendered_content_regex":
+        //"non-empty" is enough for these
+        if (!this._nonEmpty(this.form["condition-value"].value)) {
+          errors["condition-value"] = "Cannot be empty.";
+        }
+        break;
+      case "http_headers":
+        // Has to be non-empty AND match the pattern "key: value" through .+:.+ to avoid confusion
+        if (!this._nonEmpty(this.form["condition-value"].value)) {
+          errors["condition-value"] = "Cannot be empty.";
+        }
+        if (!/.+:.+/.test(this.form["condition-value"].value)) {
+          errors["condition-value"] = "Must be in the format 'key: value'.";
+        }
+        break;
+    }
 
     if (!this._isNonNegativeIntegerString(this.form.retries.value)) {
       errors.retries = "Retries must be a non-negative integer.";

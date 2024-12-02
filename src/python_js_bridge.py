@@ -5,8 +5,11 @@ from custom_logging import general_logger
 import custom_logging
 import mediator
 import serialization
+from my_utils.util import is_valid_filename
 
 __js_api = None
+
+VALID_QUERY_TYPES = ["http_simple", "http_content", "http_headers", "http_status_code", "http_regex", "rendered_content_regex"]
 
 
 def send_event_to_js(window: webview.Window, event_type: str, data: dict):
@@ -72,9 +75,46 @@ class JsApi:
         # Return the last max_number_of_entries
         return log_entries[-max_number_of_entries:]
 
+    def submit_monitor_config(self, monitor_config: dict):
+        general_logger.debug(f"Received monitor config submission: {monitor_config}")
+        # TODO: Decide if I want to pass only the data OR have a properly formatted encoded Monitor object. Maybe if the fronted keeps a copy and simply changes the values?
+        # TODO: Implement better return? E.g. the possibility of sending actual error messages to the user, like "Monitor name already exists."
+
+        # Reference:
+        # self.unique_name = unique_name
+        # self.query = query
+        # self.period_in_seconds = period_in_seconds
+        # self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
+        # self.last_query_passed = False
+        # self.time_at_last_status_change = datetime.now()
+        # self.stats_avg_uptime = 0
+        # self.stats_avg_latency = 0
+
+        return "true"
+
 
 def get_js_api():
     global __js_api
     if __js_api is None:
         __js_api = JsApi()
     return __js_api
+
+
+def validateMonitorConfigData(data: dict) -> bool:
+    # Check if the data contains the necessary fields
+
+    # Reference:
+    # self.unique_name = unique_name
+    # self.query_type = query
+    # self.period_in_seconds = period_in_seconds
+    # self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
+    # self.last_query_passed = False
+    # self.time_at_last_status_change = datetime.now()
+    # self.stats_avg_uptime = 0
+    # self.stats_avg_latency = 0
+
+    # unique_name must be a non-null, non-empty string that is also a valid filename and unique
+    if "unique_name" not in data or type(data["unique_name"]) is not str or len(data["unique_name"]) == 0:
+        return False
+    if not is_valid_filename(data["unique_name"]):
+        return False

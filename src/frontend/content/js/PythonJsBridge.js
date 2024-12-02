@@ -37,6 +37,16 @@ export async function requestSingleMonitor(monitorName) {
 }
 
 /**
+ * Submits a new monitor configuration to the backend, the backend validates and replies
+ * @param {Object} monitorConfig - The monitor configuration object
+ * @returns {Promise<string>} Promise that resolves to "true" if the configuration was accepted, or an error message if it was rejected
+ */
+export async function submitMonitorConfig(monitorConfig) {
+  const response = await pywebview.api.submit_monitor_config(monitorConfig);
+  return response;
+}
+
+/**
  * Request a number of recent results for a monitor
  * @param {string} monitorName
  * @param {number} numberOfResults
