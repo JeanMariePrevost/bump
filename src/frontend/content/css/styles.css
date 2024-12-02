@@ -230,8 +230,12 @@ Utility classes
   height: 100%;
 }
 
-.hidden {
-  display: none;
+.invisible {
+  visibility: hidden;
+}
+
+.no-events {
+  pointer-events: none;
 }
 
 .opacity-0 {
@@ -240,6 +244,12 @@ Utility classes
 
 .opacity-100 {
   opacity: 1;
+}
+
+.flex-row-baseline {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
 }
 
 .color-by-status,

@@ -19,6 +19,28 @@
   /* padding-top: 10px; */
 }
 
+.monitor-edit-card .card-title {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.monitor-edit-card .card-title[data-changes="valid"] {
+  background-color: var(--status-good-color-100);
+  color: var(--status-good-color-800);
+}
+
+.monitor-edit-card .card-title[data-changes="invalid"] {
+  background-color: var(--status-bad-color-100);
+  color: var(--status-bad-color-800);
+}
+
+.monitor-edit-card .monitor-action-link {
+  float: right;
+}
+
 .horizontal-flex-container > * {
   /* HACK : make sure nothing inside the grid can exceed its allowed space, e.g. long monitor names messing it up */
   max-width: 100%;

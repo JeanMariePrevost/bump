@@ -38,7 +38,6 @@ export class MonitorDetailsPanel extends BaseComponent {
       });
 
     // Add event listeners to the action-links
-    //For reference: <span class="monitor-action-link" data-action="pause">❙❙ Pause</span>
     const actionLinks = this.element.querySelectorAll(".monitor-action-link");
     actionLinks.forEach((link) => {
       link.addEventListener("click", this._onActionLinkClick.bind(this));

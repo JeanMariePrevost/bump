@@ -30,15 +30,46 @@ export class MonitorEditPanel extends BaseComponent {
     form.addEventListener("input", this.#onFormChange.bind(this));
     form.addEventListener("change", this.#onFormChange.bind(this));
 
-    // form.addEventListener("submit", (event) => {
-    //   console.log("Form submitted");
-    //   event.preventDefault();
-    //   const validator = new FormValidator(form);
-    //   const errors = validator.validate();
-    //   if (Object.keys(errors).length === 0) {
-    //     console.log("Form is valid, submitting...");
-    //   }
-    // });
+    // Add event listeners to the action-links
+    const actionLinks = this.element.querySelectorAll(".monitor-action-link");
+    actionLinks.forEach((link) => {
+      link.addEventListener("click", this._onActionLinkClick.bind(this));
+    });
+  }
+
+  _onActionLinkClick(event) {
+    const action = event.target.dataset.action;
+    // Switch on "data-action" attribute to determine the action
+    switch (action) {
+      case "pause":
+        console.log("Pause action clicked");
+        // TODO: Implement pause action
+        break;
+      case "edit":
+        console.log("Edit action clicked");
+        // Nothing, already in edit mode
+        break;
+      case "duplicate":
+        console.log("Duplicate action clicked");
+        // TODO: Implement duplicate action
+        break;
+      case "delete":
+        console.log("Delete action clicked");
+        // TODO: Implement delete action
+        break;
+      case "apply-edits":
+        console.log("Apply edits action clicked");
+        // TODO: Implement apply edits action
+        break;
+      case "revert-edits":
+        console.log("Revert edits action clicked");
+        // Simply rebuild the panel
+        this.destroy();
+        new MonitorEditPanel(".right-column", this.monitor_unique_name);
+        break;
+      default:
+        console.warn(`Unknown action: ${action}`);
+    }
   }
 
   #onFormChange(event) {
@@ -59,6 +90,23 @@ export class MonitorEditPanel extends BaseComponent {
         element.title = errors[element.name];
         this.#addErrorMessageForField(element, errors[element.name]);
       }
+    }
+
+    // Set the data-changes="valid/invalid" attribute on .monitor-edit-card .card-title for added feedback
+    const cardTitle = document.querySelector(".monitor-edit-card .card-title");
+    const applyButton = document.querySelector('.monitor-action-link[data-action="apply-edits"]');
+    const revertButton = document.querySelector('.monitor-action-link[data-action="revert-edits"]');
+    revertButton.classList.remove("invisible");
+    revertButton.classList.remove("no-events");
+
+    if (Object.keys(errors).length === 0) {
+      cardTitle.setAttribute("data-changes", "valid");
+      applyButton.classList.remove("invisible");
+      applyButton.classList.remove("no-events");
+    } else {
+      cardTitle.setAttribute("data-changes", "invalid");
+      applyButton.classList.add("invisible");
+      applyButton.classList.add("no-events");
     }
   }
 
