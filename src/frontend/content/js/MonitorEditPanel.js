@@ -266,8 +266,8 @@ export class MonitorEditPanel extends BaseComponent {
       form["query-type"].value = backendQueryClassToQueryTypeName(monitorData.value.query.type);
 
       form["condition-value"].value = ""; //Needs conversion between backend and frontend value here, introduce a pre-computed string equivalent to the queries various settings un python?
-      form.retries.value = monitorData.value.query.value._retries;
-      form["retries-interval"].value = "Not yet implemented"; // TODO: Implement retries_interval
+      form.retries.value = monitorData.value.retries;
+      form["retries-interval"].value = monitorData.value.retries_interval_in_seconds;
       form.threshold.value = "Not yet implemented"; // TODO: Implement thresholds (e.g. "tolerate 1", or "2 out of 5"...)
       form["threshold-value"].value = "Not yet implemented";
       form["alert-profile"].value = "Not yet implemented"; // TODO: Implement alert profiles defined by the user
@@ -330,10 +330,9 @@ class FormValidator {
       errors.retries = "Retries must be a non-negative integer.";
     }
 
-    // Placeholder checks for not-yet-implemented fields
-    // if (!this._nonEmpty(this.form["retries-interval"].value)) {
-    //   errors["retries-interval"] = "Retries interval is not implemented yet.";
-    // }
+    if (!this._isNonNegativeIntegerString(this.form["retries-interval"].value)) {
+      errors["retries-interval"] = "Retries interval must be a non-negative integer.";
+    }
 
     // if (!this._nonEmpty(this.form.threshold.value)) {
     //   errors.threshold = "Threshold is not implemented yet.";
