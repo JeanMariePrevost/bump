@@ -15,15 +15,7 @@ export class MonitorEditPanel extends BaseComponent {
     console.log("MonitorEditPanel element is ready");
 
     // Get monitor data from the backend
-    requestSingleMonitor(this.monitor_unique_name).then((response) => {
-      if (!response) {
-        console.error("Failed to fetch monitor data");
-        return;
-      }
-
-      console.log("Monitor data received:", response);
-      this.#fillForm(response);
-    });
+    this.#resetForm();
 
     // Add event listeners for any form changes (input, change...) NOT for submit
     const form = document.querySelector(".settings-form");
@@ -63,9 +55,12 @@ export class MonitorEditPanel extends BaseComponent {
         break;
       case "revert-edits":
         console.log("Revert edits action clicked");
+        // Reload the form with the original monitor data, smoother transition
+        this.#resetForm();
+
         // Simply rebuild the panel
-        this.destroy();
-        new MonitorEditPanel(".right-column", this.monitor_unique_name);
+        // this.destroy();
+        // new MonitorEditPanel(".right-column", this.monitor_unique_name);
         break;
       default:
         console.warn(`Unknown action: ${action}`);
@@ -75,6 +70,10 @@ export class MonitorEditPanel extends BaseComponent {
   #onFormChange(event) {
     console.log("Form changed");
     const form = event.target.form;
+    this.#applyFormValidation(form);
+  }
+
+  #applyFormValidation(form) {
     const validator = new FormValidator(form);
     const errors = validator.validate();
     console.log("Errors:", errors);
@@ -110,6 +109,26 @@ export class MonitorEditPanel extends BaseComponent {
     }
   }
 
+  #resetFormValidation(form) {
+    for (const element of form.elements) {
+      element.classList.remove("validation-error");
+      element.title = "";
+      this.#clearErrorMessagesForField(element);
+    }
+
+    // Remove the data-changes attribute from the card title
+    const cardTitle = document.querySelector(".monitor-edit-card .card-title");
+    cardTitle.removeAttribute("data-changes");
+
+    // Disable the "Apply edits" and "Revert edits" buttons
+    const applyButton = document.querySelector('.monitor-action-link[data-action="apply-edits"]');
+    const revertButton = document.querySelector('.monitor-action-link[data-action="revert-edits"]');
+    applyButton.classList.add("invisible");
+    applyButton.classList.add("no-events");
+    revertButton.classList.add("invisible");
+    revertButton.classList.add("no-events");
+  }
+
   #addErrorMessageForField(formElement, message) {
     // Skip if the element already has an error message
     if (formElement.parentElement.querySelector(".validation-error-message")) {
@@ -130,18 +149,40 @@ export class MonitorEditPanel extends BaseComponent {
     }
   }
 
-  #fillForm(monitorData) {
-    // Populate the form with the monitor data
-    const form = document.querySelector(".settings-form");
-    form.name.value = monitorData.value.unique_name;
-    form.url.value = monitorData.value.query.value.url;
-    form.interval.value = monitorData.value.period_in_seconds;
-    form.condition.value = monitorData.value.query.type; // TODO Implement a way to comminucate this with the backed? Predefined strings? Use an "adapter"?
-    form.retries.value = monitorData.value.query.value._retries;
-    form["retries-interval"].value = "Not yet implemented"; // TODO: Implement retries_interval
-    form.threshold.value = "Not yet implemented"; // TODO: Implement thresholds (e.g. "tolerate 1", or "2 out of 5"...)
-    form["threshold-value"].value = "Not yet implemented";
-    form["alert-profile"].value = "Not yet implemented"; // TODO: Implement alert profiles defined by the user
+  #resetForm() {
+    // Disable the "Apply edits" and "Revert edits" buttons
+    const applyButton = document.querySelector('.monitor-action-link[data-action="apply-edits"]');
+    const revertButton = document.querySelector('.monitor-action-link[data-action="revert-edits"]');
+    applyButton.classList.add("invisible");
+    applyButton.classList.add("no-events");
+    revertButton.classList.add("invisible");
+    revertButton.classList.add("no-events");
+
+    // Remove any "data-changes" attribute from the card title
+    const cardTitle = document.querySelector(".monitor-edit-card .card-title");
+    cardTitle.removeAttribute("data-changes");
+
+    // Fill the form with the monitor data
+    requestSingleMonitor(this.monitor_unique_name).then((monitorData) => {
+      if (!monitorData) {
+        console.error("Failed to fetch monitor data");
+        return;
+      }
+
+      // Populate the form with the monitor data
+      const form = document.querySelector(".settings-form");
+      form.name.value = monitorData.value.unique_name;
+      form.url.value = monitorData.value.query.value.url;
+      form.interval.value = monitorData.value.period_in_seconds;
+      form.condition.value = monitorData.value.query.type; // TODO Implement a way to comminucate this with the backed? Predefined strings? Use an "adapter"?
+      form.retries.value = monitorData.value.query.value._retries;
+      form["retries-interval"].value = "Not yet implemented"; // TODO: Implement retries_interval
+      form.threshold.value = "Not yet implemented"; // TODO: Implement thresholds (e.g. "tolerate 1", or "2 out of 5"...)
+      form["threshold-value"].value = "Not yet implemented";
+      form["alert-profile"].value = "Not yet implemented"; // TODO: Implement alert profiles defined by the user
+
+      this.#resetFormValidation(form);
+    });
   }
 }
 
