@@ -8,7 +8,22 @@ class Query(Deserializable):
     """
 
     def __init__(self) -> None:
-        self._retries = 0
+        self.query_params_as_string = ""  # Used for the frontend, as it configures queries through a single text field
+
+    def apply_query_params_string(self, query_params_as_string: str):
+        """
+        Apply the query parameters from a string.
+        Used when applying setings from the frontend.
+        Each subclass implements its own logic for parsing the string.
+        """
+        raise NotImplementedError("Subclasses must implement this method.")
+
+    def update_query_params_string(self):
+        """
+        Update the query parameters string to be read by the frontend.
+        Each subclass implements its own logic for translating its configuration to a string.
+        """
+        raise NotImplementedError("Subclasses must implement this method.")
 
     def execute(self) -> QueryResult:
         """

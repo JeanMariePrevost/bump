@@ -2,6 +2,8 @@ from datetime import datetime, timedelta
 from enum import Enum
 import os
 import traceback
+import mediator
+from my_utils.util import get_query_class_from_string, is_valid_filename, is_valid_url
 from queries.query import Query
 from queries.query_result import QueryResult
 from serialization import Deserializable
@@ -18,6 +20,8 @@ class Monitor(Deserializable):
         self.unique_name = unique_name
         self.query = query
         self.period_in_seconds = period_in_seconds
+        self.retries = 0
+        self.retries_interval_in_seconds = 1
         self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
         self.last_query_passed = False
         self.time_at_last_status_change = datetime.now()
@@ -117,3 +121,72 @@ class Monitor(Deserializable):
             self.stats_avg_uptime = 0
             self.stats_avg_latency = 0
             self.time_at_last_status_change = datetime.now()
+
+    def validate_and_apply_config_from_frontend(self, config: dict) -> None:
+        """
+        Applies the configuration received from the frontend if valid, otherwise raises an exception
+        :param config: The object received from the frontend
+        """
+
+        # from python_js_bridge import VALID_QUERY_TYPES
+
+        # VALIDATION
+        # Original name must be an existing monitor name
+        if "original_name" not in config or type(config["original_name"]) is not str:
+            raise ValueError("original_name is missing or invalid")
+        targetMonitor = mediator.get_monitors_manager().get_monitor_by_name(config["original_name"])
+        if targetMonitor is None:
+            raise ValueError("original_name does not match any existing monitor")
+
+        # unique_name must be a non-null, non-empty string that is also a valid filename and unique
+        if "unique_name" not in config or type(config["unique_name"]) is not str or len(config["unique_name"]) == 0:
+            raise ValueError("unique_name is missing or invalid")
+        if not is_valid_filename(config["unique_name"]):
+            raise ValueError("unique_name is not a valid filename")
+
+        # query_url must be a non-null, non-empty string, and a valid URL
+        if "query_url" not in config or type(config["query_url"]) is not str or len(config["query_url"]) == 0:
+            raise ValueError("query_url is missing or invalid")
+        if not is_valid_url(config["query_url"]):
+            raise ValueError("query_url is not a valid URL")
+
+        # query_type must be a non-null, non-empty string that is also a valid query type
+        if "query_type" not in config or type(config["query_type"]) is not str:
+            raise ValueError("query_type is missing or invalid")
+        # Test whether config["query_type"] is an existing fully qualified class name in the queries package
+        queryType = get_query_class_from_string(f"{config['query_type']}")
+        if queryType is None:
+            raise ValueError("query_type not a known query type")
+
+        # Testing query_params_string requires creating a query object temporarily and passing the string to it
+        validation_query: Query = queryType()
+        try:
+            validation_query.apply_query_params_string(config["query_params_string"])
+        except Exception as e:
+            raise ValueError(f"query_params_string is invalid: {str(e)}")
+
+        # period_in_seconds must be a positive integer
+        if "period_in_seconds" not in config or int(config["period_in_seconds"]) <= 0:
+            raise ValueError("period_in_seconds is missing or invalid")
+
+        # retries must be a positive integer
+        if "retries" not in config or int(config["retries"]) < 0:
+            raise ValueError("retries is missing or invalid")
+
+        # retries_interval_in_seconds must be a positive integer
+        if "retries_interval_in_seconds" not in config or int(config["retries_interval_in_seconds"]) < 0:
+            raise ValueError("retries_interval_in_seconds is missing or invalid")
+
+        # APPLICATION
+        # Apply the new configuration
+        targetMonitor.unique_name = config["unique_name"]
+        targetMonitor.query = get_query_class_from_string(f"{config['query_type']}")()
+        targetMonitor.query.apply_query_params_string(config["query_params_string"])
+        targetMonitor.period_in_seconds = int(config["period_in_seconds"])
+        targetMonitor.retries = int(config["retries"])
+        targetMonitor.retries_interval_in_seconds = int(config["retries_interval_in_seconds"])
+        # targetMonitor.last_query_passed = False
+        # targetMonitor.time_at_last_status_change = datetime.now()
+        # targetMonitor.stats_avg_uptime = 0
+        # targetMonitor.stats_avg_latency = 0
+        targetMonitor._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)

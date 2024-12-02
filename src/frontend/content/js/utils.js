@@ -39,7 +39,9 @@ export const queryTypeMapping = {
  * @returns {string|null} - The backend class name, or null if the key doesn't exist.
  */
 export function queryTypeNameToBackendClass(queryType) {
-  return queryTypeMapping[queryType] || null;
+  const className = queryTypeMapping[queryType];
+  if (!className) console.warn(`No backend query class found for frontend key: ${queryType}`);
+  return className || null;
 }
 
 /**
@@ -49,5 +51,6 @@ export function queryTypeNameToBackendClass(queryType) {
  */
 export function backendQueryClassToQueryTypeName(backendValue) {
   const entry = Object.entries(queryTypeMapping).find(([, value]) => value === backendValue);
+  if (!entry) console.warn(`No frontend query type found for backend class: ${backendValue}`);
   return entry ? entry[0] : null;
 }

@@ -4,8 +4,10 @@ import webview
 from custom_logging import general_logger
 import custom_logging
 import mediator
+from monitor.monitor import Monitor
+from queries.query import Query
 import serialization
-from my_utils.util import is_valid_filename
+from my_utils.util import is_valid_filename, is_valid_url, get_query_class_from_string
 
 __js_api = None
 
@@ -75,20 +77,27 @@ class JsApi:
         # Return the last max_number_of_entries
         return log_entries[-max_number_of_entries:]
 
-    def submit_monitor_config(self, monitor_config: dict):
-        general_logger.debug(f"Received monitor config submission: {monitor_config}")
-        # TODO: Decide if I want to pass only the data OR have a properly formatted encoded Monitor object. Maybe if the fronted keeps a copy and simply changes the values?
-        # TODO: Implement better return? E.g. the possibility of sending actual error messages to the user, like "Monitor name already exists."
+    def submit_monitor_config(self, monitor_config: dict) -> str:
+        """
+        Call to apply a monitor configuration received from the frontend.
+        Input is validated by the monitor itself then applied.
+        The frontend is then responsible for reflecting the new backend state.
 
-        # Reference:
-        # self.unique_name = unique_name
-        # self.query = query
-        # self.period_in_seconds = period_in_seconds
-        # self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
-        # self.last_query_passed = False
-        # self.time_at_last_status_change = datetime.now()
-        # self.stats_avg_uptime = 0
-        # self.stats_avg_latency = 0
+        :param monitor_config: The configuration object received from the frontend
+        :return: "true" if successful, or an error message if not
+        """
+        general_logger.debug(f"Received monitor config submission: {monitor_config}")
+
+        try:
+            targetMonitor: Monitor = mediator.get_monitors_manager().get_monitor_by_name(monitor_config["original_name"])
+            if targetMonitor is None:
+                return f"Monitor with name {monitor_config['original_name']} not found"
+            targetMonitor.validate_and_apply_config_from_frontend(monitor_config)
+            general_logger.debug("Monitor config applied successfully.")
+            general_logger.debug(f"Monitor after applying config: {targetMonitor}")
+        except Exception as e:
+            general_logger.exception(f"Error while applying monitor config: {e}")
+            return str(e)
 
         return "true"
 
@@ -98,23 +107,3 @@ def get_js_api():
     if __js_api is None:
         __js_api = JsApi()
     return __js_api
-
-
-def validateMonitorConfigData(data: dict) -> bool:
-    # Check if the data contains the necessary fields
-
-    # Reference:
-    # self.unique_name = unique_name
-    # self.query_type = query
-    # self.period_in_seconds = period_in_seconds
-    # self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
-    # self.last_query_passed = False
-    # self.time_at_last_status_change = datetime.now()
-    # self.stats_avg_uptime = 0
-    # self.stats_avg_latency = 0
-
-    # unique_name must be a non-null, non-empty string that is also a valid filename and unique
-    if "unique_name" not in data or type(data["unique_name"]) is not str or len(data["unique_name"]) == 0:
-        return False
-    if not is_valid_filename(data["unique_name"]):
-        return False

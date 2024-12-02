@@ -26,6 +26,16 @@ class HttpRegexQuery(HttpQuery):
         self.ignore_case = ignore_case
         self.dot_all = dot_all
 
+    def apply_query_params_string(self, query_params_as_string: str):
+        # Error if null or empty
+        if not query_params_as_string:
+            raise ValueError("query_params_as_string cannot be null or empty")
+        self.regex_to_find = query_params_as_string
+        self.update_query_params_string()
+
+    def update_query_params_string(self):
+        self.query_params_as_string = self.regex_to_find
+
     def _test_passed_predicate(self, response: HTTPResponse | Exception) -> bool:
         self.flags = 0
         if self.multi_line:

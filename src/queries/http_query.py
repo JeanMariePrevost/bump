@@ -23,6 +23,14 @@ class HttpQuery(Query):
         self.url = url
         self.timeout = timeout
 
+    def apply_query_params_string(self, query_params_as_string: str):
+        # The basic HttpQuery does not have any parameters to apply
+        pass
+
+    def update_query_params_string(self):
+        # The basic HttpQuery does not have any parameters to update
+        pass
+
     def execute(self) -> QueryResult:
         # Send an HTTP HEAD request to the URL using urllib
         self._start_time = datetime.now()

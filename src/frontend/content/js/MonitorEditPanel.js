@@ -1,6 +1,6 @@
 import { BaseComponent } from "./BaseComponent.js";
 import { requestSingleMonitor, submitMonitorConfig } from "./PythonJsBridge.js";
-import { backendQueryClassToQueryTypeName } from "./utils.js";
+import { backendQueryClassToQueryTypeName, queryTypeNameToBackendClass } from "./utils.js";
 
 /**
  * Handles the monitor editing form in the right-column panel
@@ -55,26 +55,26 @@ export class MonitorEditPanel extends BaseComponent {
         // TODO: Implement apply edits action
         // Collect the form data
         const form = document.querySelector(".settings-form");
-        const monitorConfig = {
+
+        const newMonitorConfig = {
+          original_name: this.monitor_unique_name,
           unique_name: form.name.value,
-          query: {
-            type: form.condition.value,
-            value: {
-              url: form.url.value,
-              _retries: form.retries.value,
-            },
-          },
+          query_url: form.url.value,
+          query_type: queryTypeNameToBackendClass(form["query-type"].value),
+          query_params_string: form["condition-value"].value,
           period_in_seconds: form.interval.value,
+          retries: form.retries.value,
+          retries_interval_in_seconds: form["retries-interval"].value,
         };
-        submitMonitorConfig(monitorConfig)
+        submitMonitorConfig(newMonitorConfig)
           .then((response) => {
-            if (response) {
+            if (response === "true") {
               console.log("Backend accepted monitor config");
               // Reload the form with the new monitor data
               this.#resetForm(); // WARNING: This willbreak on name changes, implement proper solution
               //TODO - do this through events? Or at least have the MonitorList refresh itself? But then to we need to re-select?
             } else {
-              console.error("Backend rejected monitor config");
+              console.error("Backend rejected monitor config : ", response);
               // TODO: Display an error message to the user, can we do easy dialogs?
             }
           })
@@ -161,7 +161,11 @@ export class MonitorEditPanel extends BaseComponent {
   #applyFormValidation(form) {
     const validator = new FormValidator(form);
     const errors = validator.validate();
-    console.log("Errors:", errors);
+    if (Object.keys(errors).length === 0) {
+      console.log("Form is valid");
+    } else {
+      console.log("Form is invalid:", errors);
+    }
 
     // Update the form with the validation errors styles and messages
     for (const element of form.elements) {
