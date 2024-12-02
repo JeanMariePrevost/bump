@@ -95,6 +95,8 @@ class JsApi:
             targetMonitor.validate_and_apply_config_from_frontend(monitor_config)
             general_logger.debug("Monitor config applied successfully.")
             general_logger.debug(f"Monitor after applying config: {targetMonitor}")
+            # Save the new config to disk
+            mediator.get_monitors_manager().save_monitors_configs_to_file()
         except Exception as e:
             general_logger.exception(f"Error while applying monitor config: {e}")
             return str(e)

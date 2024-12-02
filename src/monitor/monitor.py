@@ -182,6 +182,7 @@ class Monitor(Deserializable):
         targetMonitor.unique_name = config["unique_name"]
         targetMonitor.query = get_query_class_from_string(f"{config['query_type']}")()
         targetMonitor.query.apply_query_params_string(config["query_params_string"])
+        targetMonitor.query.url = config["query_url"]
         targetMonitor.period_in_seconds = int(config["period_in_seconds"])
         targetMonitor.retries = int(config["retries"])
         targetMonitor.retries_interval_in_seconds = int(config["retries_interval_in_seconds"])

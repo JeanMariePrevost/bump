@@ -5,6 +5,7 @@ from monitor.monitor import Monitor
 from my_utils.simple_queue import QueueEvents
 from serialization import Deserializable
 from custom_logging import general_logger
+import serialization
 
 MONITOR_LOOP_INTERVAL_S = 30
 
@@ -66,3 +67,6 @@ class MonitorsManager(Deserializable):
 
     def stop_background_monitoring_thread(self) -> None:
         mediator.bg_monitoring_queue.put(QueueEvents.EXIT_APP)
+
+    def save_monitors_configs_to_file(self) -> None:
+        serialization.save_as_json_file(self, "data/monitors.json")

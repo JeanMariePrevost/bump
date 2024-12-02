@@ -23,7 +23,7 @@ def create_default_testing_monitors_setup():
     monitors_manager.add_monitor(monitor)
     monitors_manager.add_monitor(monitor2)
     general_logger.info("Default monitors created successfully.")
-    serialization.save_as_json_file(monitors_manager, "data/monitors.json")
+    monitors_manager.save_to_file()
     general_logger.info("Default monitors configuration file created.")
 
 
