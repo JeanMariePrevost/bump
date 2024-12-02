@@ -3,7 +3,6 @@
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  overflow: hidden;
   gap: 10px;
   height: 100%;
 }
@@ -19,7 +18,7 @@
   height: 100%;
 }
 
-.default-grid-layout > * {
+.horizontal-flex-container > * {
   /* HACK : make sure nothing inside the grid can exceed its allowed space, e.g. long monitor names messing it up */
   max-width: 100%;
   min-width: 0; /* Allow items to shrink if necessary */

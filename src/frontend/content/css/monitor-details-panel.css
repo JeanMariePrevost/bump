@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  overflow: hidden;
   gap: 10px;
   height: 100%;
 }
@@ -125,7 +124,7 @@
   display: flex;
   justify-content: space-between; /* Push items to left and right */
   align-items: center;
-  padding-top: 3px;
+  padding-top: 7px;
 }
 
 .monitor-details-chart-bar {
@@ -146,6 +145,10 @@
   transition: opacity 0.15s ease;
 }
 
+.monitor-details-chart-container .card-content {
+  padding-top: 10px;
+}
+
 .monitor-details-logs-container {
   flex: 1; /* Fill the remaining space */
   overflow-y: hidden;
@@ -158,6 +161,7 @@
   font-family: "Courier New", monospace;
   /* font-weight: 300; */
   color: var(--text-color-800);
-  margin-top: 0.5rem;
+  margin-top: 0;
+  padding-top: 10px;
   margin-right: calc(-1 * var(--card-padding)); /* To "counter" the card's padding and have the scrollbar at the right edge */
 }

@@ -4,12 +4,11 @@
   flex-direction: column; /* Stack children vertically */
   gap: 1rem; /* Maintain spacing between children */
   height: 100%; /* Ensure it fills its parent's space */
-  overflow: hidden; /* Prevent scrolling on this container */
 }
 
 /* The card that reads "All monitors are up" and such */
 .summary-card {
-  flex: 0 0 50px; /* Fixed height */
+  flex: 0 0 80px; /* Fixed height */
   background-color: var(--status-unknown-color-300);
   color: var(--status-unknown-color-800);
   position: relative; /* For absolute positioning of the title and count */
@@ -46,7 +45,7 @@
   color: var(--status-unknown-color-800);
 }
 
-.summary-card[data-status="up"],
+/* .summary-card[data-status="up"],
 .summary-card[data-status="up"] .card-content {
   background-color: var(--status-good-color-300);
   color: var(--status-good-color-800);
@@ -56,7 +55,7 @@
 .summary-card[data-status="down"] .card-content {
   background-color: var(--status-bad-color-300);
   color: var(--status-bad-color-800);
-}
+} */
 
 /* 
 ******************************************************************************
@@ -76,8 +75,8 @@ Log portion of the dashboard
   font-family: "Courier New", monospace;
   /* font-weight: 300; */
   color: var(--text-color-800);
-  margin-top: 0.5rem;
-  margin-right: calc(-1 * var(--card-padding)); /* To "counter" the card's padding and have the scrollbar at the right edge */
+  /* margin-top: 0.5rem; */
+  padding-top: 10px;
 }
 /* 
   .recent-events-card .card-content p {

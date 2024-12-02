@@ -27,6 +27,7 @@
   --nav-background-color: #333;
   --nav-hover-color: #444444;
   --nav-active-color: #393939;
+  --extra-light-border-color: rgba(0, 0, 0, 0.08);
   --light-border-color: rgba(0, 0, 0, 0.2);
   --text-color-100: rgb(244, 244, 244);
   --text-color-200: color-mix(in srgb, var(--text-color-100), var(--text-color-500) 25%);
@@ -84,9 +85,10 @@
   --status-bad-color-800: color-mix(in srgb, var(--status-bad-color-500), var(--status-bad-color-900) 75%);
   --status-bad-color-900: rgb(150, 0, 0);
 
-  /* Spacing and layout*/
+  /* Others*/
   --card-padding: 20px;
-  --card-border-radius: 5px;
+  --card-border-radius: 3px;
+  --default-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* Reset some basic styles */
@@ -118,6 +120,7 @@ html {
   padding: 10px 0px;
   display: flex;
   justify-content: center;
+  box-shadow: var(--default-shadow);
 }
 
 .nav-title-label {
@@ -147,54 +150,56 @@ html {
   flex: 1; /* Fill the remaining space */
   display: flex; /* To size the children elements automatically */
   flex-direction: column;
-  padding: 20px;
-  overflow-y: hidden;
+  /* padding: 20px 0; */
+  /* padding: 20px 10%; */
+  overflow: hidden;
+  max-height: 100%;
+  max-width: 100%;
 }
 
 /* "Tiles" layout on the dashboard */
-.default-grid-layout {
-  flex: 1;
-  display: grid;
-  /* grid-template-columns: 40% 60%; */
-  grid-template-columns: 1fr 2fr;
-  box-sizing: content-box;
-  gap: 1rem;
-  margin: 20px auto; /* top/bottom spacing AND center horizontally */
-  /* height: 100%; */
-  width: 90%; /* Prefered width */
-  max-width: 1600px; /* Don't stretch too much */
-  overflow-y: hidden;
-}
-
-.default-grid-layout > * {
-  /* HACK : make sure nothing inside the grid can exceed its allowed space, e.g. long monitor names messing it up */
+.horizontal-flex-container {
+  flex-basis: 100%;
+  display: flex;
+  /* gap: 1rem; */
+  margin: 20px auto;
+  padding: 0 40px;
+  max-width: 1600px;
+  overflow: visible;
+  min-height: 0; /* Needs any defined height to prevent content from defining it */
+  max-height: 100%;
+  min-width: 100%;
   max-width: 100%;
-  min-width: 0; /* Allow items to shrink if necessary */
-  overflow: hidden; /* Prevent content from spilling */
+  box-sizing: border-box;
 }
 
-.default-grid-layout .left-column {
+.horizontal-flex-container .left-column {
   display: flex;
   flex-direction: column;
+  overflow: visible;
+  flex: 0 0 35%;
 }
 
-/* No longer needed as thr right columns is now components-based? */
-/* .default-grid-layout .right-column {
+.horizontal-flex-container .right-column {
   display: flex;
-  flex-direction: column; 
-  gap: 1rem; 
-  height: 100%; 
-  overflow: hidden; 
-} */
+  flex-direction: column;
+  overflow: visible;
+  flex: 0 0 65%;
+
+  /* "gap" that works automatically in the flexbox */
+  padding-left: 1rem;
+  box-sizing: border-box;
+}
 
 .card {
   background-color: var(--background-fullbright-color);
-  padding: var(--card-padding);
-  /* margin: 10px 0; */
-  border: 1px solid var(--light-border-color);
+  display: flex;
+  flex-direction: column;
+  outline: 1px solid var(--extra-light-border-color);
   border-radius: var(--card-border-radius);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.2s ease-out; /* Animate cards loading or being created */
+
+  box-shadow: var(--default-shadow);
 }
 
 .card-title {
@@ -204,15 +209,16 @@ html {
   font-size: 1.2rem;
   color: var(--text-color-100);
   border-radius: var(--card-border-radius) var(--card-border-radius) 0 0; /* Match the card's border-radius for the top corners */
-  margin-top: calc(-1 * var(--card-padding)); /* To "counter" the card's padding */
-  margin-left: calc(-1 * var(--card-padding)); /* To "counter" the card's padding */
-  margin-right: calc(-1 * var(--card-padding)); /* To "counter" the card's padding */
 }
 
 .card-content {
+  padding: var(--card-padding);
   font-size: 1rem;
-  /* color: var(--text-color-800); */
   color: var(--text-color-500);
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: var(--card-border-radius);
 }
 
 /* 
