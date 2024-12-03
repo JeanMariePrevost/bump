@@ -52,7 +52,6 @@ export class MonitorEditPanel extends BaseComponent {
         break;
       case "apply-edits":
         console.log("Apply edits action clicked");
-        // TODO: Implement apply edits action
         // Collect the form data
         const form = document.querySelector(".settings-form");
 
@@ -70,14 +69,8 @@ export class MonitorEditPanel extends BaseComponent {
           .then((response) => {
             if (response === "true") {
               console.log("Backend accepted monitor config");
-              // HERE: either refresh the ENTIRE thing, or fire an event that the GUI can refresh on (currently this panel and the monitor list I think)
-              // Reload the form with the new monitor data
-
-              // Test: Refresh by navigating to home, but give it a parameter to know to jump directly to this window
+              // Refresh everything by navigating to home, but give it a parameter to know to jump directly to this window
               window.location.href = "/?monitor_edit=" + encodeURIComponent(newMonitorConfig.unique_name);
-
-              //this.#resetForm(); // WARNING: This willbreak on name changes, implement proper solution
-              //TODO - do this through events? Or at least have the MonitorList refresh itself? But then to we need to re-select?
             } else {
               console.error("Backend rejected monitor config : ", response);
               // TODO: Display an error message to the user, can we do easy dialogs?
