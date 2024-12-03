@@ -214,12 +214,16 @@ html {
 }
 
 .card-title {
-  /* margin-bottom: 0.5rem; */
   background-color: var(--tertiary-color);
-  padding: 8px 25px;
+  padding: 8px 8px 7px 22px;
   font-size: 1.2rem;
   color: var(--text-color-100);
   border-radius: var(--card-border-radius) var(--card-border-radius) 0 0; /* Match the card's border-radius for the top corners */
+
+  /* To allow for buttons to be on the same line when present */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .card-content {
@@ -230,6 +234,26 @@ html {
   width: 100%;
   box-sizing: border-box;
   border-radius: var(--card-border-radius);
+}
+
+.card-title-button {
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0);
+  padding: 2px 5px;
+  min-width: 30px;
+  text-align: center;
+  border-radius: 5px;
+  user-select: none;
+  height: 100%;
+  margin: -8px 0;
+}
+
+.card-title-button:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.card-title-button:active {
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 /* 
