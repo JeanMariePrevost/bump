@@ -90,6 +90,9 @@ class JsApi:
         """
         general_logger.debug(f"Received monitor config submission: {monitor_config}")
 
+        # DEBUG: Refuse submission
+        return "false"
+
         try:
             targetMonitor: Monitor = mediator.get_monitors_manager().get_monitor_by_name(monitor_config["original_name"])
             if targetMonitor is None:

@@ -73,24 +73,22 @@ export class MonitorEditPanel extends BaseComponent {
               window.location.href = "/?monitor_edit=" + encodeURIComponent(newMonitorConfig.unique_name);
             } else {
               console.error("Backend rejected monitor config : ", response);
-              // TODO: Display an error message to the user, can we do easy dialogs?
+              alert("Changes could not be applied.\n\nError Message:\n" + response);
             }
           })
           .catch((error) => {
             console.error("Failed to submit monitor config:", error);
+            alert("Changes could not be applied.\n\nError Message:\n" + error);
           });
         break;
       case "revert-edits":
         console.log("Revert edits action clicked");
         // Reload the form with the original monitor data, smoother transition
         this.#resetFormAndFillWithMonitorData();
-
-        // Simply rebuild the panel
-        // this.destroy();
-        // new MonitorEditPanel(".right-column", this.monitor_unique_name);
         break;
       default:
         console.warn(`Unknown action: ${action}`);
+        alert("Received unknown action: " + action);
     }
   }
 
