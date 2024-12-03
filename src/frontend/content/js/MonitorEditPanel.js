@@ -16,7 +16,7 @@ export class MonitorEditPanel extends BaseComponent {
     console.log("MonitorEditPanel element is ready");
 
     // Get monitor data from the backend
-    this.#resetForm();
+    this.#resetFormAndFillWithMonitorData();
 
     // Add event listeners for any form changes (input, change...) NOT for submit
     const form = document.querySelector(".settings-form");
@@ -70,8 +70,13 @@ export class MonitorEditPanel extends BaseComponent {
           .then((response) => {
             if (response === "true") {
               console.log("Backend accepted monitor config");
+              // HERE: either refresh the ENTIRE thing, or fire an event that the GUI can refresh on (currently this panel and the monitor list I think)
               // Reload the form with the new monitor data
-              this.#resetForm(); // WARNING: This willbreak on name changes, implement proper solution
+
+              // Test: Refresh by navigating to home, but give it a parameter to know to jump directly to this window
+              window.location.href = "/?monitor_edit=" + encodeURIComponent(newMonitorConfig.unique_name);
+
+              //this.#resetForm(); // WARNING: This willbreak on name changes, implement proper solution
               //TODO - do this through events? Or at least have the MonitorList refresh itself? But then to we need to re-select?
             } else {
               console.error("Backend rejected monitor config : ", response);
@@ -85,7 +90,7 @@ export class MonitorEditPanel extends BaseComponent {
       case "revert-edits":
         console.log("Revert edits action clicked");
         // Reload the form with the original monitor data, smoother transition
-        this.#resetForm();
+        this.#resetFormAndFillWithMonitorData();
 
         // Simply rebuild the panel
         // this.destroy();
@@ -238,7 +243,7 @@ export class MonitorEditPanel extends BaseComponent {
     }
   }
 
-  #resetForm() {
+  #resetFormAndFillWithMonitorData() {
     // Disable the "Apply edits" and "Revert edits" buttons
     const applyButton = document.querySelector('.monitor-action-link[data-action="apply-edits"]');
     const revertButton = document.querySelector('.monitor-action-link[data-action="revert-edits"]');
@@ -252,29 +257,33 @@ export class MonitorEditPanel extends BaseComponent {
     cardTitle.removeAttribute("data-changes");
 
     // Fill the form with the monitor data
-    requestSingleMonitor(this.monitor_unique_name).then((monitorData) => {
-      if (!monitorData) {
-        console.error("Failed to fetch monitor data");
-        return;
-      }
+    requestSingleMonitor(this.monitor_unique_name)
+      .then((monitorData) => {
+        if (!monitorData) {
+          console.error("Backend returned no data for monitor:", this.monitor_unique_name);
+          return;
+        }
 
-      // Populate the form with the monitor data
-      const form = document.querySelector(".settings-form");
-      form.name.value = monitorData.value.unique_name;
-      form.url.value = monitorData.value.query.value.url;
-      form.interval.value = monitorData.value.period_in_seconds;
-      form["query-type"].value = backendQueryClassToQueryTypeName(monitorData.value.query.type);
+        // Populate the form with the monitor data
+        const form = document.querySelector(".settings-form");
+        form.name.value = monitorData.value.unique_name;
+        form.url.value = monitorData.value.query.value.url;
+        form.interval.value = monitorData.value.period_in_seconds;
+        form["query-type"].value = backendQueryClassToQueryTypeName(monitorData.value.query.type);
 
-      form["condition-value"].value = ""; //Needs conversion between backend and frontend value here, introduce a pre-computed string equivalent to the queries various settings un python?
-      form.retries.value = monitorData.value.retries;
-      form["retries-interval"].value = monitorData.value.retries_interval_in_seconds;
-      form.threshold.value = "Not yet implemented"; // TODO: Implement thresholds (e.g. "tolerate 1", or "2 out of 5"...)
-      form["threshold-value"].value = "Not yet implemented";
-      form["alert-profile"].value = "Not yet implemented"; // TODO: Implement alert profiles defined by the user
+        form["condition-value"].value = ""; //Needs conversion between backend and frontend value here, introduce a pre-computed string equivalent to the queries various settings un python?
+        form.retries.value = monitorData.value.retries;
+        form["retries-interval"].value = monitorData.value.retries_interval_in_seconds;
+        form.threshold.value = "Not yet implemented"; // TODO: Implement thresholds (e.g. "tolerate 1", or "2 out of 5"...)
+        form["threshold-value"].value = "Not yet implemented";
+        form["alert-profile"].value = "Not yet implemented"; // TODO: Implement alert profiles defined by the user
 
-      this.#resetFormValidation(form);
-      this.#updateConditionValueFieldFromQueryType(form, form["query-type"].value);
-    });
+        this.#resetFormValidation(form);
+        this.#updateConditionValueFieldFromQueryType(form, form["query-type"].value);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch monitor data for monitor:", this.monitor_unique_name, ", Error:", error);
+      });
   }
 }
 

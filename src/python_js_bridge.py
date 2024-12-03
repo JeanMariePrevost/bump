@@ -49,6 +49,8 @@ class JsApi:
     def request_monitor_data(self, unique_name: str):
         print(f"Received request for monitor data: {unique_name}")
         targetMonitor = mediator.get_monitors_manager().get_monitor_by_name(unique_name)
+        if targetMonitor is None:
+            raise ValueError(f"No monitor found with name {unique_name}")
         targetMonitor.recalculate_stats()  # Send the frontend the latest stats for monitor details
         return serialization.to_dict_encoded_with_types(targetMonitor)
 
