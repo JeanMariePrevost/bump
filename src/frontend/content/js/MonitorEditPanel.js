@@ -58,6 +58,11 @@ export class MonitorEditPanel extends BaseComponent {
     actionLinks.forEach((link) => {
       link.addEventListener("click", this._onActionLinkClick.bind(this));
     });
+
+    // Fire a global event to inform things like the list that a monitor should be selected
+    const event = new CustomEvent("monitor-edit-panel-ready", { detail: { monitor_unique_name: this.monitor_unique_name } });
+    document.dispatchEvent(event);
+    console.log(`Monitor edit panel fired event for ${this.monitor_unique_name}`);
   }
 
   _onActionLinkClick(event) {

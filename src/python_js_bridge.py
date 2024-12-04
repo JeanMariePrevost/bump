@@ -128,6 +128,25 @@ class JsApi:
         newMonitorData = self.request_monitor_data(new_monitor.unique_name)
         return newMonitorData
 
+    def create_new_duplicate_monitor(self, original_name: str) -> dict:
+        """
+        Create and returns a new monitor that is a duplicate of the monitor with the given name.
+        :param original_name: The name of the monitor to duplicate
+        :return: The unique name of the newly created monitor
+        """
+        general_logger.debug(f"Received request to duplicate monitor: {original_name}")
+        monitors_manager = mediator.get_monitors_manager()
+        original_monitor = monitors_manager.get_monitor_by_name(original_name)
+        if original_monitor is None:
+            return f"Trying to duplicate monitor {original_name} but it does not exist."
+        original_as_dict = serialization.to_encoded_json(original_monitor)
+        new_monitor = serialization.from_encoded_json(original_as_dict)
+        new_monitor.unique_name = monitors_manager.get_next_free_monitor_name()
+        monitors_manager.add_monitor(new_monitor)
+        monitors_manager.save_monitors_configs_to_file()
+        newMonitorData = self.request_monitor_data(new_monitor.unique_name)
+        return newMonitorData
+
 
 def get_js_api():
     global __js_api

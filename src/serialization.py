@@ -11,6 +11,7 @@ class Deserializable:
 
     @classmethod
     def from_dict(cls, dict_object: dict):
+        # TODO : IS THIS DEPRECATED IN FAVOR OF from_encoded_json()?
         # Dynamically create an instance of the calling class
         instance = cls()
         for key, value in dict_object.items():

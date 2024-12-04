@@ -1,6 +1,7 @@
 import { BaseComponent } from "./BaseComponent.js";
-import { requestSingleMonitor, requestMonitorHistory, requestMonitorDeletion } from "./PythonJsBridge.js";
+import { requestSingleMonitor, requestMonitorHistory, requestMonitorDeletion, requestNewDuplicateMonitor } from "./PythonJsBridge.js";
 import { MonitorEditPanel } from "./MonitorEditPanel.js";
+import { addMonitorToList } from "./MainPage.js";
 
 /**
  * Handles the monitor details right-column panel
@@ -60,7 +61,23 @@ export class MonitorDetailsPanel extends BaseComponent {
         break;
       case "duplicate":
         console.log("Duplicate action clicked");
-        // TODO: Implement duplicate action
+        // Ask backend to create a new monitor and receive the new monitor's data
+        requestNewDuplicateMonitor(this.monitor_unique_name)
+          .then((response) => {
+            if (!response) {
+              console.error("Failed to fetch new monitor data");
+              return;
+            }
+            // Add the new monitor to the list
+            addMonitorToList(response.value);
+            // Empty whaterver is in the right column
+            document.querySelector(".right-column").innerHTML = "";
+            // Open the edit panel for the new monitor
+            new MonitorEditPanel(".right-column", response.value.unique_name, true); // true will make it focus on the name input directly since the user will want to rename it
+          })
+          .catch((error) => {
+            console.error("Error while duplicating monitor:", error);
+          });
         break;
       case "delete":
         console.log("Delete action clicked");

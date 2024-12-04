@@ -26,14 +26,18 @@ class MonitorsManager(Deserializable):
         self.monitors.remove(monitor)
 
     def create_and_add_empty_monitor(self) -> Monitor:
+        unique_name = self.get_next_free_monitor_name()
+        monitor = Monitor(unique_name=unique_name)
+        self.add_monitor(monitor)
+        return monitor
+
+    def get_next_free_monitor_name(self) -> str:
         unique_name = "New monitor"
         i = 1
         while self.get_monitor_by_name(unique_name) is not None:
             unique_name = f"New monitor {i}"
             i += 1
-        monitor = Monitor(unique_name=unique_name)
-        self.add_monitor(monitor)
-        return monitor
+        return unique_name
 
     def get_monitor_by_name(self, name: str) -> Monitor:
         for monitor in self.monitors:

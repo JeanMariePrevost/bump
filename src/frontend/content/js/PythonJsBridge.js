@@ -46,6 +46,16 @@ export async function requestNewEmptyMonitor() {
 }
 
 /**
+ * Requests the backend to create and return a new monitor duplicating an existing one
+ * @param {string} baseMonitorName - The name of the monitor to duplicate
+ * @returns {Promise<Object>} The new monitor, with its state under the 'value' property
+ */
+export async function requestNewDuplicateMonitor(baseMonitorName) {
+  const response = await pywebview.api.create_new_duplicate_monitor(baseMonitorName);
+  return response;
+}
+
+/**
  * Requests the backend to delete a monitor
  * @param {*} monitorName
  * @returns {Promise<string>} Promise that resolves to "true" if the monitor was deleted, or an error message if it was not

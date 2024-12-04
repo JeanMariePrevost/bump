@@ -9,7 +9,7 @@ const monitorsInList = [];
 /**
  * Creates a "monitorListItem" element from the given monitor data, which adds itself to the DOM.
  */
-function addMonitorToList(monitorData) {
+export function addMonitorToList(monitorData) {
   if (!monitorData) {
     throw new Error("addCard: cannot create a card without monitor data");
   }

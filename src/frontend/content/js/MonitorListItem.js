@@ -13,6 +13,24 @@ export class MonitorListItem {
     this.monitorData = monitorData;
     console.log(`${this.constructor.name} instance created with config:`, monitorData);
     this.addSelfToDOM();
+
+    // Add an event listener for OTHER things that can trigger this item's selection
+    document.addEventListener("monitor-edit-panel-ready", (event) => this.#onMonitorEditPanelReady(event));
+  }
+
+  #onMonitorEditPanelReady(event) {
+    console.log(`MonitorEditPanel ready event received:`, event);
+    if (event.detail.monitor_unique_name === this.monitorData.unique_name) {
+      // Something else triggered the editing of THIS item's monitor, so select it
+      const items = document.querySelectorAll(".monitor-list-item");
+      items.forEach((item) => {
+        item.classList.remove("selected-monitor");
+      });
+      const item = document.querySelector(`.monitor-list-item[data-unique-name="${this.monitorData.unique_name}"]`);
+      if (item) {
+        item.classList.add("selected-monitor");
+      }
+    }
   }
 
   addSelfToDOM() {
@@ -83,27 +101,29 @@ export class MonitorListItem {
         });
 
       // Add a click event listener to the item
-      newItem.addEventListener("click", (event) => {
-        console.log(`Clicked on ${this.monitorData.unique_name}`);
-        // Remove the "selected-monitor" class from all items, place on self
-        const items = document.querySelectorAll(".monitor-list-item");
-        items.forEach((item) => {
-          item.classList.remove("selected-monitor");
-        });
-        newItem.classList.add("selected-monitor");
-
-        //Completely remove everything INDE "right-column" and add a new element
-        const rightColumn = document.querySelector("div.right-column");
-        if (rightColumn) {
-          const newRightColumn = rightColumn.cloneNode(false); // `false` clones only the element, without its children.
-          rightColumn.parentNode.replaceChild(newRightColumn, rightColumn);
-
-          // Add a new element to the right column
-          const monitorDetailsColumn = new MonitorDetailsPanel(".right-column", this.monitorData.unique_name);
-        }
-      });
+      newItem.addEventListener("click", (event) => this.#onClicked(event));
     } else {
       console.error(".monitors-list element not found");
+    }
+  }
+
+  #onClicked(event) {
+    console.log(`Clicked on ${this.monitorData.unique_name}`);
+    // Remove the "selected-monitor" class from all items, place on self
+    const items = document.querySelectorAll(".monitor-list-item");
+    items.forEach((item) => {
+      item.classList.remove("selected-monitor");
+    });
+    event.currentTarget.classList.add("selected-monitor");
+
+    //Completely remove everything in "right-column" and add a new element
+    const rightColumn = document.querySelector("div.right-column");
+    if (rightColumn) {
+      const newRightColumn = rightColumn.cloneNode(false); // `false` clones only the element, without its children.
+      rightColumn.parentNode.replaceChild(newRightColumn, rightColumn);
+
+      // Add a new element to the right column
+      const monitorDetailsColumn = new MonitorDetailsPanel(".right-column", this.monitorData.unique_name);
     }
   }
 }
