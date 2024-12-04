@@ -256,6 +256,10 @@ html {
   background-color: rgba(0, 0, 0, 0.2);
 }
 
+.monitors-list {
+  margin-top: -12px; /* Compensate for the card content padding at the top */
+}
+
 /* 
 ******************************************************************************
 Utility classes
