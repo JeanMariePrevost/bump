@@ -158,7 +158,13 @@ export class MonitorDetailsPanel extends BaseComponent {
       }
       // Calculate the weight (the flex value) based on the normalized time minus the previous one
       if (i > 0) {
-        bar.style.flex = `${statusChangeResults[i].normalizedTime - statusChangeResults[i - 1].normalizedTime}`;
+        let weight = `${statusChangeResults[i].normalizedTime - statusChangeResults[i - 1].normalizedTime}`;
+        if (weight < 0.01) {
+          // Minimum weight to avoid fully collapsed bars
+          weight = 0.01;
+        }
+        bar.style.flex = weight;
+        console.log("Flex value:", bar.style.flex);
       } else {
         bar.style.flex = `${statusChangeResults[i].normalizedTime}`;
       }
