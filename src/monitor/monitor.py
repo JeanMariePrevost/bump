@@ -3,6 +3,7 @@ from enum import Enum
 import os
 import traceback
 import mediator
+from my_utils import util
 from my_utils.util import get_query_class_from_string, is_valid_filename, is_valid_url
 from queries.query import Query
 from queries.query_result import QueryResult
@@ -79,7 +80,9 @@ class Monitor(Deserializable):
             messageString = f"Monitor {self.unique_name} is back online."
         else:
             messageString = f"Monitor {self.unique_name} is down."
-        notification.notify(app_name="BUMP", title=messageTitleString, message=messageString, timeout=10)
+        notification.notify(
+            app_name="BUMP", title=messageTitleString, message=messageString, app_icon=util.resource_path("src/frontend/content/favicon.ico")
+        )
 
     def read_results_from_history(self, count: int) -> list[QueryResult]:
         resultsList = []
