@@ -81,15 +81,12 @@ export class MonitorListItem {
         .then((response) => {
           console.log(`Received history data for ${this.monitorData.unique_name}:`, response);
 
-          //DEBUG
-          const len = response.length;
-          const firstElement = response[0];
-
           for (let i = 0; i < response.length; i++) {
-            const bar = barChart.children[barChart.children.length - 1 - i]; // Make the rightmost bar the most recent
-            if (response[i].value.test_passed === true) {
+            const bar = barChart.children[barChart.children.length - 1 - i]; // Start from the end
+            const status = response[response.length - 1 - i].value.test_passed;
+            if (status === true) {
               bar.setAttribute("data-status", "up");
-            } else if (response[i].value.test_passed === false) {
+            } else if (status === false) {
               bar.setAttribute("data-status", "down");
             } else {
               bar.setAttribute("data-status", "unknown");
