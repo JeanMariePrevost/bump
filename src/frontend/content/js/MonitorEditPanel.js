@@ -1,7 +1,6 @@
 import { BaseComponent } from "./BaseComponent.js";
 import { requestSingleMonitor, submitMonitorConfig } from "./PythonJsBridge.js";
 import { backendQueryClassToQueryTypeName, queryTypeNameToBackendClass } from "./utils.js";
-import { handleMonitorActionBarLinksClick } from "./MonitorDetailsPanel.js";
 
 /**
  * Handles the monitor editing form in the right-column panel
@@ -74,7 +73,7 @@ export class MonitorEditPanel extends BaseComponent {
       case "duplicate":
       case "delete":
         // Pass the event to the global handler for default behavior
-        handleMonitorActionBarLinksClick(event, this.monitor_unique_name);
+        // handleMonitorActionBarLinksClick(event, this.monitor_unique_name);
         break;
       case "edit":
         console.log("Edit action clicked");

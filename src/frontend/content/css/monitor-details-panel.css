@@ -43,7 +43,7 @@
   flex-direction: row;
   justify-content: flex-end;
   gap: 6px;
-  /* align-items: center; */
+  align-items: baseline;
   /* flex: 1 1 auto; */
   /* padding-right: 10px; */
 }

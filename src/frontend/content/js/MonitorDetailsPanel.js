@@ -1,13 +1,14 @@
 import { BaseComponent } from "./BaseComponent.js";
-import { requestSingleMonitor, requestMonitorHistory, requestMonitorDeletion, requestNewDuplicateMonitor } from "./PythonJsBridge.js";
-import { MonitorEditPanel } from "./MonitorEditPanel.js";
-import { addMonitorToList } from "./MainPage.js";
+import { requestSingleMonitor, requestMonitorHistory } from "./PythonJsBridge.js";
+import { MonitorHeaderCard } from "./MonitorHeaderCard.js";
 
 /**
  * Handles the monitor details right-column panel
  */
 export class MonitorDetailsPanel extends BaseComponent {
   static MAX_RESULTS_IN_TIMELINE = 100; // TODO: Implement using DAYS instead of number of results? E.g. 7 days
+
+  #headerCardComponent;
 
   constructor(parentSelector, monitor_unique_name) {
     super(parentSelector, "monitor-details-column", "fragments/monitor-details-panel.html");
@@ -21,7 +22,7 @@ export class MonitorDetailsPanel extends BaseComponent {
     // Get the monitor data
     requestSingleMonitor(this.monitor_unique_name)
       .then((monitorData) => {
-        this._updateHeaderCard(monitorData);
+        this.#headerCardComponent = new MonitorHeaderCard(".monitor-header-card-container", monitorData);
         this._udpateStatsCards(monitorData);
       })
       .catch((error) => {
@@ -36,47 +37,6 @@ export class MonitorDetailsPanel extends BaseComponent {
       .catch((error) => {
         console.error(`Error while fetching history data for ${this.monitor_unique_name}:`, error);
       });
-
-    // Add event listeners to the action-links
-    const actionLinks = this.element.querySelectorAll(".monitor-action-link");
-    actionLinks.forEach((link) => {
-      link.addEventListener("click", (event) => {
-        handleMonitorActionBarLinksClick(event, this.monitor_unique_name);
-      });
-    });
-  }
-
-  _updateHeaderCard(monitorData) {
-    const monitorNameElement = this.element.querySelector(".monitor-details-title");
-    // Return if not found
-    if (!monitorNameElement) {
-      console.warn("Monitor name element not found.");
-      return;
-    }
-
-    if (!monitorData) {
-      console.warn("Monitor data is not available.");
-      return;
-    }
-
-    const monitorIsUp = monitorData.value?.last_query_passed ?? null;
-
-    let dataStatus = "unknown";
-    if (monitorIsUp === null) {
-      // Leave it t its default color
-      console.warn("Monitor status is unknown.");
-    } else if (monitorIsUp) {
-      this.element.setAttribute("data-status", "up");
-      dataStatus = "up";
-    } else {
-      this.element.setAttribute("data-status", "down");
-      dataStatus = "down";
-    }
-    const headerCardDiv = this.element.querySelector(".monitor-details-header-card");
-    headerCardDiv?.setAttribute("data-status", dataStatus);
-
-    // Set the monitor name
-    monitorNameElement.textContent = monitorData.value.unique_name;
   }
 
   _udpateStatsCards(monitorData) {
@@ -318,73 +278,5 @@ export class MonitorDetailsPanel extends BaseComponent {
         }
       });
     }
-  }
-}
-
-/**
- * Shared function to handle clicks on the action bar links of a monitor.
- * Introduced to avoid duplications in the various panels that use it.
- * @param {MouseEvent} event - The click event.
- * @param {string} monitor_unique_name - The unique name of the monitor.
- */
-export function handleMonitorActionBarLinksClick(event, monitor_unique_name) {
-  const action = event.target.dataset.action;
-  // Switch on "data-action" attribute to determine the action
-  switch (action) {
-    case "pause":
-      console.log("Pause action clicked");
-      // TODO: Implement pause action
-      break;
-    case "edit":
-      console.log("Edit action clicked");
-      // Empty whaterver is in the right column
-      document.querySelector(".right-column").innerHTML = "";
-      // Open the edit panel for the monitor
-      new MonitorEditPanel(".right-column", monitor_unique_name);
-      break;
-    case "duplicate":
-      console.log("Duplicate action clicked");
-      // Ask backend to create a new monitor and receive the new monitor's data
-      requestNewDuplicateMonitor(monitor_unique_name)
-        .then((response) => {
-          if (!response) {
-            console.error("Failed to fetch new monitor data");
-            return;
-          }
-          // Add the new monitor to the list
-          addMonitorToList(response.value);
-          // Empty whaterver is in the right column
-          document.querySelector(".right-column").innerHTML = "";
-          // Open the edit panel for the new monitor
-          new MonitorEditPanel(".right-column", response.value.unique_name, true); // true will make it focus on the name input directly since the user will want to rename it
-        })
-        .catch((error) => {
-          console.error("Error while duplicating monitor:", error);
-        });
-      break;
-    case "delete":
-      console.log("Delete action clicked");
-      // Prompt user for confirmation
-      if (confirm("Are you sure you want to delete this monitor?")) {
-        // Ask backend to delete the monitor
-        console.log("Deleting monitor");
-        requestMonitorDeletion(monitor_unique_name)
-          .then((response) => {
-            if (response === "true") {
-              console.log("Monitor deleted successfully");
-              // Refresh back to the home page "/"
-              window.location.href = "/";
-            } else {
-              console.error("Error while deleting monitor:", response);
-            }
-          })
-          .catch((error) => {
-            console.error("Error while deleting monitor:", error);
-          });
-      }
-      // TODO: Implement delete action
-      break;
-    default:
-      console.warn(`Unknown action: ${action}`);
   }
 }
