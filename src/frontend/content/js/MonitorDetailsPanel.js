@@ -40,72 +40,10 @@ export class MonitorDetailsPanel extends BaseComponent {
     // Add event listeners to the action-links
     const actionLinks = this.element.querySelectorAll(".monitor-action-link");
     actionLinks.forEach((link) => {
-      link.addEventListener("click", this._onActionLinkClick.bind(this));
+      link.addEventListener("click", (event) => {
+        handleMonitorActionBarLinksClick(event, this.monitor_unique_name);
+      });
     });
-  }
-
-  _onActionLinkClick(event) {
-    const action = event.target.dataset.action;
-    // Switch on "data-action" attribute to determine the action
-    switch (action) {
-      case "pause":
-        console.log("Pause action clicked");
-        // TODO: Implement pause action
-        break;
-      case "edit":
-        console.log("Edit action clicked");
-        // TODO: Implement edit action
-        // Remove self and instantiate a MonitorEditPanel
-        this.destroy();
-        new MonitorEditPanel(".right-column", this.monitor_unique_name);
-        break;
-      case "duplicate":
-        console.log("Duplicate action clicked");
-        // Ask backend to create a new monitor and receive the new monitor's data
-        requestNewDuplicateMonitor(this.monitor_unique_name)
-          .then((response) => {
-            if (!response) {
-              console.error("Failed to fetch new monitor data");
-              return;
-            }
-            // Add the new monitor to the list
-            addMonitorToList(response.value);
-            // Empty whaterver is in the right column
-            document.querySelector(".right-column").innerHTML = "";
-            // Open the edit panel for the new monitor
-            new MonitorEditPanel(".right-column", response.value.unique_name, true); // true will make it focus on the name input directly since the user will want to rename it
-          })
-          .catch((error) => {
-            console.error("Error while duplicating monitor:", error);
-          });
-        break;
-      case "delete":
-        console.log("Delete action clicked");
-        // Prompt user for confirmation
-        if (confirm("Are you sure you want to delete this monitor?")) {
-          // Ask backend to delete the monitor
-          console.log("Deleting monitor");
-          requestMonitorDeletion(this.monitor_unique_name)
-            .then((response) => {
-              if (response === "true") {
-                console.log("Monitor deleted successfully");
-                // Remove self from the DOM
-                this.destroy();
-                // Refresh back to the home page "/"
-                window.location.href = "/";
-              } else {
-                console.error("Error while deleting monitor:", response);
-              }
-            })
-            .catch((error) => {
-              console.error("Error while deleting monitor:", error);
-            });
-        }
-        // TODO: Implement delete action
-        break;
-      default:
-        console.warn(`Unknown action: ${action}`);
-    }
   }
 
   _updateHeaderCard(monitorData) {
@@ -380,5 +318,73 @@ export class MonitorDetailsPanel extends BaseComponent {
         }
       });
     }
+  }
+}
+
+/**
+ * Shared function to handle clicks on the action bar links of a monitor.
+ * Introduced to avoid duplications in the various panels that use it.
+ * @param {MouseEvent} event - The click event.
+ * @param {string} monitor_unique_name - The unique name of the monitor.
+ */
+export function handleMonitorActionBarLinksClick(event, monitor_unique_name) {
+  const action = event.target.dataset.action;
+  // Switch on "data-action" attribute to determine the action
+  switch (action) {
+    case "pause":
+      console.log("Pause action clicked");
+      // TODO: Implement pause action
+      break;
+    case "edit":
+      console.log("Edit action clicked");
+      // Empty whaterver is in the right column
+      document.querySelector(".right-column").innerHTML = "";
+      // Open the edit panel for the monitor
+      new MonitorEditPanel(".right-column", monitor_unique_name);
+      break;
+    case "duplicate":
+      console.log("Duplicate action clicked");
+      // Ask backend to create a new monitor and receive the new monitor's data
+      requestNewDuplicateMonitor(monitor_unique_name)
+        .then((response) => {
+          if (!response) {
+            console.error("Failed to fetch new monitor data");
+            return;
+          }
+          // Add the new monitor to the list
+          addMonitorToList(response.value);
+          // Empty whaterver is in the right column
+          document.querySelector(".right-column").innerHTML = "";
+          // Open the edit panel for the new monitor
+          new MonitorEditPanel(".right-column", response.value.unique_name, true); // true will make it focus on the name input directly since the user will want to rename it
+        })
+        .catch((error) => {
+          console.error("Error while duplicating monitor:", error);
+        });
+      break;
+    case "delete":
+      console.log("Delete action clicked");
+      // Prompt user for confirmation
+      if (confirm("Are you sure you want to delete this monitor?")) {
+        // Ask backend to delete the monitor
+        console.log("Deleting monitor");
+        requestMonitorDeletion(monitor_unique_name)
+          .then((response) => {
+            if (response === "true") {
+              console.log("Monitor deleted successfully");
+              // Refresh back to the home page "/"
+              window.location.href = "/";
+            } else {
+              console.error("Error while deleting monitor:", response);
+            }
+          })
+          .catch((error) => {
+            console.error("Error while deleting monitor:", error);
+          });
+      }
+      // TODO: Implement delete action
+      break;
+    default:
+      console.warn(`Unknown action: ${action}`);
   }
 }
