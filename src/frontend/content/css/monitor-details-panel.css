@@ -8,33 +8,32 @@
 
 /* The card that reads "All monitors are up" and such */
 .monitor-details-header-card {
-  flex: 0 0 50px; /* Fixed height */
+  flex: 0 0 50px;
   padding-top: 0;
   padding-bottom: 0;
   /* background-color: var(--status-unknown-color-300); */
   /* color: var(--status-unknown-color-800); */
-  position: relative; /* For absolute positioning of the title and count */
+  position: relative;
   user-select: none;
   cursor: default;
 }
 
 .monitor-details-header-card .card-content {
-  /* Center and distribute contents */
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  justify-content: right;
+  align-items: baseline;
   height: 100%;
   padding-top: 10px;
-  padding-bottom: 10px;
+  padding-bottom: 4px;
 }
 
 .monitor-details-title {
   font-size: larger;
-  /* trim overflow and display ellipsis */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  padding-left: 8px;
 }
 
 .monitor-actions-container {
@@ -119,7 +118,7 @@
   height: 50px;
   border: 1px solid var(--light-border-color);
   overflow: hidden;
-  margin-top: 10px;
+  margin-top: 0px;
   position: relative;
 }
 
@@ -158,7 +157,8 @@
 }
 
 .monitor-details-chart-container .card-content {
-  padding-top: 10px;
+  padding-top: 15px;
+  padding-bottom: 10px;
 }
 
 .monitor-details-logs-container {
