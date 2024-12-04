@@ -164,24 +164,23 @@ export class MonitorDetailsPanel extends BaseComponent {
       bar.setAttribute("data-status", statusChangeResults[i].value.test_passed ? "up" : "down");
       bar.setAttribute("data-begin-time", statusChangeResults[i].value.end_time.value);
       bar.setAttribute("data-message", statusChangeResults[i].value.reason);
+
       // Set data-end-time to the next status change or the end of the timeline, i.e. "now"
       if (i < statusChangeResults.length - 1) {
         bar.setAttribute("data-end-time", statusChangeResults[i + 1].value.end_time.value);
       } else {
         bar.setAttribute("data-end-time", new Date().toISOString());
       }
-      // Calculate the weight (the flex value) based on the normalized time minus the previous one
-      if (i > 0) {
-        bar.style.flex = Math.max(statusChangeResults[i].normalizedTime - statusChangeResults[i - 1].normalizedTime, 0.01); // Has a minimum width to avoid collapsing
-        console.log("Flex value:", bar.style.flex);
+
+      // Calculate the weight (the flex value) based on the normalized time minus the next one
+      if (i < statusChangeResults.length - 1) {
+        // Not the last element, calculate flex based on the next normalized time
+        bar.style.flex = Math.max(
+          statusChangeResults[i + 1].normalizedTime - statusChangeResults[i].normalizedTime,
+          0.01 // Minimum width to avoid collapsing
+        );
       } else {
-        //First element, can't calculate based on the previous one
-        if (statusChangeResults.length === 1) {
-          //If there's only one element, give it a flex value of 1
-          bar.style.flex = 1;
-        } else {
-          bar.style.flex = Math.max(statusChangeResults[i + 1].normalizedTime - statusChangeResults[i].normalizedTime, 0.01); // Has a minimum width to avoid collapsing
-        }
+        bar.style.flex = 1 - statusChangeResults[i].normalizedTime;
       }
 
       //Set listeners for tooltips
