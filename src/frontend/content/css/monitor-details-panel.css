@@ -123,6 +123,15 @@
   position: relative;
 }
 
+.monitor-details-chart-empty {
+  height: 100%;
+  width: 100%;
+  background-color: var(--status-no-data-color-100);
+  text-align: center;
+  align-content: center;
+  color: var(--status-no-data-color-400);
+}
+
 .monitor-details-chart-x-axis {
   display: flex;
   justify-content: space-between; /* Push items to left and right */

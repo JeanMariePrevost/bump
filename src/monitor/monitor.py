@@ -65,6 +65,7 @@ class Monitor(Deserializable):
             general_logger.error(f"Error while getting previous query result: {e}")
             traceback.print_exc()
             return []
+        return resultsList
 
     def read_results_from_history_days(self, days_to_read: int) -> list[QueryResult]:
         resultsList = []

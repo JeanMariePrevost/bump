@@ -35,10 +35,7 @@ function _onCardTitleButtonClick(event) {
   switch (action) {
     case "new-monitor":
       console.log("Create a new monitor");
-      // What's the process here?
-      // I think:
-      // Ask backend to create a new monitor
-      // Receive the new monitor's data
+      // Ask backend to create a new monitor and receive the new monitor's data
       requestNewEmptyMonitor().then((response) => {
         if (!response) {
           console.error("Failed to fetch new monitor data");
@@ -47,6 +44,9 @@ function _onCardTitleButtonClick(event) {
 
         // Add the new monitor to the list
         addMonitorToList(response.value);
+        // Empty whaterver is in the right column
+        document.querySelector(".right-column").innerHTML = "";
+
         // Open the edit panel for the new monitor
         new MonitorEditPanel(".right-column", response.value.unique_name);
       });

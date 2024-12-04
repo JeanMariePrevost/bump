@@ -62,8 +62,13 @@ export async function submitMonitorConfig(monitorConfig) {
  * @returns {Promise<Array<Object>>} Array of objects, each containing the state of a monitor under its 'value' property
  */
 export async function requestMonitorHistory(monitorName, numberOfResults) {
-  const response = await pywebview.api.request_monitor_history(monitorName, numberOfResults);
-  return response;
+  try {
+    const response = await pywebview.api.request_monitor_history(monitorName, numberOfResults);
+    return response || [];
+  } catch (error) {
+    console.error("Error while fetching monitor history data:", error);
+    return [];
+  }
 }
 
 /**

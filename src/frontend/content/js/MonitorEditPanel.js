@@ -271,10 +271,20 @@ export class MonitorEditPanel extends BaseComponent {
 
         this.#resetFormValidation(form);
         this.#updateConditionValueFieldFromQueryType(form, form["query-type"].value);
+
+        this.#focusAndSelectNameField();
       })
       .catch((error) => {
         console.error("Failed to fetch monitor data for monitor:", this.monitor_unique_name, ", Error:", error);
       });
+  }
+
+  #focusAndSelectNameField() {
+    const nameField = document.querySelector(".settings-form input[name='name']");
+    setTimeout(() => {
+      nameField.focus();
+      nameField.select();
+    }, 300);
   }
 }
 

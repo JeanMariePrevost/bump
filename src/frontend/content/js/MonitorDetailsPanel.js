@@ -158,6 +158,16 @@ export class MonitorDetailsPanel extends BaseComponent {
   }
 
   _updateTimelineChart(monitorResultsHistory) {
+    const emptyChartElement = this.element.querySelector(".monitor-details-chart-empty");
+    if (!monitorResultsHistory || monitorResultsHistory.length === 0) {
+      console.log("Monitor has no history.");
+      // Remove the ".display-none"  class from the .monitor-details-chart-empty element
+      emptyChartElement.classList.remove("display-none");
+      return;
+    } else {
+      emptyChartElement.classList.add("display-none");
+    }
+
     // Step 1: Create a new array with only results that differ from the previous one
     const statusChangeResults = [];
     let lastStatus = null;
