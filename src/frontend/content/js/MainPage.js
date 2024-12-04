@@ -48,7 +48,7 @@ function _onCardTitleButtonClick(event) {
         document.querySelector(".right-column").innerHTML = "";
 
         // Open the edit panel for the new monitor
-        new MonitorEditPanel(".right-column", response.value.unique_name);
+        new MonitorEditPanel(".right-column", response.value.unique_name, true); // true will make it focus on the name input directly since the user will want to rename it
       });
       break;
     default:

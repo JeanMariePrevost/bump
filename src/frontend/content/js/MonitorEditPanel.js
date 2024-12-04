@@ -7,10 +7,11 @@ import { backendQueryClassToQueryTypeName, queryTypeNameToBackendClass } from ".
  */
 export class MonitorEditPanel extends BaseComponent {
   #formSnapshot; // A snapshot of the form data to compare against to detect changes
-  constructor(parentSelector, monitor_unique_name) {
+  constructor(parentSelector, monitor_unique_name, focusNameField = false) {
     super(parentSelector, "monitor-edit-column", "fragments/monitor-edit-panel.html");
     this.monitor_unique_name = monitor_unique_name;
     this.#formSnapshot = null;
+    this.focusNameField = focusNameField;
   }
 
   /**
@@ -310,7 +311,7 @@ export class MonitorEditPanel extends BaseComponent {
         this.#resetFormValidation(form);
 
         this.#applyFormValidation(form);
-        this.#focusAndSelectNameField();
+        if (this.focusNameField) this.#focusAndSelectNameField();
       })
       .catch((error) => {
         console.error("Failed to fetch monitor data for monitor:", this.monitor_unique_name, ", Error:", error);
@@ -319,11 +320,9 @@ export class MonitorEditPanel extends BaseComponent {
 
   #focusAndSelectNameField() {
     const nameField = document.querySelector(".settings-form input[name='name']");
-    setTimeout(() => {
-      console.log("Focusing and selecting name field");
-      nameField.focus();
-      nameField.select();
-    }, 800);
+    console.log("Focusing and selecting name field");
+    nameField.focus();
+    nameField.select();
   }
 }
 
