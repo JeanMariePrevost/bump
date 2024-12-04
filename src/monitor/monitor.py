@@ -32,6 +32,7 @@ class Monitor(Deserializable):
         self.time_at_last_status_change = datetime.now()
         self.stats_avg_uptime = 0
         self.stats_avg_latency = 0
+        self.current_status = self.read_results_from_history(1)[0].test_passed if len(self.read_results_from_history(1)) > 0 else False
 
     def execute(self):
         if not hasattr(self, "query") or self.query is None:
@@ -75,6 +76,8 @@ class Monitor(Deserializable):
         # )
 
         from plyer import notification
+
+        general_logger.debug(f"Sending alert for monitor {self.unique_name}")
 
         notification.notify(title="Monitor Alert", message=f"Monitor {self.unique_name} has failed!", app_name="Monitor", timeout=10)
 

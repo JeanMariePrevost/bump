@@ -22,7 +22,7 @@ export class MonitorHeaderCard extends BaseComponent {
     const actionLinks = this.element.querySelectorAll(".monitor-action-link");
     actionLinks.forEach((link) => {
       link.addEventListener("click", (event) => {
-        this.handleMonitorActionBarLinksClick(event, this.monitor_unique_name);
+        this.handleMonitorActionBarLinksClick(event, this.monitorUniqueName);
       });
     });
   }
@@ -67,7 +67,16 @@ export class MonitorHeaderCard extends BaseComponent {
       case "execute":
         console.log("Execute action clicked");
         // Ask backend to execute the monitor
-        requestMonitorExecution(this.monitorUniqueName);
+        requestMonitorExecution(this.monitorUniqueName).then((response) => {
+          if (response === "true") {
+            console.log("Monitor executed successfully");
+            // Fire a global event to inform things like the list items that results are in
+            const event = new CustomEvent("monitor-results-received", { detail: { monitorUniqueName: this.monitorUniqueName } });
+            document.dispatchEvent(event);
+          } else {
+            console.error("Error while executing monitor:", response);
+          }
+        });
         break;
       case "pause":
         console.log("Pause action clicked");

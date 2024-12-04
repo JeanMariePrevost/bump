@@ -7,9 +7,9 @@ import { backendQueryClassToQueryTypeName, queryTypeNameToBackendClass } from ".
  */
 export class MonitorEditPanel extends BaseComponent {
   #formSnapshot; // A snapshot of the form data to compare against to detect changes
-  constructor(parentSelector, monitor_unique_name, focusNameField = false) {
+  constructor(parentSelector, monitorUniqueName, focusNameField = false) {
     super(parentSelector, "monitor-edit-column", "fragments/monitor-edit-panel.html");
-    this.monitor_unique_name = monitor_unique_name;
+    this.monitorUniqueName = monitorUniqueName;
     this.#formSnapshot = null;
     this.focusNameField = focusNameField;
   }
@@ -60,9 +60,9 @@ export class MonitorEditPanel extends BaseComponent {
     });
 
     // Fire a global event to inform things like the list that a monitor should be selected
-    const event = new CustomEvent("monitor-edit-panel-ready", { detail: { monitor_unique_name: this.monitor_unique_name } });
+    const event = new CustomEvent("monitor-edit-panel-ready", { detail: { monitorUniqueName: this.monitorUniqueName } });
     document.dispatchEvent(event);
-    console.log(`Monitor edit panel fired event for ${this.monitor_unique_name}`);
+    console.log(`Monitor edit panel fired event for ${this.monitorUniqueName}`);
   }
 
   _onActionLinkClick(event) {
@@ -75,7 +75,7 @@ export class MonitorEditPanel extends BaseComponent {
         const form = document.querySelector(".settings-form");
 
         const newMonitorConfig = {
-          original_name: this.monitor_unique_name,
+          original_name: this.monitorUniqueName,
           unique_name: form.name.value,
           query_url: form.url.value,
           query_type: queryTypeNameToBackendClass(form["query-type"].value),
@@ -299,10 +299,10 @@ export class MonitorEditPanel extends BaseComponent {
     cardTitle.removeAttribute("data-changes");
 
     // Fill the form with the monitor data
-    requestSingleMonitor(this.monitor_unique_name)
+    requestSingleMonitor(this.monitorUniqueName)
       .then((monitorData) => {
         if (!monitorData) {
-          console.error("Backend returned no data for monitor:", this.monitor_unique_name);
+          console.error("Backend returned no data for monitor:", this.monitorUniqueName);
           return;
         }
 
@@ -328,7 +328,7 @@ export class MonitorEditPanel extends BaseComponent {
         if (this.focusNameField) this.#focusAndSelectNameField();
       })
       .catch((error) => {
-        console.error("Failed to fetch monitor data for monitor:", this.monitor_unique_name, ", Error:", error);
+        console.error("Failed to fetch monitor data for monitor:", this.monitorUniqueName, ", Error:", error);
       });
   }
 
