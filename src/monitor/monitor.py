@@ -59,6 +59,9 @@ class Monitor(Deserializable):
         resultsList = []
         try:
             target_path = self.get_history_file_path()
+            if not os.path.exists(target_path):
+                general_logger.warning(f"Requested history file {target_path} does not exist.")
+                return []
             with open(target_path, "r") as f:
                 lines = f.readlines()
                 if len(lines) > 0:
@@ -76,6 +79,9 @@ class Monitor(Deserializable):
         resultsList = []
         try:
             target_path = self.get_history_file_path()
+            if not os.path.exists(target_path):
+                general_logger.warning(f"Requested history file {target_path} does not exist.")
+                return []
             with open(target_path, "r") as f:
                 lines = f.readlines()
                 if len(lines) > 0:
