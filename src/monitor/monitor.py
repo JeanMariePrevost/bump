@@ -67,16 +67,6 @@ class Monitor(Deserializable):
         self.last_query_passed = query_result.test_passed
 
     def sendUserAlerts(self, query_result: QueryResult):
-        # from plyer import notification
-        #
-        # notification.notify(
-        #     title='Here is the title',
-        #     message='Here is the message',
-        #     app_name='Your App Name',
-        #     #app_icon='path/to/your/icon.ico',  # Optional
-        #     timeout=10,  # Duration in seconds
-        # )
-
         from plyer import notification
 
         general_logger.debug(f"Sending alert for monitor {self.unique_name}")
@@ -87,7 +77,7 @@ class Monitor(Deserializable):
             messageString = f"Monitor {self.unique_name} is back online."
         else:
             messageString = f"Monitor {self.unique_name} is down."
-        notification.notify(title=messageTitleString, message=messageString, timeout=10)
+        notification.notify(app_name="BUMP", title=messageTitleString, message=messageString, timeout=10)
 
     def read_results_from_history(self, count: int) -> list[QueryResult]:
         resultsList = []

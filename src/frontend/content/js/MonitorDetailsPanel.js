@@ -19,7 +19,7 @@ export class MonitorDetailsPanel extends BaseComponent {
     // Add your custom logic here
     console.log("MonitorDetailsColumn element is ready");
 
-    // Get the monitor data
+    // Get the monitor data and create the header card
     requestSingleMonitor(this.monitor_unique_name)
       .then((monitorData) => {
         this.#headerCardComponent = new MonitorHeaderCard(".monitor-header-card-container", monitorData);
@@ -29,6 +29,12 @@ export class MonitorDetailsPanel extends BaseComponent {
         console.error(`Error while fetching monitor data for ${this.monitor_unique_name}:`, error);
       });
 
+    this.#refreshWithLatestMonitorData();
+
+    document.addEventListener("monitor-results-received", (event) => this.#onMonitorResultsReceived(event));
+  }
+
+  #refreshWithLatestMonitorData() {
     requestMonitorHistory(this.monitor_unique_name, MonitorDetailsPanel.MAX_RESULTS_IN_TIMELINE)
       .then((monitorResultsHistory) => {
         this._updateTimelineChart(monitorResultsHistory);
@@ -37,6 +43,14 @@ export class MonitorDetailsPanel extends BaseComponent {
       .catch((error) => {
         console.error(`Error while fetching history data for ${this.monitor_unique_name}:`, error);
       });
+  }
+
+  #onMonitorResultsReceived(event) {
+    // console.log(`Monitor results received event:`, event);
+    if (event.detail.monitorUniqueName === this.monitor_unique_name) {
+      //New data for this item, refresh contents
+      this.#refreshWithLatestMonitorData();
+    }
   }
 
   _udpateStatsCards(monitorData) {
@@ -97,10 +111,10 @@ export class MonitorDetailsPanel extends BaseComponent {
     if (!monitorResultsHistory || monitorResultsHistory.length === 0) {
       console.log("Monitor has no history.");
       // Remove the ".display-none"  class from the .monitor-details-chart-empty element
-      emptyChartElement.classList.remove("display-none");
+      emptyChartElement?.classList.remove("display-none");
       return;
     } else {
-      emptyChartElement.classList.add("display-none");
+      emptyChartElement?.classList.add("display-none");
     }
 
     // Step 1: Create a new array with only results that differ from the previous one
@@ -158,15 +172,16 @@ export class MonitorDetailsPanel extends BaseComponent {
       }
       // Calculate the weight (the flex value) based on the normalized time minus the previous one
       if (i > 0) {
-        let weight = `${statusChangeResults[i].normalizedTime - statusChangeResults[i - 1].normalizedTime}`;
-        if (weight < 0.01) {
-          // Minimum weight to avoid fully collapsed bars
-          weight = 0.01;
-        }
-        bar.style.flex = weight;
+        bar.style.flex = Math.max(statusChangeResults[i].normalizedTime - statusChangeResults[i - 1].normalizedTime, 0.01); // Has a minimum width to avoid collapsing
         console.log("Flex value:", bar.style.flex);
       } else {
-        bar.style.flex = `${statusChangeResults[i].normalizedTime}`;
+        //First element, can't calculate based on the previous one
+        if (statusChangeResults.length === 1) {
+          //If there's only one element, give it a flex value of 1
+          bar.style.flex = 1;
+        } else {
+          bar.style.flex = Math.max(statusChangeResults[i + 1].normalizedTime - statusChangeResults[i].normalizedTime, 0.01); // Has a minimum width to avoid collapsing
+        }
       }
 
       //Set listeners for tooltips
@@ -241,6 +256,10 @@ export class MonitorDetailsPanel extends BaseComponent {
 
     // Add each to .recent-events-card .recent-events
     const recentEvents = document.querySelector(".recent-events");
+
+    // Clear the existing entries
+    recentEvents.innerHTML = "";
+
     for (let i = monitorResultsHistory.length - 1; i >= 0; i--) {
       // Build the string to display as "end time, status, message" AND a special case if "exception_type" exists
       let entryText = `[${new Date(monitorResultsHistory[i].value.end_time.value).toLocaleString()}] `;
