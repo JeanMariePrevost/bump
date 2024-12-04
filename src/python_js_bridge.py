@@ -64,6 +64,17 @@ class JsApi:
         # encodedJson = serialization.to_dict_encoded_with_types(history)
         return serialization.to_dict_encoded_with_types(history)
 
+    def request_delete_monitor(self, unique_name: str):
+        print(f"Received request to delete monitor: {unique_name}")
+        monitors_manager = mediator.get_monitors_manager()
+        targetMonitor = monitors_manager.get_monitor_by_name(unique_name)
+        if targetMonitor is None:
+            return f"Monitor with name {unique_name} not found"
+        monitors_manager.remove_monitor(targetMonitor)
+        targetMonitor.delete_history_file()
+        monitors_manager.save_monitors_configs_to_file()
+        return "true"
+
     def request_log_entries(self, max_number_of_entries: int, min_level: str = "INFO", include_general: bool = True, include_monitoring: bool = True):
         print(f"Received request for log entries")
         # Parse BOTH log files for entries of a given level or higher

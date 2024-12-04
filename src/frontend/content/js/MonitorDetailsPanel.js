@@ -1,5 +1,5 @@
 import { BaseComponent } from "./BaseComponent.js";
-import { requestSingleMonitor, requestMonitorHistory } from "./PythonJsBridge.js";
+import { requestSingleMonitor, requestMonitorHistory, requestMonitorDeletion } from "./PythonJsBridge.js";
 import { MonitorEditPanel } from "./MonitorEditPanel.js";
 
 /**
@@ -64,6 +64,26 @@ export class MonitorDetailsPanel extends BaseComponent {
         break;
       case "delete":
         console.log("Delete action clicked");
+        // Prompt user for confirmation
+        if (confirm("Are you sure you want to delete this monitor?")) {
+          // Ask backend to delete the monitor
+          console.log("Deleting monitor");
+          requestMonitorDeletion(this.monitor_unique_name)
+            .then((response) => {
+              if (response === "true") {
+                console.log("Monitor deleted successfully");
+                // Remove self from the DOM
+                this.destroy();
+                // Refresh back to the home page "/"
+                window.location.href = "/";
+              } else {
+                console.error("Error while deleting monitor:", response);
+              }
+            })
+            .catch((error) => {
+              console.error("Error while deleting monitor:", error);
+            });
+        }
         // TODO: Implement delete action
         break;
       default:

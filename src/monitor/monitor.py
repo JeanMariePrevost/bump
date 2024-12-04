@@ -116,6 +116,12 @@ class Monitor(Deserializable):
             with open(target_path, "w") as f:
                 f.write("")  # Create an empty file
 
+    def delete_history_file(self):
+        target_path = self.get_history_file_path()
+        if os.path.exists(target_path):
+            os.remove(target_path)
+            general_logger.debug(f"Monitor {self.unique_name} history file deleted.")
+
     def recalculate_stats(self):
         results = self.read_results_from_history_days(AVG_STATS_TIMESPAN_DAYS)
         if len(results) > 0:

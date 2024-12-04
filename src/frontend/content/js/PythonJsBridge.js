@@ -46,6 +46,16 @@ export async function requestNewEmptyMonitor() {
 }
 
 /**
+ * Requests the backend to delete a monitor
+ * @param {*} monitorName
+ * @returns {Promise<string>} Promise that resolves to "true" if the monitor was deleted, or an error message if it was not
+ */
+export async function requestMonitorDeletion(monitorName) {
+  const response = await pywebview.api.request_delete_monitor(monitorName);
+  return response;
+}
+
+/**
  * Submits a new monitor configuration to the backend, the backend validates and replies
  * @param {Object} monitorConfig - The monitor configuration object
  * @returns {Promise<string>} Promise that resolves to "true" if the configuration was accepted, or an error message if it was rejected
