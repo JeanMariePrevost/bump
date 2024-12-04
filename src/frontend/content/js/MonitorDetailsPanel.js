@@ -235,7 +235,7 @@ export class MonitorDetailsPanel extends BaseComponent {
 
     // Add each to .recent-events-card .recent-events
     const recentEvents = document.querySelector(".recent-events");
-    for (let i = 0; i < monitorResultsHistory.length; i++) {
+    for (let i = monitorResultsHistory.length - 1; i >= 0; i--) {
       // Build the string to display as "end time, status, message" AND a special case if "exception_type" exists
       let entryText = `[${new Date(monitorResultsHistory[i].value.end_time.value).toLocaleString()}] `;
       let entryStatus = "unknown";
