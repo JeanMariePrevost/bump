@@ -6,9 +6,38 @@ import { backendQueryClassToQueryTypeName, queryTypeNameToBackendClass } from ".
  * Handles the monitor editing form in the right-column panel
  */
 export class MonitorEditPanel extends BaseComponent {
+  #formSnapshot; // A snapshot of the form data to compare against to detect changes
   constructor(parentSelector, monitor_unique_name) {
     super(parentSelector, "monitor-edit-column", "fragments/monitor-edit-panel.html");
     this.monitor_unique_name = monitor_unique_name;
+    this.#formSnapshot = null;
+  }
+
+  /**
+   * Takes a "snapshot" of the form data to compare against later to detect changes.
+   */
+  #saveFormSnapshot() {
+    const form = document.querySelector(".settings-form");
+    this.#formSnapshot = {};
+    for (const element of form.elements) {
+      if (element.name) {
+        this.#formSnapshot[element.name] = element.value;
+      }
+    }
+  }
+
+  #formContainsChanges() {
+    if (!this.#formSnapshot) return false;
+
+    const form = document.querySelector(".settings-form");
+    for (const element of form.elements) {
+      if (element.name && this.#formSnapshot[element.name] !== undefined) {
+        if (element.value !== this.#formSnapshot[element.name]) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   _onElementReady() {
@@ -192,6 +221,13 @@ export class MonitorEditPanel extends BaseComponent {
       applyButton.classList.add("invisible");
       applyButton.classList.add("no-events");
     }
+    if (!this.#formContainsChanges()) {
+      // Nothing to apply or revert
+      applyButton.classList.add("invisible");
+      applyButton.classList.add("no-events");
+      revertButton.classList.add("invisible");
+      revertButton.classList.add("no-events");
+    }
   }
 
   #resetFormValidation(form) {
@@ -269,8 +305,11 @@ export class MonitorEditPanel extends BaseComponent {
         form["threshold-value"].value = "Not yet implemented";
         form["alert-profile"].value = "Not yet implemented"; // TODO: Implement alert profiles defined by the user
 
+        this.#saveFormSnapshot();
+
         this.#resetFormValidation(form);
 
+        this.#applyFormValidation(form);
         this.#focusAndSelectNameField();
       })
       .catch((error) => {
@@ -387,7 +426,7 @@ class FormValidator {
   }
 
   _isUniqueName(value) {
-    // TODO: pass this call to the backend to validate
+    // TODO: pass this call to the backend to validate // It IS validated on the backend though, maybe validate against the list for the GUI would be enough?
     // WARNING - Currently always returns true
     return true;
   }
