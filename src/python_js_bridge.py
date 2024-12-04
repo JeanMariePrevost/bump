@@ -75,6 +75,14 @@ class JsApi:
         monitors_manager.save_monitors_configs_to_file()
         return "true"
 
+    def request_monitor_execution(self, unique_name: str):
+        print(f"Received request to execute monitor: {unique_name}")
+        targetMonitor = mediator.get_monitors_manager().get_monitor_by_name(unique_name)
+        if targetMonitor is None:
+            return f"Monitor with name {unique_name} not found"
+        targetMonitor.execute()
+        return "true"
+
     def request_log_entries(self, max_number_of_entries: int, min_level: str = "INFO", include_general: bool = True, include_monitoring: bool = True):
         print(f"Received request for log entries")
         # Parse BOTH log files for entries of a given level or higher

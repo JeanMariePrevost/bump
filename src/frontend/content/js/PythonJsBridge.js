@@ -56,6 +56,16 @@ export async function requestNewDuplicateMonitor(baseMonitorName) {
 }
 
 /**
+ * Requests that a monitor be executed immediately
+ * @param {string} monitorName
+ * @returns {Promise<string>} Promise that resolves to "true" if the monitor was executed, or an error message if it was not
+ */
+export async function requestMonitorExecution(monitorName) {
+  const response = await pywebview.api.request_monitor_execution(monitorName);
+  return response;
+}
+
+/**
  * Requests the backend to delete a monitor
  * @param {*} monitorName
  * @returns {Promise<string>} Promise that resolves to "true" if the monitor was deleted, or an error message if it was not

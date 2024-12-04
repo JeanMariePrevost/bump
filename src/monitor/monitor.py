@@ -50,10 +50,33 @@ class Monitor(Deserializable):
 
     def update_satus_variables(self, query_result: QueryResult):
         # Trigger a status change if the status changed
-        if self.current_status != query_result.test_passed:
-            # TODO - Signal the change
-            monitoring_logger.warning(f"Monitor {self.unique_name} status changed from [{self.current_status}] to [{query_result.test_passed}]")
+        if not hasattr(self, "current_status") or self.current_status is None:
+            current_status_string = "up" if query_result.test_passed else "down"
+            monitoring_logger.info(f"Monitor {self.unique_name} ran for the first time and it is {current_status_string}")
+        elif self.current_status != query_result.test_passed:
+            # TODO - Signal the change / send alerts
+            # DEBUG - Testing alerts, always sending them for now
+            self.sendUserAlerts(query_result)
+
+            current_status_string = "up" if query_result.test_passed else "down"
+            previous_status_string = "up" if self.current_status else "down"
+            monitoring_logger.warning(f"Monitor {self.unique_name} status changed from [{previous_status_string}] to [{current_status_string}]")
         self.current_status = query_result.test_passed
+
+    def sendUserAlerts(self, query_result: QueryResult):
+        # from plyer import notification
+        #
+        # notification.notify(
+        #     title='Here is the title',
+        #     message='Here is the message',
+        #     app_name='Your App Name',
+        #     #app_icon='path/to/your/icon.ico',  # Optional
+        #     timeout=10,  # Duration in seconds
+        # )
+
+        from plyer import notification
+
+        notification.notify(title="Monitor Alert", message=f"Monitor {self.unique_name} has failed!", app_name="Monitor", timeout=10)
 
     def read_results_from_history(self, count: int) -> list[QueryResult]:
         resultsList = []

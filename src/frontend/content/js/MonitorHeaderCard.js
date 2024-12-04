@@ -5,7 +5,7 @@
 
 import { BaseComponent } from "./BaseComponent.js";
 import { MonitorEditPanel } from "./MonitorEditPanel.js";
-import { requestMonitorDeletion, requestNewDuplicateMonitor } from "./PythonJsBridge.js";
+import { requestMonitorDeletion, requestNewDuplicateMonitor, requestMonitorExecution } from "./PythonJsBridge.js";
 import { addMonitorToList } from "./MainPage.js";
 
 export class MonitorHeaderCard extends BaseComponent {
@@ -64,6 +64,11 @@ export class MonitorHeaderCard extends BaseComponent {
     const action = event.target.dataset.action;
     // Switch on "data-action" attribute to determine the action
     switch (action) {
+      case "execute":
+        console.log("Execute action clicked");
+        // Ask backend to execute the monitor
+        requestMonitorExecution(this.monitorUniqueName);
+        break;
       case "pause":
         console.log("Pause action clicked");
         // TODO: Implement pause action
