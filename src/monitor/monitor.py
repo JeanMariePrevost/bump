@@ -53,7 +53,7 @@ class Monitor(Deserializable):
 
     def handle_new_query_result(self, query_result: QueryResult):
         # Trigger a status change if the status changed
-        if not hasattr(self, "current_status") or self.last_query_passed is None:
+        if not hasattr(self, "last_query_passed") or self.last_query_passed is None:
             current_status_string = "up" if query_result.test_passed else "down"
             monitoring_logger.info(f"Monitor {self.unique_name} ran for the first time and it is {current_status_string}")
         elif self.last_query_passed != query_result.test_passed:
@@ -81,7 +81,13 @@ class Monitor(Deserializable):
 
         general_logger.debug(f"Sending alert for monitor {self.unique_name}")
 
-        notification.notify(title="Monitor Alert", message=f"Monitor {self.unique_name} has failed!", app_name="Monitor", timeout=10)
+        messageTitleString = f"Monitor {self.unique_name}"
+
+        if query_result.test_passed:
+            messageString = f"Monitor {self.unique_name} is back online."
+        else:
+            messageString = f"Monitor {self.unique_name} is down."
+        notification.notify(title=messageTitleString, message=messageString, timeout=10)
 
     def read_results_from_history(self, count: int) -> list[QueryResult]:
         resultsList = []
