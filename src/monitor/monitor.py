@@ -28,11 +28,12 @@ class Monitor(Deserializable):
         self.retries = 0
         self.retries_interval_in_seconds = 1
         self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
-        self.last_query_passed = False
+        # Needed by the GUI as it doesn't have direct access to the query results
+        self.last_query_passed = self.read_results_from_history(1)[0].test_passed if len(self.read_results_from_history(1)) > 0 else False
         self.time_at_last_status_change = datetime.now()
         self.stats_avg_uptime = 0
         self.stats_avg_latency = 0
-        self.current_status = self.read_results_from_history(1)[0].test_passed if len(self.read_results_from_history(1)) > 0 else False
+        # self.current_status DEPRACATED in favor of more descriptive last_query_passed
 
     def execute(self):
         if not hasattr(self, "query") or self.query is None:
@@ -42,27 +43,28 @@ class Monitor(Deserializable):
         query_result: QueryResult = self.query.execute()
         monitoring_logger.debug(f"Monitor {self.unique_name} executed with result: {query_result}")
 
-        self.last_query_passed = query_result.test_passed  # Needed by the GUI as it doesn't have direct access to the query results
-
-        self.update_satus_variables(query_result)
+        self.handle_new_query_result(query_result)
 
         self.append_query_result_to_history(query_result)
+
+        # HACK - Ended up with some state in the monitor CONFIGURATIONS... so I'll simply force save every time until I implement a proper solution
+        mediator.get_monitors_manager().save_monitors_configs_to_file()
         return query_result
 
-    def update_satus_variables(self, query_result: QueryResult):
+    def handle_new_query_result(self, query_result: QueryResult):
         # Trigger a status change if the status changed
-        if not hasattr(self, "current_status") or self.current_status is None:
+        if not hasattr(self, "current_status") or self.last_query_passed is None:
             current_status_string = "up" if query_result.test_passed else "down"
             monitoring_logger.info(f"Monitor {self.unique_name} ran for the first time and it is {current_status_string}")
-        elif self.current_status != query_result.test_passed:
+        elif self.last_query_passed != query_result.test_passed:
             # TODO - Signal the change / send alerts
             # DEBUG - Testing alerts, always sending them for now
             self.sendUserAlerts(query_result)
 
             current_status_string = "up" if query_result.test_passed else "down"
-            previous_status_string = "up" if self.current_status else "down"
+            previous_status_string = "up" if self.last_query_passed else "down"
             monitoring_logger.warning(f"Monitor {self.unique_name} status changed from [{previous_status_string}] to [{current_status_string}]")
-        self.current_status = query_result.test_passed
+        self.last_query_passed = query_result.test_passed
 
     def sendUserAlerts(self, query_result: QueryResult):
         # from plyer import notification

@@ -1,8 +1,7 @@
 // File: /f:/OneDrive/MyDocs/Study/TELUQ/Session 5 - Hiver 2024/INF1430 Final Project/TN3 - Actual Software/bump/src/frontend/content/js/MonitorCard.js
 
-import { requestMonitorHistory } from "./PythonJsBridge.js";
+import { requestMonitorHistory, requestSingleMonitor } from "./PythonJsBridge.js";
 import { MonitorDetailsPanel } from "./MonitorDetailsPanel.js";
-import { loadFragment } from "./utils.js";
 
 document.addEventListener("DOMContentLoaded", (event) => {
   console.log("Hello, world! This coming from MonitorCard.js!");
@@ -45,8 +44,7 @@ export class MonitorListItem {
     // console.log(`Monitor results received event:`, event);
     if (event.detail.monitorUniqueName === this.monitorData.unique_name) {
       //New data for this item, refresh
-      this.#refreshStatusIndicator();
-      this.#refreshHistoryBars();
+      this.#refreshWithLatestMonitorData();
     }
   }
 
@@ -112,6 +110,20 @@ export class MonitorListItem {
       // Add a new element to the right column
       const monitorDetailsColumn = new MonitorDetailsPanel(".right-column", this.monitorData.unique_name);
     }
+  }
+
+  #refreshWithLatestMonitorData() {
+    // Request the latest data for this monitor
+    requestSingleMonitor(this.monitorData.unique_name)
+      .then((response) => {
+        console.log(`Received data for ${this.monitorData.unique_name}:`, response);
+        this.monitorData = response.value;
+        this.#refreshStatusIndicator();
+        this.#refreshHistoryBars();
+      })
+      .catch((error) => {
+        console.error(`Error while fetching data for ${this.monitorData.unique_name}:`, error);
+      });
   }
 
   #refreshStatusIndicator() {
