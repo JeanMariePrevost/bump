@@ -51,6 +51,8 @@ export function queryTypeNameToBackendClass(queryType) {
  */
 export function backendQueryClassToQueryTypeName(backendValue) {
   const entry = Object.entries(queryTypeMapping).find(([, value]) => value === backendValue);
-  if (!entry) console.warn(`No frontend query type found for backend class: ${backendValue}`);
+  if (!entry) {
+    console.warn(`No frontend query type found for backend class: ${backendValue}`);
+  }
   return entry ? entry[0] : null;
 }

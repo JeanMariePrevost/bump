@@ -18,6 +18,11 @@ class Monitor(Deserializable):
 
     def __init__(self, unique_name: str = "undefined", period_in_seconds: int = 60, query: Query = None) -> None:
         self.unique_name = unique_name
+        # Default to an HttpQuery if none is provided
+        if query is None:
+            from queries.http_query import HttpQuery
+
+            query = HttpQuery()
         self.query = query
         self.period_in_seconds = period_in_seconds
         self.retries = 0

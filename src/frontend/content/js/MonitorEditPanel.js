@@ -257,12 +257,12 @@ export class MonitorEditPanel extends BaseComponent {
 
         // Populate the form with the monitor data
         const form = document.querySelector(".settings-form");
-        form.name.value = monitorData.value.unique_name;
-        form.url.value = monitorData.value.query.value.url;
-        form.interval.value = monitorData.value.period_in_seconds;
-        form["query-type"].value = backendQueryClassToQueryTypeName(monitorData.value.query.type);
-
-        form["condition-value"].value = ""; //Needs conversion between backend and frontend value here, introduce a pre-computed string equivalent to the queries various settings un python?
+        form.name.value = monitorData?.value?.unique_name ?? "ERROR";
+        form.url.value = monitorData?.value?.query?.value?.url ?? "";
+        form.interval.value = monitorData?.value?.period_in_seconds ?? "";
+        form["query-type"].value = backendQueryClassToQueryTypeName(monitorData?.value?.query?.type);
+        this.#updateConditionValueFieldFromQueryType(form, form["query-type"].value); // Update the condition-value field status based on the query type before setting its value
+        form["condition-value"].value = monitorData?.value?.query?.value?.query_params_as_string ?? "";
         form.retries.value = monitorData.value.retries;
         form["retries-interval"].value = monitorData.value.retries_interval_in_seconds;
         form.threshold.value = "Not yet implemented"; // TODO: Implement thresholds (e.g. "tolerate 1", or "2 out of 5"...)
@@ -270,7 +270,6 @@ export class MonitorEditPanel extends BaseComponent {
         form["alert-profile"].value = "Not yet implemented"; // TODO: Implement alert profiles defined by the user
 
         this.#resetFormValidation(form);
-        this.#updateConditionValueFieldFromQueryType(form, form["query-type"].value);
 
         this.#focusAndSelectNameField();
       })
@@ -282,9 +281,10 @@ export class MonitorEditPanel extends BaseComponent {
   #focusAndSelectNameField() {
     const nameField = document.querySelector(".settings-form input[name='name']");
     setTimeout(() => {
+      console.log("Focusing and selecting name field");
       nameField.focus();
       nameField.select();
-    }, 300);
+    }, 800);
   }
 }
 
