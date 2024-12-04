@@ -25,6 +25,16 @@ class MonitorsManager(Deserializable):
     def remove_monitor(self, monitor: Monitor) -> None:
         self.monitors.remove(monitor)
 
+    def create_and_add_empty_monitor(self) -> Monitor:
+        unique_name = "New monitor"
+        i = 1
+        while self.get_monitor_by_name(unique_name) is not None:
+            unique_name = f"New monitor {i}"
+            i += 1
+        monitor = Monitor(unique_name=unique_name)
+        self.add_monitor(monitor)
+        return monitor
+
     def get_monitor_by_name(self, name: str) -> Monitor:
         for monitor in self.monitors:
             if monitor.unique_name == name:
@@ -69,4 +79,8 @@ class MonitorsManager(Deserializable):
         mediator.bg_monitoring_queue.put(QueueEvents.EXIT_APP)
 
     def save_monitors_configs_to_file(self) -> None:
+        # Prepare monitors for serialization
+        for monitor in self.monitors:
+            monitor.create_history_file_if_not_exists()  # Ensure the history files exist
+            monitor.recalculate_stats()  # Ensure the latest stats are saved
         serialization.save_as_json_file(self, "data/monitors.json")

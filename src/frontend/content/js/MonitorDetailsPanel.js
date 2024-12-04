@@ -29,7 +29,6 @@ export class MonitorDetailsPanel extends BaseComponent {
 
     requestMonitorHistory(this.monitor_unique_name, MonitorDetailsPanel.MAX_RESULTS_IN_TIMELINE)
       .then((monitorResultsHistory) => {
-        console.log("History data received:", monitorResultsHistory);
         this._updateTimelineChart(monitorResultsHistory);
         this._updateMonitorRecentEvents(monitorResultsHistory);
       })
@@ -288,8 +287,6 @@ export class MonitorDetailsPanel extends BaseComponent {
       console.error("No log entries received.");
       return;
     }
-
-    console.log("Log entries received:", monitorResultsHistory);
 
     // Add each to .recent-events-card .recent-events
     const recentEvents = document.querySelector(".recent-events");

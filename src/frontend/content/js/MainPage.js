@@ -1,5 +1,5 @@
 import { MonitorListItem } from "./MonitorListItem.js";
-import { requestMonitorsList, requestLogEntries } from "./PythonJsBridge.js";
+import { requestMonitorsList, requestLogEntries, requestNewEmptyMonitor } from "./PythonJsBridge.js";
 import { DashboardPanel } from "./DashboardPanel.js";
 import { MonitorEditPanel } from "./MonitorEditPanel.js";
 
@@ -26,6 +26,35 @@ function addMonitorToList(monitorData) {
  */
 function updateNoMonitorsElementVisibility() {
   // TODO: Add a special item/div to the list with a "no monitors" label if monitorsInList.length > 0
+}
+
+function _onCardTitleButtonClick(event) {
+  const action = event.target.getAttribute("data-action");
+  console.log(`Clicked on card-title-button with data-action: ${action}`);
+
+  switch (action) {
+    case "new-monitor":
+      console.log("Create a new monitor");
+      // What's the process here?
+      // I think:
+      // Ask backend to create a new monitor
+      // Receive the new monitor's data
+      requestNewEmptyMonitor().then((response) => {
+        if (!response) {
+          console.error("Failed to fetch new monitor data");
+          return;
+        }
+
+        // Add the new monitor to the list
+        addMonitorToList(response.value);
+        // Open the edit panel for the new monitor
+        new MonitorEditPanel(".right-column", response.value.unique_name);
+      });
+      break;
+    default:
+      console.log("Unknown action");
+      break;
+  }
 }
 
 window.addEventListener("pywebviewready", function () {
@@ -63,9 +92,15 @@ window.addEventListener("pywebviewready", function () {
     .catch((error) => {
       console.error("Error while fetching all monitors data:", error);
     });
+
+  // Listen for clicks to any "card-title-button" elements
+  const cardTitleButtons = document.querySelectorAll(".card-title-button");
+  cardTitleButtons.forEach((button) => {
+    button.addEventListener("click", _onCardTitleButtonClick);
+  });
 });
 
-// Testing out events, they should be globally accessible
+// Custom pywebview events should be globally accessible
 // window.addEventListener("py_js_test_event", (event) => {
 //   console.log("Event received from Python:");
 //   // Print each key-value pair in the event payload

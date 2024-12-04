@@ -46,7 +46,7 @@ class JsApi:
         # return mediator.get_monitors_manager().monitors
         return serialization.to_dict_encoded_with_types(mediator.get_monitors_manager().monitors)
 
-    def request_monitor_data(self, unique_name: str):
+    def request_monitor_data(self, unique_name: str) -> dict:
         print(f"Received request for monitor data: {unique_name}")
         targetMonitor = mediator.get_monitors_manager().get_monitor_by_name(unique_name)
         if targetMonitor is None:
@@ -90,9 +90,6 @@ class JsApi:
         """
         general_logger.debug(f"Received monitor config submission: {monitor_config}")
 
-        # DEBUG: Refuse submission
-        return "false"
-
         try:
             targetMonitor: Monitor = mediator.get_monitors_manager().get_monitor_by_name(monitor_config["original_name"])
             if targetMonitor is None:
@@ -107,6 +104,18 @@ class JsApi:
             return str(e)
 
         return "true"
+
+    def create_new_empty_monitor(self) -> dict:
+        """
+        Create and returns a new empty monitor with a unique name.
+        :return: The unique name of the newly created monitor
+        """
+        general_logger.debug("Received request to create a new empty monitor.")
+        monitors_manager = mediator.get_monitors_manager()
+        new_monitor = monitors_manager.create_and_add_empty_monitor()
+        monitors_manager.save_monitors_configs_to_file()
+        newMonitorData = self.request_monitor_data(new_monitor.unique_name)
+        return newMonitorData
 
 
 def get_js_api():

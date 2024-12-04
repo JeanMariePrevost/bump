@@ -37,6 +37,15 @@ export async function requestSingleMonitor(monitorName) {
 }
 
 /**
+ * Requests the backend to create and return a new empty monitor
+ * @returns {Promise<Object>} The new monitor, with its state under the 'value' property
+ */
+export async function requestNewEmptyMonitor() {
+  const response = await pywebview.api.create_new_empty_monitor();
+  return response;
+}
+
+/**
  * Submits a new monitor configuration to the backend, the backend validates and replies
  * @param {Object} monitorConfig - The monitor configuration object
  * @returns {Promise<string>} Promise that resolves to "true" if the configuration was accepted, or an error message if it was rejected

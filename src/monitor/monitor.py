@@ -82,6 +82,7 @@ class Monitor(Deserializable):
             general_logger.error(f"Error while getting previous query result: {e}")
             traceback.print_exc()
             return []
+        return resultsList
 
     def execute_if_due(self):
         if datetime.now() > self._next_run_time:
@@ -93,14 +94,21 @@ class Monitor(Deserializable):
     def append_query_result_to_history(self, query_result):
         try:
             target_path = self.get_history_file_path()
-            # create the whole path if it doesn't exist
-            os.makedirs(os.path.dirname(target_path), exist_ok=True)
+            self.create_history_file_if_not_exists()
             encoded_query_result = serialization.to_encoded_jsonl(query_result)
             with open(target_path, "a") as f:
                 f.write(encoded_query_result + "\n")
 
         except Exception as e:
             general_logger.error(f"Error while appending query result to history: {e}")
+
+    def create_history_file_if_not_exists(self):
+        target_path = self.get_history_file_path()
+        os.makedirs(os.path.dirname(target_path), exist_ok=True)
+        if not os.path.exists(target_path):
+            general_logger.debug(f"Monitor {self.unique_name} did not have a history file, creating one now.")
+            with open(target_path, "w") as f:
+                f.write("")  # Create an empty file
 
     def recalculate_stats(self):
         results = self.read_results_from_history_days(AVG_STATS_TIMESPAN_DAYS)
