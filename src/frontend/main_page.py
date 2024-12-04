@@ -5,6 +5,7 @@ import webview
 import mediator
 import python_js_bridge
 from custom_logging import general_logger
+from my_utils import util
 
 DEFAULT_WINDOW_WIDTH = 1280
 DEFAULT_WINDOW_HEIGHT = 800
@@ -40,7 +41,7 @@ class MainPage:
         self._window.events.closed += self.close
         mediator.register_active_gui(self)
 
-        webview.start(self.webview_custom_logic_callback, debug=True)
+        webview.start(self.webview_custom_logic_callback, icon=util.resource_path("assets/icon_32px.png"), debug=True)
 
     def close(self):
         if mediator.get_active_gui() == self._window:

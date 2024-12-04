@@ -27,6 +27,11 @@ bg_monitoring_queue = SimpleQueue()
 main_loop_exited = Signal()  # E.g. the main loop has exited, application is shutting down, threads need to stop
 app_exit_requested = Signal()  # E.g. the user has requested the application to exit, will allow to close opened windows and such
 
+all_monitors_now_up = Signal()  # all monitors are now up, change the tray icon to normal
+some_monitors_down = Signal()  # some monitors are now down, change the tray icon to down
+some_monitors_have_exceptions = Signal()  # some monitors now have exceptions, change the tray icon to warning
+new_monitor_results = Signal()  # new results have been received from any monitor
+
 
 ############################################################################################
 # Shared state / blackboard

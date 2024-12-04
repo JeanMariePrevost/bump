@@ -14,6 +14,7 @@ class MonitorsManager(Deserializable):
 
     def __init__(self) -> None:
         self.monitors: list[Monitor] = []
+        mediator.new_monitor_results.add(self.checkIfAllMonitorsAreUp)
 
     def add_monitor(self, monitor: Monitor) -> None:
         # Ensure no duplicate names
@@ -21,9 +22,11 @@ class MonitorsManager(Deserializable):
             if m.unique_name == monitor.unique_name:
                 raise ValueError(f"Monitor with name {monitor.unique_name} already exists")
         self.monitors.append(monitor)
+        self.checkIfAllMonitorsAreUp()
 
     def remove_monitor(self, monitor: Monitor) -> None:
         self.monitors.remove(monitor)
+        self.checkIfAllMonitorsAreUp()
 
     def create_and_add_empty_monitor(self) -> Monitor:
         unique_name = self.get_next_free_monitor_name()
@@ -88,3 +91,21 @@ class MonitorsManager(Deserializable):
             monitor.create_history_file_if_not_exists()  # Ensure the history files exist
             monitor.recalculate_stats()  # Ensure the latest stats are saved
         serialization.save_as_json_file(self, "data/monitors.json")
+
+    def checkIfAllMonitorsAreUp(self):
+        # Determine if all monitors are up, some are down, or some have exceptions/issues
+        any_down = False
+        any_exceptions = False
+        for monitor in self.monitors:
+            if not monitor.last_query_passed:
+                any_down = True
+            # TODO : Implement "monitor has issues" logic, e.g. bad config
+            # if monitor.is_invalid or monitor.has_exception:
+            #     any_exceptions = True
+
+        if any_down:
+            mediator.some_monitors_down.trigger()
+        elif any_exceptions:
+            mediator.some_monitors_have_exceptions.trigger()
+        else:
+            mediator.all_monitors_now_up.trigger()

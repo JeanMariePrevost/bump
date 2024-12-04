@@ -47,6 +47,8 @@ class Monitor(Deserializable):
 
         self.append_query_result_to_history(query_result)
 
+        mediator.new_monitor_results.trigger()
+
         # HACK - Ended up with some state in the monitor CONFIGURATIONS... so I'll simply force save every time until I implement a proper solution
         mediator.get_monitors_manager().save_monitors_configs_to_file()
         return query_result

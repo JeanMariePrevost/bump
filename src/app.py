@@ -1,3 +1,4 @@
+import time
 from frontend.main_page import MainPage
 import mediator
 from monitor.monitor import Monitor
@@ -53,6 +54,9 @@ BottleServer().start_as_background_thread()
 print("We started the background monitoring thread. Now we can do other things in the main thread.")
 
 tray_icon = SystemTrayIcon()
+
+# RIght before entiring the main loop, refresh things like the tray icon
+monitors_manager.checkIfAllMonitorsAreUp()
 
 
 def main_thread_loop():

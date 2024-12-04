@@ -32,10 +32,26 @@ class SystemTrayIcon:
             ),
         )
 
+        mediator.all_monitors_now_up.add(self.changeIconToNormal)
+        mediator.some_monitors_down.add(self.changeIconToDown)
+        mediator.some_monitors_have_exceptions.add(self.changeIconToWarning)
+
         mediator.main_loop_exited.add(self.stop)
 
         # Run pystray
         __pystray_icon_object.run_detached()
+
+    def changeIconToWarning(self):
+        image = PIL.Image.open(util.resource_path("assets/icon_warning_32px.png"))
+        __pystray_icon_object.icon = image
+
+    def changeIconToNormal(self):
+        image = PIL.Image.open(util.resource_path("assets/icon_32px.png"))
+        __pystray_icon_object.icon = image
+
+    def changeIconToDown(self):
+        image = PIL.Image.open(util.resource_path("assets/icon_down_32px.png"))
+        __pystray_icon_object.icon = image
 
     # Define actions for the RMB menu of the tray icon
     def on_clicked_exit(self, icon, item):
