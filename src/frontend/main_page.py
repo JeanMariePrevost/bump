@@ -6,7 +6,7 @@ import mediator
 import python_js_bridge
 from custom_logging import general_logger
 
-DEFAULT_WINDOW_WIDTH = 1200
+DEFAULT_WINDOW_WIDTH = 1280
 DEFAULT_WINDOW_HEIGHT = 800
 
 
@@ -28,22 +28,13 @@ class MainPage:
             return
 
         # NOTE: pywebview uses the script's current working directory as the base directory for relative paths. E.g. /src/...
-        # self._window: webview.Window = webview.create_window(
-        #     "BUMP - Dashboard",
-        #     "frontend/content/main_page.html",
-        #     js_api=python_js_bridge.get_js_api(),
-        #     text_select=True,
-        #     width=1200,
-        #     height=800,
-        # )
-
         self._window: webview.Window = webview.create_window(
             title="BUMP - Dashboard",
             url=mediator.get_http_server(),
             js_api=python_js_bridge.get_js_api(),
             text_select=True,
-            width=1200,
-            height=800,
+            width=DEFAULT_WINDOW_WIDTH,
+            height=DEFAULT_WINDOW_HEIGHT,
         )
 
         self._window.events.closed += self.close

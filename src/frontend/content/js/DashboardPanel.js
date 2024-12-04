@@ -107,10 +107,12 @@ export class DashboardPanel extends BaseComponent {
     } else if (downCount > 0) {
       summaryCard.setAttribute("data-status", "down");
       summaryCard.querySelector(".summary-card-title").innerText = "Some monitors are down";
+      summaryCard.classList.add("shake-animation");
     } else if (unknownCount > 0) {
       // TODO : Need to handle differently here? I don't think so
       summaryCard.querySelector(".summary-card-title").innerText = "Issues were encountered";
       summaryCard.setAttribute("data-status", "down");
+      summaryCard.classList.add("shake-animation");
     } else if (upCount + downCount + unknownCount === 0) {
       summaryCard.querySelector(".summary-card-title").innerText = "No monitors found";
       summaryCard.setAttribute("data-status", "unknown");
