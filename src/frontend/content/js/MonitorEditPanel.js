@@ -69,16 +69,6 @@ export class MonitorEditPanel extends BaseComponent {
     const action = event.target.dataset.action;
     // Switch on "data-action" attribute to determine the action
     switch (action) {
-      case "pause":
-      case "duplicate":
-      case "delete":
-        // Pass the event to the global handler for default behavior
-        // handleMonitorActionBarLinksClick(event, this.monitor_unique_name);
-        break;
-      case "edit":
-        console.log("Edit action clicked");
-        // Nothing, already in edit mode
-        break;
       case "apply-edits":
         console.log("Apply edits action clicked");
         // Collect the form data
@@ -212,22 +202,47 @@ export class MonitorEditPanel extends BaseComponent {
     revertButton.classList.remove("invisible");
     revertButton.classList.remove("no-events");
 
-    if (Object.keys(errors).length === 0) {
-      cardTitle.setAttribute("data-changes", "valid");
-      applyButton.classList.remove("invisible");
-      applyButton.classList.remove("no-events");
-    } else {
-      cardTitle.setAttribute("data-changes", "invalid");
-      applyButton.classList.add("invisible");
-      applyButton.classList.add("no-events");
-    }
     if (!this.#formContainsChanges()) {
-      // Nothing to apply or revert
-      applyButton.classList.add("invisible");
-      applyButton.classList.add("no-events");
-      revertButton.classList.add("invisible");
-      revertButton.classList.add("no-events");
+      // Nothing changes
+      this.#hideApplyButton();
+      this.#hideRevertButton();
+      cardTitle.setAttribute("data-changes", "no-changes");
+    } else {
+      if (Object.keys(errors).length === 0) {
+        // Valid changes
+        cardTitle.setAttribute("data-changes", "valid");
+        this.#showRevertButton();
+        this.#showApplyButton();
+      } else {
+        // Invalid changes
+        cardTitle.setAttribute("data-changes", "invalid");
+        this.#showRevertButton();
+        this.#hideApplyButton();
+      }
     }
+  }
+
+  #showRevertButton() {
+    const revertButton = document.querySelector('.monitor-action-link[data-action="revert-edits"]');
+    revertButton.classList.remove("invisible");
+    revertButton.classList.remove("no-events");
+  }
+
+  #hideRevertButton() {
+    const revertButton = document.querySelector('.monitor-action-link[data-action="revert-edits"]');
+    revertButton.classList.add("invisible");
+    revertButton.classList.add("no-events");
+  }
+  #showApplyButton() {
+    const applyButton = document.querySelector('.monitor-action-link[data-action="apply-edits"]');
+    applyButton.classList.remove("invisible");
+    applyButton.classList.remove("no-events");
+  }
+
+  #hideApplyButton() {
+    const applyButton = document.querySelector('.monitor-action-link[data-action="apply-edits"]');
+    applyButton.classList.add("invisible");
+    applyButton.classList.add("no-events");
   }
 
   #resetFormValidation(form) {
