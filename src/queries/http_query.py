@@ -37,16 +37,16 @@ class HttpQuery(Query):
         try:
             request = Request(self.url)
             with urllib.request.urlopen(request, timeout=self.timeout) as response:
-                return self._process_response(response)
+                return self._postprocess_query_result(self._process_response(response))
         except ValueError as e:
             # URL is invalid?
-            return self._process_exception(e)
+            return self._postprocess_query_result(self._process_exception(e))
         except HTTPError as e:
             # 404, 500...
-            return self._process_exception(e)
+            return self._postprocess_query_result(self._process_exception(e))
         except URLError as e:
             # Timeout, URL does not exist or there is a connection issue
-            return self._process_exception(e)
+            return self._postprocess_query_result(self._process_exception(e))
 
     def _process_response(self, response: HTTPResponse) -> QueryResult:
         """

@@ -59,17 +59,18 @@ class RenderedContentRegexQuery(Query):
                 retries=1,
                 code_or_status=type(e).__name__,
                 message=str(e),
-                reason=None,
+                reason=str(e),
             )
 
+        test_passed = self._test_passed_predicate(rendered_content)
         return QueryResult(
             start_time=self._start_time,
             end_time=datetime.now(),
-            test_passed=self._test_passed_predicate(rendered_content),
+            test_passed=test_passed,
             retries=1,
             code_or_status=None,
             message=None,
-            reason=None,
+            reason="Did not match regex pattern." if not test_passed else None,
         )
 
     def _test_passed_predicate(self, rendered_content: str) -> bool:

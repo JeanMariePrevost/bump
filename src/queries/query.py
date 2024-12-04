@@ -32,3 +32,10 @@ class Query(Deserializable):
 
         # TODO: Make async, or make the ENTIRE backend monitoring logic its own service
         raise NotImplementedError("Subclasses must implement this method.")
+
+    def _postprocess_query_result(self, query_result: QueryResult) -> QueryResult:
+        """
+        Hook to allow for post-processing of the query result.
+        E.g. to add rule failure information, like "if respons eif fine but test failed, set the reason to 'Did not contain the string'"
+        """
+        return query_result

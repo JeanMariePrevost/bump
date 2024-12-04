@@ -1,6 +1,7 @@
 from http.client import HTTPResponse
 
 from queries.http_query import HttpQuery
+from queries.query_result import QueryResult
 
 
 class HttpContentQuery(HttpQuery):
@@ -28,3 +29,9 @@ class HttpContentQuery(HttpQuery):
             return self.string_to_find in body
         else:
             return False
+
+    def _postprocess_query_result(self, query_result: QueryResult) -> QueryResult:
+        if query_result.exception_type is None and not query_result.test_passed:
+            # Failed because of the rule, not because of an exception
+            query_result.reason = "Did not contain expected string."
+        return super()._postprocess_query_result(query_result)
