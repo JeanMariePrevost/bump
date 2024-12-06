@@ -3,24 +3,30 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import tkinter as tk
 from tkinter import simpledialog
-
-# Email configuration
-# TODO : Move this to a config file
-smtp_server = "smtp.mailersend.net"
-smtp_port = 587
-username = "MS_Adb8eN@trial-3zxk54vd89x4jy6v.mlsender.net"
-# password = ""
-from_email = "MS_Adb8eN@trial-3zxk54vd89x4jy6v.mlsender.net"  # Simply copy the username?
-# to_email = "4503573043@txt.bell.ca"
-to_email = "4503573043@txt.bell.ca"
+from my_utils import util
+import yaml
 
 
-# Debug values
-subject = "SubejctGoesHere"  # The subject simply gets placed in parentheses for SMS, i.e. the message is "(subject) body"
-body = "This is the actual message."
+def load_configs() -> None:
+    """
+    Set module-level variables from the email_config.yaml file.
+    """
+    # Read from /email_config.yaml
+    global smtp_server, smtp_port, username, from_email, to_email, subject, body
+    with open(util.resource_path("config/email_config.yaml"), "r") as file:
+        config = yaml.safe_load(file)
+        smtp_server = config.get("smtp_server")
+        smtp_port = config.get("smtp_port")
+        username = config.get("username")
+        from_email = config.get("from_email")
+        to_email = config.get("to_email")
 
 
 class PasswordDialog(simpledialog.Dialog):
+    """
+    A simple dialog to prompt the user for a password. The password is stored in the result attribute after the dialog is closed.
+    """
+
     def body(self, master):
         self.title("Enter Password")
 
@@ -42,6 +48,10 @@ class PasswordDialog(simpledialog.Dialog):
 
 
 def send_email():
+    # Debug values
+    subject = "SubjectGoesHere"  # The subject simply gets placed in parentheses for SMS, i.e. the message is "(subject) body"
+    body = "This is the actual message."
+
     # Create the email
     msg = MIMEMultipart()
     msg["From"] = from_email
@@ -58,19 +68,22 @@ def send_email():
         password = PasswordDialog(root).result
 
         # DEBUG!!
-        print(f"User entered password: {password}")
+        print(
+            f"SMTP would normally proceed with the following parameters: {smtp_server}, {smtp_port}, {username}, {from_email}, {to_email}, {subject}, {body}, {password}"
+        )
 
-        print("Starting to send email...")
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            print("Logging in...")
-            server.login(username, password)
-            print("Sending email...")
-            server.sendmail(from_email, to_email, msg.as_string())
-        print("Email sent successfully!")
+        # print("Starting to send email...")
+        # with smtplib.SMTP(smtp_server, smtp_port) as server:
+        #     server.starttls()
+        #     print("Logging in...")
+        #     server.login(username, password)
+        #     print("Sending email...")
+        #     server.sendmail(from_email, to_email, msg.as_string())
+        # print("Email sent successfully!")
     except Exception as e:
         print(f"Failed to send email: {e}")
 
 
 if __name__ == "__main__":
+    load_configs()
     send_email()
