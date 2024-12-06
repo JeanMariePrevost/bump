@@ -12,6 +12,7 @@ from custom_logging import monitoring_logger
 import serialization
 from custom_logging import general_logger
 import email_service
+from settings_manager import settings
 
 AVG_STATS_TIMESPAN_DAYS = 7
 
@@ -82,17 +83,16 @@ class Monitor(Deserializable):
         else:
             messageString = f"Monitor {self.unique_name} is down."
 
-        # Toast notification
-        notification.notify(
-            app_name="BUMP", title=messageTitleString, message=messageString, app_icon=util.resource_path("src/frontend/content/favicon.ico")
-        )
+        if settings.alerts_use_toast:
+            icon = util.resource_path("src/frontend/content/favicon.ico")
+            notification.notify(app_name="BUMP", title=messageTitleString, message=messageString, app_icon=icon)
 
         # TODO - If both enabled, send a single message with both recipients to avoid sending two messages or one being / or filtered out?
-        # Email notification
-        email_service.send_email_alert(messageTitleString, messageString)
+        if settings.alerts_use_email:
+            email_service.send_email_alert(messageTitleString, messageString)
 
-        # SMS notification
-        email_service.send_sms_alert(messageTitleString, messageString)
+        if settings.alerts_use_sms:
+            email_service.send_sms_alert(messageTitleString, messageString)
 
     def read_results_from_history(self, count: int) -> list[QueryResult]:
         resultsList = []

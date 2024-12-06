@@ -1,4 +1,3 @@
-import time
 from frontend.main_page import MainPage
 import mediator
 from monitor.monitor import Monitor
@@ -7,9 +6,12 @@ from my_utils.simple_queue import QueueEvents
 import serialization
 from custom_logging import general_logger
 from system_tray_icon import SystemTrayIcon
+import settings_manager
 
 
 general_logger.info("Starting application...")
+
+settings_manager.load_configs()
 
 
 def create_default_testing_monitors_setup():
