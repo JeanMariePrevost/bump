@@ -67,10 +67,10 @@ class MonitorsManager(Deserializable):
 
         async def background_monitoring_loop():
             while True:
-                general_logger.debug("Background monitoring loop ticking")
-                general_logger.warning("DEBUG: Monitoring currently disabled in the code.")
-                # self.execute_due_monitors() # DEBUG: Monitoring currently disabled because it's not required at this point in development
-                event = mediator.bg_monitoring_queue.get(timeout_s=MONITOR_LOOP_INTERVAL_S)  # Wait for an event, or continue after the timeout
+                self.execute_due_monitors()
+
+                # Wait listening for an event for a time, or continue after the timeout
+                event = mediator.bg_monitoring_queue.get(timeout_s=MONITOR_LOOP_INTERVAL_S)
                 if event == QueueEvents.EXIT_APP:
                     general_logger.debug("Background monitoring loop exiting")
                     break

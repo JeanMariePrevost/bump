@@ -1,4 +1,4 @@
-from queue import LifoQueue
+from queue import Empty, LifoQueue
 from enum import Enum, auto
 from custom_logging import general_logger
 
@@ -34,8 +34,6 @@ class SimpleQueue:
             # Log as debug, then empty the queue and put the new event. SimpleQueue only keeps the latest event
             self.__queue.get()
         self.__queue.put_nowait(event)
-        # DEBUG: Log the queue size
-        general_logger.debug(f"Queue size: {self.__queue.qsize()}")
 
     def put(self, event: QueueEvents, timeout_s: float = None) -> None:
         """
@@ -55,6 +53,9 @@ class SimpleQueue:
         """
         try:
             return self.__queue.get(block=True, timeout=timeout_s)
+        except Empty:
+            # Timeout and no events were received
+            return QueueEvents.NO_EVENT
         except Exception as e:
-            general_logger.debug(f"Queue get failed (probably timed out): {e}")
-            return None
+            general_logger.error(f"Queue get failed: {e}")
+            return QueueEvents.NO_EVENT
