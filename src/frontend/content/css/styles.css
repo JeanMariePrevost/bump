@@ -299,6 +299,7 @@ Utility classes
 .color-by-status .card-content {
   background-color: var(--status-no-data-color-300);
   color: var(--status-no-data-color-800);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .color-by-status[data-status="up"],

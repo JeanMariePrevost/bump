@@ -105,6 +105,14 @@ export class MonitorDetailsPanel extends BaseComponent {
     const uptimeCard = this.element.querySelector(".monitor-details-uptime");
     const latencyCard = this.element.querySelector(".monitor-details-latency");
 
+    // Make the card animation re-play by removing and re-adding the class
+    statusCard.classList.remove("card");
+    durationCard.classList.remove("card");
+    void statusCard.offsetWidth; // Trigger reflow
+    void durationCard.offsetWidth; // Trigger reflow
+    statusCard.classList.add("card");
+    durationCard.classList.add("card");
+
     // Update the status card
     statusCard.setAttribute("data-status", monitorStatus);
     const statusValue = statusCard.querySelector(".stat-card-value-text");
