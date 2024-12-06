@@ -55,18 +55,30 @@ export class MonitorDetailsPanel extends BaseComponent {
 
   _udpateStatsCards(monitorData) {
     console.log("Updating stats cards");
-    if (!monitorData) {
+    if (!monitorData || !monitorData.value) {
       console.warn("Monitor data is not available.");
       return;
     }
     console.log("Monitor data:", monitorData);
 
     // Prepare the data for the stats cards
-    let monitorStatus = "unknown";
-    if (monitorData.value?.last_query_passed === true) {
+    let monitorStatus;
+    let monitorStatusText;
+    if (monitorData.value.paused === true) {
+      monitorStatus = "paused";
+      monitorStatusText = "Monitoring is currently paused for this resource.";
+    } else if (monitorData.value.error_preventing_execution !== null) {
+      monitorStatus = "error";
+      monitorStatusText = monitorData.value.error_preventing_execution;
+    } else if (monitorData.value.last_query_passed === true) {
       monitorStatus = "up";
-    } else if (monitorData.value?.last_query_passed === false) {
+      monitorStatusText = "Monitor query passed.";
+    } else if (monitorData.value.last_query_passed === false) {
       monitorStatus = "down";
+      monitorStatusText = "Monitor query failed.";
+    } else {
+      monitorStatus = "unknown";
+      monitorStatusText = "Something went wrong, monitor status unknown.";
     }
 
     let timeAtLastStatusChange = monitorData.value?.time_at_last_status_change?.value ?? null;
@@ -89,6 +101,7 @@ export class MonitorDetailsPanel extends BaseComponent {
     statusCard.setAttribute("data-status", monitorStatus);
     const statusValue = statusCard.querySelector(".stat-card-value-text");
     statusValue.textContent = monitorStatus.toUpperCase();
+    statusCard.setAttribute("title", monitorStatusText);
 
     // Update the duration card
     durationCard.setAttribute("data-status", monitorStatus);
@@ -262,7 +275,7 @@ export class MonitorDetailsPanel extends BaseComponent {
     for (let i = monitorResultsHistory.length - 1; i >= 0; i--) {
       // Build the string to display as "end time, status, message" AND a special case if "exception_type" exists
       let entryText = `[${new Date(monitorResultsHistory[i].value.end_time.value).toLocaleString()}] `;
-      let entryStatus = "unknown";
+      let entryStatus = "error";
       if (monitorResultsHistory[i].value.test_passed) {
         entryText += "Monitor query passed";
         entryStatus = "up";
