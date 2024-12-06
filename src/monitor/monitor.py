@@ -331,13 +331,13 @@ class Monitor(Deserializable):
             self.error_preventing_execution = "Time at last status change is invalid"
             return False
 
-        # stats_avg_uptime is a float
-        if not isinstance(self.stats_avg_uptime, float):
+        # stats_avg_uptime is a number
+        if not isinstance(self.stats_avg_uptime, (int, float)):
             self.error_preventing_execution = "Average uptime is invalid"
             return False
 
-        # stats_avg_latency is a float
-        if not isinstance(self.stats_avg_latency, float):
+        # stats_avg_latency is a number
+        if not isinstance(self.stats_avg_latency, (int, float)):
             self.error_preventing_execution = "Average latency is invalid"
             return False
 

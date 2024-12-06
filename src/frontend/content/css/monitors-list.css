@@ -3,9 +3,7 @@
 } */
 
 .monitor-list-item {
-  height: 2rem;
-  /* width: 100%; */
-  /* color: var(--accent-color); */
+  height: 35px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -29,32 +27,59 @@
 }
 
 .monitor-list-item-status-indicator {
-  width: 1.5rem;
-  flex-shrink: 0; /* Prevents the element from shrinking */
-  flex-grow: 0; /* Prevents the element from growing */
-  height: 1rem;
+  align-content: center;
+  text-align: center;
+  width: 2.5rem;
+  flex-shrink: 0;
+  flex-grow: 0;
+  height: 1.4rem;
   border-radius: 0.4rem;
   background-color: var(--status-unknown-color-500);
   margin-left: 0.7rem;
   background-color: var(--status-unknown-color-500);
+  font-size: 0.66rem;
 }
 
-.monitor-list-item-status-indicator[data-status="up"] {
-  background-color: var(--status-good-color-500);
+.monitor-list-item-status-indicator[data-status="up"],
+.monitor-list-item-status-indicator[data-status="up"]::before {
+  background-color: var(--status-good-color-300);
+  color: var(--status-good-color-900);
+  content: "UP";
 }
 
-.monitor-list-item-status-indicator[data-status="down"] {
+.monitor-list-item-status-indicator[data-status="down"],
+.monitor-list-item-status-indicator[data-status="down"]::before {
   background-color: var(--status-bad-color-500);
+  color: var(--status-bad-color-900);
+  content: "DOWN";
+}
+
+.monitor-list-item-status-indicator[data-status="paused"],
+.monitor-list-item-status-indicator[data-status="paused"]::before {
+  background-color: var(--status-no-data-color-200);
+  color: var(--status-no-data-color-400);
+  content: "❙❙";
+  font-size: 0.8rem;
+}
+
+.monitor-list-item-status-indicator[data-status="error"],
+.monitor-list-item-status-indicator[data-status="error"]::before {
+  background-color: var(--status-unknown-color-300);
+  color: var(--status-unknown-color-600);
+  content: "!";
+  font-family: "Inter";
+  font-size: 0.9rem;
 }
 
 .monitor-list-item-label {
   margin-left: 0.7rem;
   flex-grow: 1;
   flex-shrink: 1;
-  white-space: nowrap; /* Prevents text wrapping */
-  overflow: hidden; /* Hides any text that overflows */
-  text-overflow: ellipsis; /* Displays an ellipsis (...) for truncated text */
-  color: var(--text-color-600);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-color-700);
+  font-size: 0.9rem;
 }
 
 .monitor-list-item-history {
@@ -69,6 +94,7 @@
 
 .monitor-list-item-history-bar {
   height: 90%;
+  max-height: 1.3rem;
   width: 0.3rem;
   border-radius: 0.2rem;
   background-color: var(--status-no-data-color-200);

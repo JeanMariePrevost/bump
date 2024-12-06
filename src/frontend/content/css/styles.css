@@ -34,9 +34,9 @@
   --text-color-300: color-mix(in srgb, var(--text-color-100), var(--text-color-500) 50%);
   --text-color-400: color-mix(in srgb, var(--text-color-100), var(--text-color-500) 75%);
   --text-color-500: rgb(120, 120, 120);
-  --text-color-600: color-mix(in srgb, var(--text-color-500), var(--statutext-color-900) 25%);
-  --text-color-700: color-mix(in srgb, var(--text-color-500), var(--statutext-color-900) 50%);
-  --text-color-800: color-mix(in srgb, var(--text-color-500), var(--statutext-color-900) 75%);
+  --text-color-600: color-mix(in srgb, var(--text-color-500), var(--text-color-900) 25%);
+  --text-color-700: color-mix(in srgb, var(--text-color-500), var(--text-color-900) 50%);
+  --text-color-800: color-mix(in srgb, var(--text-color-500), var(--text-color-900) 75%);
   --text-color-900: rgb(20, 20, 20);
 
   /* Status colors */
@@ -61,7 +61,7 @@
   --status-unknown-color-600: color-mix(in srgb, var(--status-unknown-color-500), var(--status-unknown-color-900) 25%);
   --status-unknown-color-700: color-mix(in srgb, var(--status-unknown-color-500), var(--status-unknown-color-900) 50%);
   --status-unknown-color-800: color-mix(in srgb, var(--status-unknown-color-500), var(--status-unknown-color-900) 75%);
-  --status-unknown-color-900: rgb(135, 90, 5);
+  --status-unknown-color-900: rgb(92, 60, 0);
 
   /* Good : e.g. monitor up */
   --status-good-color-100: rgb(204, 255, 204);
@@ -83,7 +83,7 @@
   --status-bad-color-600: color-mix(in srgb, var(--status-bad-color-500), var(--status-bad-color-900) 25%);
   --status-bad-color-700: color-mix(in srgb, var(--status-bad-color-500), var(--status-bad-color-900) 50%);
   --status-bad-color-800: color-mix(in srgb, var(--status-bad-color-500), var(--status-bad-color-900) 75%);
-  --status-bad-color-900: rgb(150, 0, 0);
+  --status-bad-color-900: rgb(90, 0, 0);
 
   /* Others*/
   --card-padding: 20px;
