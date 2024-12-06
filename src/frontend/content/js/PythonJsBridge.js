@@ -76,6 +76,17 @@ export async function requestMonitorDeletion(monitorName) {
 }
 
 /**
+ * Requests the backend to pause/unpause a monitor
+ * @param {string} monitorName
+ * @param {boolean} pause - True to pause, false to unpause
+ * @returns {Promise<string>} Promise that resolves to "true" if the monitor was paused/unpaused, or an error message if it was not
+ */
+export async function setMonitorPauseState(monitorName, pause) {
+  const response = await pywebview.api.set_monitor_pause_state(monitorName, pause);
+  return response;
+}
+
+/**
  * Submits a new monitor configuration to the backend, the backend validates and replies
  * @param {Object} monitorConfig - The monitor configuration object
  * @returns {Promise<string>} Promise that resolves to "true" if the configuration was accepted, or an error message if it was rejected

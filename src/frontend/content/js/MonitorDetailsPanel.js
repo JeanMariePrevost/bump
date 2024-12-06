@@ -35,6 +35,14 @@ export class MonitorDetailsPanel extends BaseComponent {
   }
 
   #refreshWithLatestMonitorData() {
+    requestSingleMonitor(this.monitor_unique_name)
+      .then((monitorData) => {
+        this._udpateStatsCards(monitorData);
+      })
+      .catch((error) => {
+        console.error(`Error while fetching monitor data for ${this.monitor_unique_name}:`, error);
+      });
+
     requestMonitorHistory(this.monitor_unique_name, MonitorDetailsPanel.MAX_RESULTS_IN_TIMELINE)
       .then((monitorResultsHistory) => {
         this._updateTimelineChart(monitorResultsHistory);

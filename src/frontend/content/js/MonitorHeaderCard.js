@@ -5,7 +5,7 @@
 
 import { BaseComponent } from "./BaseComponent.js";
 import { MonitorEditPanel } from "./MonitorEditPanel.js";
-import { requestMonitorDeletion, requestNewDuplicateMonitor, requestMonitorExecution } from "./PythonJsBridge.js";
+import { requestMonitorDeletion, requestNewDuplicateMonitor, requestMonitorExecution, setMonitorPauseState, requestSingleMonitor } from "./PythonJsBridge.js";
 import { addMonitorToList } from "./MainPage.js";
 
 export class MonitorHeaderCard extends BaseComponent {
@@ -56,6 +56,17 @@ export class MonitorHeaderCard extends BaseComponent {
     const headerCardDiv = this.element.querySelector(".monitor-details-header-card");
     headerCardDiv?.setAttribute("data-status", dataStatus);
 
+    // Set the correctly visibility for pause or unpause buttons
+    const pauseActionLink = this.element.querySelector(".monitor-action-link[data-action='pause']");
+    const unpauseActionLink = this.element.querySelector(".monitor-action-link[data-action='unpause']");
+    if (monitorData.value.paused) {
+      pauseActionLink.classList.add("display-none");
+      unpauseActionLink.classList.remove("display-none");
+    } else {
+      pauseActionLink.classList.remove("display-none");
+      unpauseActionLink.classList.add("display-none");
+    }
+
     // Set the monitor name
     monitorNameElement.textContent = monitorData.value.unique_name;
   }
@@ -80,7 +91,11 @@ export class MonitorHeaderCard extends BaseComponent {
         break;
       case "pause":
         console.log("Pause action clicked");
-        // TODO: Implement pause action
+        this.changeMonitorPauseState(true);
+        break;
+      case "unpause":
+        console.log("Unpause action clicked");
+        this.changeMonitorPauseState(false);
         break;
       case "edit":
         console.log("Edit action clicked");
@@ -134,5 +149,22 @@ export class MonitorHeaderCard extends BaseComponent {
       default:
         console.warn(`Unknown action: ${action}`);
     }
+  }
+
+  changeMonitorPauseState(pauseState) {
+    setMonitorPauseState(this.monitorUniqueName, pauseState).then((monitorPauseResponse) => {
+      if (monitorPauseResponse === "true") {
+        console.log("Monitor pause state successfully changed to:", pauseState);
+        // Get the new state
+        requestSingleMonitor(this.monitorUniqueName).then((monitorDataResponse) => {
+          this._updateHeaderCard(monitorDataResponse);
+          // Fire a global event to inform things like the list items that state has changed
+          const event = new CustomEvent("monitor-results-received", { detail: { monitorUniqueName: this.monitorUniqueName } });
+          document.dispatchEvent(event);
+        });
+      } else {
+        console.error("Error while pausing monitor:", monitorPauseResponse);
+      }
+    });
   }
 }

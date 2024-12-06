@@ -98,6 +98,21 @@ class JsApi:
         # Return the first max_number_of_entries
         return log_entries[:max_number_of_entries]
 
+    def set_monitor_pause_state(self, unique_name: str, new_paused_value: bool) -> str:
+        """
+        Call to set the pause state of a monitor.
+        :param unique_name: The unique name of the monitor
+        :param is_paused: The new pause state
+        :return: "true" if successful, or an error message if not
+        """
+        general_logger.debug(f'Received request to set monitor pause state: "{unique_name}" to {new_paused_value}')
+        targetMonitor = mediator.get_monitors_manager().get_monitor_by_name(unique_name)
+        if targetMonitor is None:
+            return f"Monitor with name {unique_name} not found"
+        targetMonitor.paused = new_paused_value
+        mediator.get_monitors_manager().save_monitors_configs_to_file()
+        return "true"
+
     def submit_monitor_config(self, monitor_config: dict) -> str:
         """
         Call to apply a monitor configuration received from the frontend.
