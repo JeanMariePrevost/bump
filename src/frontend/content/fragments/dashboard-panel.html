@@ -4,8 +4,12 @@ This section represents the right column on the homepage, displaying an overview
 <div class="card summary-card color-by-status">
   <div class="card-content">
     <div class="summary-card-title">Unknown monitor status...</div>
-    <div class="summary-card-count">? / ? / ?</div>
-    <div class="summary-card-count-label">Up / Down / Unknown</div>
+    <div class="summary-card-count">
+      <span class="count-up summary-card-count-text">?</span> / <span class="count-down summary-card-count-text">?</span> /
+      <span class="count-paused summary-card-count-text">?</span> /
+      <span class="count-error summary-card-count-text">?</span>
+    </div>
+    <div class="summary-card-count-label">Up / Down / Paused / Error</div>
   </div>
 </div>
 <div class="card recent-events-card">

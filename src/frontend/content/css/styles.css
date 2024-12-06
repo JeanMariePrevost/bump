@@ -313,6 +313,8 @@ Utility classes
   color: var(--status-bad-color-800);
 }
 
+.color-by-status[data-status="error"],
+.color-by-status[data-status="error"] .card-content,
 .color-by-status[data-status="unknown"],
 .color-by-status[data-status="unknown"] .card-content {
   background-color: var(--status-unknown-color-300);
@@ -334,6 +336,8 @@ Utility classes
   color: var(--status-bad-color-800);
 }
 
+.text-color-by-status[data-status="error"],
+.text-color-by-status[data-status="error"] .card-content,
 .text-color-by-status[data-status="unknown"],
 .text-color-by-status[data-status="unknown"] .card-content {
   color: var(--status-unknown-color-800);

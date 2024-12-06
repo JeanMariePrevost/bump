@@ -90,37 +90,80 @@ export class DashboardPanel extends BaseComponent {
   #updateSummaryCard(monitorListResponseData) {
     let upCount = 0;
     let downCount = 0;
-    let unknownCount = 0;
+    let pausedCount = 0;
+    let errorCount = 0;
     for (let i = 0; i < monitorListResponseData.length; i++) {
-      if (monitorListResponseData[i].value.last_query_passed === true) {
+      if (monitorListResponseData[i].value.paused === true) {
+        pausedCount++;
+      } else if (monitorListResponseData[i].value.error_preventing_execution !== null) {
+        errorCount++;
+      } else if (monitorListResponseData[i].value.last_query_passed === true) {
         upCount++;
       } else if (monitorListResponseData[i].value.last_query_passed === false) {
         downCount++;
       } else {
-        unknownCount++;
+        errorCount++;
       }
     }
 
     //Update the summary-card element's counts and status based
+    // Paused monitors are not used here, regardless of their status
     const summaryCard = document.querySelector(".summary-card");
-    if (upCount > 0 && downCount === 0 && unknownCount === 0) {
+    if (upCount > 0 && downCount === 0 && errorCount === 0) {
       summaryCard.setAttribute("data-status", "up");
       summaryCard.querySelector(".summary-card-title").innerText = "All monitors are up";
     } else if (downCount > 0) {
       summaryCard.setAttribute("data-status", "down");
       summaryCard.querySelector(".summary-card-title").innerText = "Some monitors are down";
       summaryCard.classList.add("shake-animation");
-    } else if (unknownCount > 0) {
-      // TODO : Need to handle differently here? I don't think so
+    } else if (errorCount > 0) {
       summaryCard.querySelector(".summary-card-title").innerText = "Issues were encountered";
-      summaryCard.setAttribute("data-status", "down");
+      summaryCard.setAttribute("data-status", "error");
       summaryCard.classList.add("shake-animation");
-    } else if (upCount + downCount + unknownCount === 0) {
+    } else if (upCount + downCount + errorCount === 0) {
       summaryCard.querySelector(".summary-card-title").innerText = "No monitors found";
       summaryCard.setAttribute("data-status", "unknown");
     }
-    summaryCard.querySelector(".summary-card-count").innerText = `${upCount} / ${downCount} / ${unknownCount}`;
 
-    console.log(`Monitors status counts: up=${upCount}, down=${downCount}, unknown=${unknownCount}`);
+    // const summaryCard = document.querySelector(".summary-card-count");
+    const countUpSpan = summaryCard.querySelector(".count-up");
+    const countDownSpan = summaryCard.querySelector(".count-down");
+    const countPausedSpan = summaryCard.querySelector(".count-paused");
+    const countErrorSpan = summaryCard.querySelector(".count-error");
+
+    countUpSpan.innerText = upCount;
+    countDownSpan.innerText = downCount;
+    countPausedSpan.innerText = pausedCount;
+    countErrorSpan.innerText = errorCount;
+
+    // Set the tooltips
+    summaryCard.querySelector(".count-up").setAttribute("title", upCount === 1 ? `1 monitor is up` : `${upCount} monitors are up`);
+    summaryCard.querySelector(".count-down").setAttribute("title", downCount === 1 ? `1 monitor is down` : `${downCount} monitors are down`);
+    summaryCard.querySelector(".count-paused").setAttribute("title", pausedCount === 1 ? `1 monitor is paused` : `${pausedCount} monitors are paused`);
+    summaryCard.querySelector(".count-error").setAttribute("title", errorCount === 1 ? `1 monitor has issues` : `${errorCount} monitors have issues`);
+
+    // Color the individual counts using data-color-type="good", "bad", "neutral"
+    if (upCount > 0) {
+      summaryCard.querySelector(".count-up").setAttribute("data-color-type", "good");
+    } else {
+      summaryCard.querySelector(".count-up").setAttribute("data-color-type", "neutral");
+    }
+
+    if (downCount > 0) {
+      summaryCard.querySelector(".count-down").setAttribute("data-color-type", "bad");
+    } else {
+      summaryCard.querySelector(".count-down").setAttribute("data-color-type", "neutral");
+    }
+
+    // Paused count is always neutral
+    summaryCard.querySelector(".count-paused").setAttribute("data-color-type", "neutral");
+
+    if (errorCount > 0) {
+      summaryCard.querySelector(".count-error").setAttribute("data-color-type", "bad");
+    } else {
+      summaryCard.querySelector(".count-error").setAttribute("data-color-type", "neutral");
+    }
+
+    console.log(`Monitors status counts: up=${upCount}, down=${downCount}, unknown=${errorCount}`);
   }
 }

@@ -35,12 +35,18 @@ class Monitor(Deserializable):
         self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
         self.paused = False
         self.error_preventing_execution: str | None = None
-        # Needed by the GUI as it doesn't have direct access to the query results
-        self.last_query_passed = self.read_results_from_history(1)[0].test_passed if len(self.read_results_from_history(1)) > 0 else False
         self.time_at_last_status_change = datetime.now()
         self.stats_avg_uptime = 0
         self.stats_avg_latency = 0
+
+        # Needed by the GUI as it doesn't have direct access to the query results
         # self.current_status DEPRACATED in favor of more descriptive last_query_passed
+        if unique_name != "undefined":
+            tempHistory = self.read_results_from_history(1)
+            self.last_query_passed = tempHistory[0].test_passed if len(tempHistory) > 0 else False
+        else:
+            # Creating a new empty monitor or deserializing one, so we default to "up"
+            self.last_query_passed = True
 
     def execute(self) -> QueryResult:
         self.set_next_run_time()  # Has to happen before the paused/invalid checks otherwise it will fire every cycle
