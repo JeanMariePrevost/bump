@@ -7,6 +7,8 @@ import { requestLogEntries } from "./PythonJsBridge.js";
  * @param {Object[]} monitorListthis.monitorListResponseDataData - The this.monitorListResponseData object from the monitor list request
  */
 export class DashboardPanel extends BaseComponent {
+  static LOG_ENTRIES_LIMIT = 100; // The maximum number of log entries to fetch and display on the dashboard
+
   constructor(parentSelector, monitorListResponseDataData) {
     super(parentSelector, "dashboard-column", "fragments/dashboard-panel.html");
     this.monitorListResponseData = monitorListResponseDataData;
@@ -26,7 +28,7 @@ export class DashboardPanel extends BaseComponent {
   }
 
   #updateRecentEvents() {
-    requestLogEntries(30)
+    requestLogEntries(DashboardPanel.LOG_ENTRIES_LIMIT)
       .then((response) => {
         if (!response) {
           console.error("Failed to fetch log entries");

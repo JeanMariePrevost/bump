@@ -20,7 +20,7 @@ class DynamicFormatter(logging.Formatter):
 
     FORMATS = {
         logging.INFO: "%(asctime)s -> %(message)s",
-        logging.WARNING: "%(asctime)s [%(levelname)s] (%(module)s.%(funcName)s:ln%(lineno)d) -> %(message)s",  # TODO : Simplify in production?
+        # TODO - Simplify the format for other levels in production too?
         "default": "%(asctime)s [%(levelname)s] (%(module)s.%(funcName)s:ln%(lineno)d) -> %(message)s",
     }
 

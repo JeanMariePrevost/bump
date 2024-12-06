@@ -95,8 +95,8 @@ class JsApi:
         # Sort alphanumerically descending since they start with a timestamp
         log_entries.sort(reverse=True)
 
-        # Return the last max_number_of_entries
-        return log_entries[-max_number_of_entries:]
+        # Return the first max_number_of_entries
+        return log_entries[:max_number_of_entries]
 
     def submit_monitor_config(self, monitor_config: dict) -> str:
         """

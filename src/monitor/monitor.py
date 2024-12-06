@@ -26,6 +26,7 @@ class Monitor(Deserializable):
             from queries.http_query import HttpQuery
 
             query = HttpQuery()
+
         self.query = query
         self.period_in_seconds = period_in_seconds
         self.retries = 0
@@ -36,14 +37,24 @@ class Monitor(Deserializable):
         self.time_at_last_status_change = datetime.now()
         self.stats_avg_uptime = 0
         self.stats_avg_latency = 0
+        self.error_preventing_execution: str | None = None
         # self.current_status DEPRACATED in favor of more descriptive last_query_passed
 
-    def execute(self):
-        if not hasattr(self, "query") or self.query is None:
-            monitoring_logger.error(f"Monitor {self.unique_name} has no query to execute")
-            raise ValueError("Monitor has no query to execute")
+    def execute(self) -> QueryResult:
+        if not self.validate_monitor_configuration():
+            monitoring_logger.error(f"Monitor {self.unique_name} has invalid configuration: {self.error_preventing_execution}")
+            # Execution stops, this result will not be dispatched nor saved
+            return QueryResult(
+                exception_type="Invalid Configuration", message=self.error_preventing_execution, reason=self.error_preventing_execution
+            )
+
         self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
-        query_result: QueryResult = self.query.execute()
+        try:
+            query_result: QueryResult = self.query.execute()
+        except Exception as e:
+            monitoring_logger.error(f"Monitor {self.unique_name} failed to execute: {e}")
+            self.error_preventing_execution = str(e)
+
         monitoring_logger.debug(f"Monitor {self.unique_name} executed with result: {query_result}")
 
         self.handle_new_query_result(query_result)
@@ -52,7 +63,7 @@ class Monitor(Deserializable):
 
         mediator.new_monitor_results.trigger()
 
-        # HACK - Ended up with some state in the monitor CONFIGURATIONS... so I'll simply force save every time until I implement a proper solution
+        # HACK - Ended up with some state in the monitor CONFIGURATIONS... so I'll simply force save on every new result until I can think of a proper solution (just split it? Keep it this way?)
         mediator.get_monitors_manager().save_monitors_configs_to_file()
         return query_result
 
@@ -62,8 +73,7 @@ class Monitor(Deserializable):
             current_status_string = "up" if query_result.test_passed else "down"
             monitoring_logger.info(f"Monitor {self.unique_name} ran for the first time and it is {current_status_string}")
         elif self.last_query_passed != query_result.test_passed:
-            # TODO - Signal the change / send alerts
-            # DEBUG - Testing alerts, always sending them for now
+            # TODO - Signal the change / send alerts? E.g. to the GUI?
             self.sendUserAlerts(query_result)
 
             current_status_string = "up" if query_result.test_passed else "down"
@@ -83,6 +93,7 @@ class Monitor(Deserializable):
         else:
             messageString = f"Monitor {self.unique_name} is down."
 
+        # Currently using a single app-wide settings, profiles could be implemented in the future
         if settings.alerts_use_toast:
             icon = util.resource_path("src/frontend/content/favicon.ico")
             notification.notify(app_name="BUMP", title=messageTitleString, message=messageString, app_icon=icon)
@@ -270,3 +281,69 @@ class Monitor(Deserializable):
         except Exception as e:
             general_logger.error(f"Error while renaming monitor history file: {e}")
             traceback.print_exc()
+
+    def validate_monitor_configuration(self) -> bool:
+        """
+        Validates all of the monitor's parameters, stores errors in validation_error, and returns True if all are valid.
+        An invalid configuration will prevent the monitor from executing and show up in the gui, behaving like a puased monitor.
+        """
+
+        # Unique name is a non-empty string that is a valid filename
+        if not is_valid_filename(self.unique_name):
+            self.error_preventing_execution = "Unique name is missing or invalid"
+            return False
+
+        # Query not None and is of the correct type
+        if self.query is None:
+            self.error_preventing_execution = "Monitor has no query to execute"
+            return False
+        if not isinstance(self.query, Query):
+            self.error_preventing_execution = "Monitor's query is not of the correct type"
+            return False
+
+        # Period is a positive integer
+        if self.period_in_seconds <= 0:
+            self.error_preventing_execution = "Period is missing or invalid"
+            return False
+
+        # Retries is a non-negative integer
+        if self.retries < 0:
+            self.error_preventing_execution = "Retries is missing or invalid"
+            return False
+
+        # Retries interval is a non-negative integer (0 simply is retry immediately, this isn't an issue like period)
+        if self.retries_interval_in_seconds < 0:
+            self.error_preventing_execution = "Retries interval is missing or invalid"
+            return False
+
+        # next_run_time is a datetime
+        if not isinstance(self._next_run_time, datetime):
+            self.error_preventing_execution = "Next run time is invalid"
+            return False
+
+        # last_query_passed is a boolean
+        if not isinstance(self.last_query_passed, bool):
+            self.error_preventing_execution = "Last query passed is invalid"
+            return False
+
+        # time_at_last_status_change is a datetime
+        if not isinstance(self.time_at_last_status_change, datetime):
+            self.error_preventing_execution = "Time at last status change is invalid"
+            return False
+
+        # stats_avg_uptime is a float
+        if not isinstance(self.stats_avg_uptime, float):
+            self.error_preventing_execution = "Average uptime is invalid"
+            return False
+
+        # stats_avg_latency is a float
+        if not isinstance(self.stats_avg_latency, float):
+            self.error_preventing_execution = "Average latency is invalid"
+            return False
+
+        # validation_error is a string or None
+        if not isinstance(self.error_preventing_execution, str) and self.error_preventing_execution is not None:
+            self.error_preventing_execution = "Validation error is invalid"
+            return False
+
+        return True
