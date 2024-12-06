@@ -28,7 +28,7 @@ def send_email_alert(subject, body):
     """
     Send an email alert.
     """
-    load_configs()
+    general_logger.debug("email_service.py sending email alert")
     __send_smtp_email(subject, body, to_email)
 
 
@@ -36,7 +36,7 @@ def send_sms_alert(subject, body):
     """
     Send an SMS alert.
     """
-    load_configs()
+    general_logger.debug("email_service.py sending SMS alert")
     __send_smtp_email(subject, body, to_email_for_sms)
 
 
@@ -57,13 +57,7 @@ def __send_smtp_email(subject, body, target_email):
 
     # Send the email
     try:
-
-        # DEBUG!!
-        print(
-            f"SMTP would normally proceed with the following parameters: {smtp_server}, {smtp_port}, {username}, {from_email}, {target_email}, {subject}, {body}, (password hidden)"
-        )
-
-        general_logger.debug("email_service.py starting to send email")
+        general_logger.debug(f"email_service.py starting to send email to {target_email}")
         with smtplib.SMTP(smtp_server, smtp_port) as server:
             server.starttls()
             server.login(username, password)
@@ -76,4 +70,5 @@ load_configs()
 
 if __name__ == "__main__":
     # send_email_alert("Test Subject", "Test Body")
-    # send_sms_alert("Test SMS Body")
+    # send_sms_alert("Test Subject", "Test Body")
+    pass
