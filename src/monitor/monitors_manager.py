@@ -14,7 +14,7 @@ class MonitorsManager(Deserializable):
 
     def __init__(self) -> None:
         self.monitors: list[Monitor] = []
-        mediator.new_monitor_results.add(self.checkIfAllMonitorsAreUp)
+        mediator.new_monitor_results.add(self.checkIfAllMonitorsAreUpAndValid)
 
     def add_monitor(self, monitor: Monitor) -> None:
         # Ensure no duplicate names
@@ -22,11 +22,11 @@ class MonitorsManager(Deserializable):
             if m.unique_name == monitor.unique_name:
                 raise ValueError(f"Monitor with name {monitor.unique_name} already exists")
         self.monitors.append(monitor)
-        self.checkIfAllMonitorsAreUp()
+        self.checkIfAllMonitorsAreUpAndValid()
 
     def remove_monitor(self, monitor: Monitor) -> None:
         self.monitors.remove(monitor)
-        self.checkIfAllMonitorsAreUp()
+        self.checkIfAllMonitorsAreUpAndValid()
 
     def create_and_add_empty_monitor(self) -> Monitor:
         unique_name = self.get_next_free_monitor_name()
@@ -89,21 +89,26 @@ class MonitorsManager(Deserializable):
         # Prepare monitors for serialization
         for monitor in self.monitors:
             monitor.create_history_file_if_not_exists()  # Ensure the history files exist
+            monitor.validate_monitor_configuration()  # Ensure the latest validation status is saved
             monitor.recalculate_stats()  # Ensure the latest stats are saved
         serialization.save_as_json_file(self, "data/monitors.json")
 
-    def checkIfAllMonitorsAreUp(self):
+    def checkIfAllMonitorsAreUpAndValid(self):
         # Determine if all monitors are up, some are down, or some have exceptions/issues
         any_down = False
         any_exceptions = False
         for monitor in self.monitors:
-            if not monitor.last_query_passed:
+            if monitor.paused:
+                # Paused monitors don't factor in
+                continue
+            elif not monitor.last_query_passed:
                 any_down = True
-            # TODO : Implement "monitor has issues" logic, e.g. bad config
-            # if monitor.is_invalid or monitor.has_exception:
-            #     any_exceptions = True
+            elif not monitor.validate_monitor_configuration():
+                any_exceptions = True
+                break
 
         if any_down:
+            # Down monitors take precedence over exceptions
             mediator.some_monitors_down.trigger()
         elif any_exceptions:
             mediator.some_monitors_have_exceptions.trigger()

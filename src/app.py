@@ -58,7 +58,7 @@ print("We started the background monitoring thread. Now we can do other things i
 tray_icon = SystemTrayIcon()
 
 # RIght before entiring the main loop, refresh things like the tray icon
-monitors_manager.checkIfAllMonitorsAreUp()
+monitors_manager.checkIfAllMonitorsAreUpAndValid()
 
 
 def main_thread_loop():

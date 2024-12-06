@@ -56,7 +56,6 @@ export class MonitorListItem {
       const newItem = document.createElement("div");
       newItem.setAttribute("data-unique-name", this.monitorData.unique_name);
       newItem.className = "monitor-list-item";
-      // newItem.innerText = this.monitorData.unique_name;
       monitorsListElement.appendChild(newItem);
 
       // Add the ".status-indicator" element
@@ -127,12 +126,19 @@ export class MonitorListItem {
   }
 
   #refreshStatusIndicator() {
-    // statusIndicator.className = "monitor-list-item-status-indicator";
     const statusIndicator = this.element.querySelector(".monitor-list-item-status-indicator");
-    if (this.monitorData.last_query_passed === true) {
+    if (this.monitorData.paused === true) {
+      statusIndicator.setAttribute("data-status", "paused");
+      statusIndicator.setAttribute("title", "Monitor is paused");
+    } else if (this.monitorData.error_preventing_execution !== null) {
+      statusIndicator.setAttribute("data-status", "error");
+      statusIndicator.setAttribute("title", `Error: ${this.monitorData.error_preventing_execution}`);
+    } else if (this.monitorData.last_query_passed === true) {
       statusIndicator.setAttribute("data-status", "up");
+      statusIndicator.setAttribute("title", "Monitor is up");
     } else if (this.monitorData.last_query_passed === false) {
       statusIndicator.setAttribute("data-status", "down");
+      statusIndicator.setAttribute("title", "Monitor is down");
     } else {
       statusIndicator.setAttribute("data-status", "unknown");
     }

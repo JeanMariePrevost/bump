@@ -15,6 +15,7 @@ import email_service
 from settings_manager import settings
 
 AVG_STATS_TIMESPAN_DAYS = 7
+PERIOD_IF_PERIOD_INVALID = 86400  # 1 day
 
 
 class Monitor(Deserializable):
@@ -32,15 +33,22 @@ class Monitor(Deserializable):
         self.retries = 0
         self.retries_interval_in_seconds = 1
         self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
+        self.paused = False
+        self.error_preventing_execution: str | None = None
         # Needed by the GUI as it doesn't have direct access to the query results
         self.last_query_passed = self.read_results_from_history(1)[0].test_passed if len(self.read_results_from_history(1)) > 0 else False
         self.time_at_last_status_change = datetime.now()
         self.stats_avg_uptime = 0
         self.stats_avg_latency = 0
-        self.error_preventing_execution: str | None = None
         # self.current_status DEPRACATED in favor of more descriptive last_query_passed
 
     def execute(self) -> QueryResult:
+        self.set_next_run_time()  # Has to happen before the paused/invalid checks otherwise it will fire every cycle
+
+        if self.paused:
+            monitoring_logger.debug(f"Monitor {self.unique_name} is paused, skipping execution.")
+            return QueryResult(exception_type="Paused", message="Monitor is paused", reason="Monitor is paused")
+
         if not self.validate_monitor_configuration():
             monitoring_logger.error(f"Monitor {self.unique_name} has invalid configuration: {self.error_preventing_execution}")
             # Execution stops, this result will not be dispatched nor saved
@@ -66,6 +74,14 @@ class Monitor(Deserializable):
         # HACK - Ended up with some state in the monitor CONFIGURATIONS... so I'll simply force save on every new result until I can think of a proper solution (just split it? Keep it this way?)
         mediator.get_monitors_manager().save_monitors_configs_to_file()
         return query_result
+
+    def set_next_run_time(self):
+        """Sets the next run time based on the period_in_seconds, or a safe default if the period is invalid."""
+        if getattr(self, "period_in_seconds", None) is None or self.period_in_seconds < 1:
+            general_logger.warning(f"Monitor {self.unique_name} has an invalid period, usin default of {PERIOD_IF_PERIOD_INVALID} seconds.")
+            self._next_run_time = datetime.now() + timedelta(seconds=PERIOD_IF_PERIOD_INVALID)
+        else:
+            self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
 
     def handle_new_query_result(self, query_result: QueryResult):
         # Trigger a status change if the status changed
@@ -149,7 +165,7 @@ class Monitor(Deserializable):
     def execute_if_due(self):
         if datetime.now() > self._next_run_time:
             return self.execute()
-        else:  # DEBUG
+        else:  # DEBUG - Remove this cause it'll spam the logs
             general_logger.debug(f"Monitor {self.unique_name} not due yet, next run in {self._next_run_time - datetime.now()}")
         return None
 
@@ -345,5 +361,7 @@ class Monitor(Deserializable):
         if not isinstance(self.error_preventing_execution, str) and self.error_preventing_execution is not None:
             self.error_preventing_execution = "Validation error is invalid"
             return False
+
+        self.error_preventing_execution = None
 
         return True
