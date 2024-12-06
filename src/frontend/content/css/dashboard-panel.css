@@ -155,6 +155,7 @@ Log portion of the dashboard
 .summary-card-count-text[data-color-type="bad"] {
   color: var(--status-bad-color-500);
   font-weight: bold;
+  cursor: help;
 }
 
 .summary-card-count-text[data-color-type="bad"]:before {

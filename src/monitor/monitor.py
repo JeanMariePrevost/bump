@@ -312,60 +312,55 @@ class Monitor(Deserializable):
 
         # Unique name is a non-empty string that is a valid filename
         if not is_valid_filename(self.unique_name):
-            self.error_preventing_execution = "Unique name is missing or invalid"
+            self.error_preventing_execution = "Invalid configuration: unique_name is missing or invalid"
             return False
 
         # Query not None and is of the correct type
         if self.query is None:
-            self.error_preventing_execution = "Monitor has no query to execute"
+            self.error_preventing_execution = "Invalid configuration: query is missing"
             return False
         if not isinstance(self.query, Query):
-            self.error_preventing_execution = "Monitor's query is not of the correct type"
+            self.error_preventing_execution = "Invalid configuration: query is not a Query object"
             return False
 
         # Period is a positive integer
         if self.period_in_seconds <= 0:
-            self.error_preventing_execution = "Period is missing or invalid"
+            self.error_preventing_execution = "Invalid configuration: period_in_seconds is missing or invalid"
             return False
 
         # Retries is a non-negative integer
         if self.retries < 0:
-            self.error_preventing_execution = "Retries is missing or invalid"
+            self.error_preventing_execution = "Invalid configuration: retries is missing or invalid"
             return False
 
         # Retries interval is a non-negative integer (0 simply is retry immediately, this isn't an issue like period)
         if self.retries_interval_in_seconds < 0:
-            self.error_preventing_execution = "Retries interval is missing or invalid"
+            self.error_preventing_execution = "Invalid configuration: retries_interval_in_seconds is missing or invalid"
             return False
 
         # next_run_time is a datetime
         if not isinstance(self._next_run_time, datetime):
-            self.error_preventing_execution = "Next run time is invalid"
+            self.error_preventing_execution = "Invalid configuration: next_run_time is invalid"
             return False
 
         # last_query_passed is a boolean
         if not isinstance(self.last_query_passed, bool):
-            self.error_preventing_execution = "Last query passed is invalid"
+            self.error_preventing_execution = "Invalid configuration: last_query_passed is invalid"
             return False
 
         # time_at_last_status_change is a datetime
         if not isinstance(self.time_at_last_status_change, datetime):
-            self.error_preventing_execution = "Time at last status change is invalid"
+            self.error_preventing_execution = "Invalid configuration: time_at_last_status_change is invalid"
             return False
 
         # stats_avg_uptime is a number
         if not isinstance(self.stats_avg_uptime, (int, float)):
-            self.error_preventing_execution = "Average uptime is invalid"
+            self.error_preventing_execution = "Invalid configuration: stats_avg_uptime is invalid"
             return False
 
         # stats_avg_latency is a number
         if not isinstance(self.stats_avg_latency, (int, float)):
-            self.error_preventing_execution = "Average latency is invalid"
-            return False
-
-        # validation_error is a string or None
-        if not isinstance(self.error_preventing_execution, str) and self.error_preventing_execution is not None:
-            self.error_preventing_execution = "Validation error is invalid"
+            self.error_preventing_execution = "Invalid configuration: stats_avg_latency is invalid"
             return False
 
         self.error_preventing_execution = None

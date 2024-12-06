@@ -93,6 +93,16 @@
   color: var(--text-color-600);
 }
 
+.top-right-information-icon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 8px;
+  cursor: pointer;
+  opacity: 0.3;
+  font-size: 1.1rem;
+}
+
 .stat-card-value-text {
   font-size: 1.5rem;
   /* fully center in parent */

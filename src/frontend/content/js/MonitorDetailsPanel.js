@@ -66,7 +66,7 @@ export class MonitorDetailsPanel extends BaseComponent {
     let monitorStatusText;
     if (monitorData.value.paused === true) {
       monitorStatus = "paused";
-      monitorStatusText = "Monitoring is currently paused for this resource.";
+      monitorStatusText = "Monitoring is currently paused.";
     } else if (monitorData.value.error_preventing_execution !== null) {
       monitorStatus = "error";
       monitorStatusText = monitorData.value.error_preventing_execution;
