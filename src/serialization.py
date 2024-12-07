@@ -57,9 +57,6 @@ def to_dict_encoded_with_types(obj, include_internal=True, include_private=False
         # Recursively encode the attributes
         encoded_attributes = {}
         for key, value in attributes.items():
-            # DEBUG:
-            print(f"Encoding {key} of type {type(value)}")
-
             encoded_attributes[key] = to_dict_encoded_with_types(value, include_internal, include_private)
 
         return {

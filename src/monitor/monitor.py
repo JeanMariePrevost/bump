@@ -58,6 +58,7 @@ class Monitor(Deserializable):
 
         if not self.validate_monitor_configuration():
             monitoring_logger.error(f"Monitor {self.unique_name} has invalid configuration: {self.error_preventing_execution}")
+            self.log_monitor_event(f"Monitor should have executed but is stopped due to invalid configuration: {self.error_preventing_execution}")
             # Execution stops, this result will not be dispatched nor saved
             return QueryResult(
                 exception_type="Invalid Configuration", message=self.error_preventing_execution, reason=self.error_preventing_execution
@@ -253,54 +254,56 @@ class Monitor(Deserializable):
         :param config: The object received from the frontend
         """
 
-        # from python_js_bridge import VALID_QUERY_TYPES
+        def log_and_raise_error(message: str):
+            self.log_monitor_event.error(f"Failed to new configuration: {message}")
+            raise ValueError(message)
 
         # VALIDATION
         # Original name must be an existing monitor name
         if "original_name" not in config or type(config["original_name"]) is not str:
-            raise ValueError("original_name is missing or invalid")
+            log_and_raise_error("original_name is missing or invalid")
         targetMonitor = mediator.get_monitors_manager().get_monitor_by_name(config["original_name"])
         if targetMonitor is None:
-            raise ValueError("original_name does not match any existing monitor")
+            log_and_raise_error("original_name does not match any existing monitor")
 
         # unique_name must be a non-null, non-empty string that is also a valid filename and unique
         if "unique_name" not in config or type(config["unique_name"]) is not str or len(config["unique_name"]) == 0:
-            raise ValueError("unique_name is missing or invalid")
+            log_and_raise_error("unique_name is missing or invalid")
         if not is_valid_filename(config["unique_name"]):
-            raise ValueError("unique_name is not a valid filename")
+            log_and_raise_error("unique_name is not a valid filename")
 
         # query_url must be a non-null, non-empty string, and a valid URL
         if "query_url" not in config or type(config["query_url"]) is not str or len(config["query_url"]) == 0:
-            raise ValueError("query_url is missing or invalid")
+            log_and_raise_error("query_url is missing or invalid")
         if not is_valid_url(config["query_url"]):
-            raise ValueError("query_url is not a valid URL")
+            log_and_raise_error("query_url is not a valid URL")
 
         # query_type must be a non-null, non-empty string that is also a valid query type
         if "query_type" not in config or type(config["query_type"]) is not str:
-            raise ValueError("query_type is missing or invalid")
+            log_and_raise_error("query_type is missing or invalid")
         # Test whether config["query_type"] is an existing fully qualified class name in the queries package
         queryType = get_query_class_from_string(f"{config['query_type']}")
         if queryType is None:
-            raise ValueError("query_type not a known query type")
+            log_and_raise_error("query_type not a known query type")
 
         # Testing query_params_string requires creating a query object temporarily and passing the string to it
         validation_query: Query = queryType()
         try:
             validation_query.apply_query_params_string(config["query_params_string"])
         except Exception as e:
-            raise ValueError(f"query_params_string is invalid: {str(e)}")
+            log_and_raise_error(f"query_params_string is invalid: {str(e)}")
 
         # period_in_seconds must be a positive integer
         if "period_in_seconds" not in config or int(config["period_in_seconds"]) <= 0:
-            raise ValueError("period_in_seconds is missing or invalid")
+            log_and_raise_error("period_in_seconds is missing or invalid")
 
         # retries must be a positive integer
         if "retries" not in config or int(config["retries"]) < 0:
-            raise ValueError("retries is missing or invalid")
+            log_and_raise_error("retries is missing or invalid")
 
         # retries_interval_in_seconds must be a positive integer
         if "retries_interval_in_seconds" not in config or int(config["retries_interval_in_seconds"]) < 0:
-            raise ValueError("retries_interval_in_seconds is missing or invalid")
+            log_and_raise_error("retries_interval_in_seconds is missing or invalid")
 
         # APPLICATION
         # Apply the new configuration
@@ -321,12 +324,25 @@ class Monitor(Deserializable):
         try:
             if targetMonitor.unique_name != config["original_name"]:
                 # Rename the history file if it exists
-                old_history_path = f"data/history/{config['original_name']}.jsonl"
+                old_history_path = util.resource_path(f"data/history/{config['original_name']}.jsonl")
                 if os.path.exists(old_history_path):
                     os.rename(old_history_path, f"data/history/{targetMonitor.unique_name}.jsonl")
+                # Rename the log file and reinitialize the logger
+                # First, release handlers for the previoius logger
+                if targetMonitor.__logger is not None:
+                    for handler in targetMonitor.__logger.handlers:
+                        targetMonitor.__logger.removeHandler(handler)
+                        handler.close()
+                # TODO: Don't hardcode the log path
+                old_log_path = util.resource_path(f"logs/monitors/{config['original_name']}.log")
+                if os.path.exists(old_log_path):
+                    os.rename(old_log_path, f"logs/{targetMonitor.unique_name}.log")
+                targetMonitor.__logger = get_new_monitor_logger(targetMonitor.unique_name)
         except Exception as e:
             general_logger.error(f"Error while renaming monitor history file: {e}")
             traceback.print_exc()
+
+        self.log_monitor_event(f"Configuration uchanged.")
 
     def validate_monitor_configuration(self) -> bool:
         """
