@@ -26,6 +26,12 @@ class HttpHeadersQuery(HttpQuery):
     def update_query_params_string(self):
         self.query_params_as_string = self.string_to_find
 
+    def parameters_are_valid(self) -> bool:
+        if not self.header_key or not self.header_value:
+            return False
+
+        return super().parameters_are_valid()
+
     def _test_passed_predicate(self, response: HTTPResponse | Exception) -> bool:
         if hasattr(response, "headers"):
             return response.headers.get(self.header_key) == self.header_value

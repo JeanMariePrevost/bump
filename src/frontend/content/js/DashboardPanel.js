@@ -20,7 +20,6 @@ export class DashboardPanel extends BaseComponent {
       return;
     } else if (this.monitorListResponseData.length === 0) {
       console.log("Config contains no monitors");
-      return;
     }
 
     this.#updateSummaryCard(this.monitorListResponseData);
@@ -122,7 +121,7 @@ export class DashboardPanel extends BaseComponent {
       summaryCard.classList.add("shake-animation");
     } else if (upCount + downCount + errorCount === 0) {
       summaryCard.querySelector(".summary-card-title").innerText = "No monitors found";
-      summaryCard.setAttribute("data-status", "unknown");
+      summaryCard.setAttribute("data-status", "no-data");
     }
 
     // const summaryCard = document.querySelector(".summary-card-count");

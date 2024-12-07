@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-from enum import Enum
 import os
 import traceback
 import mediator
@@ -8,7 +7,7 @@ from my_utils.util import get_query_class_from_string, is_valid_filename, is_val
 from queries.query import Query
 from queries.query_result import QueryResult
 from serialization import Deserializable
-from custom_logging import monitoring_logger
+from custom_logging import get_new_monitor_logger, monitoring_logger
 import serialization
 from custom_logging import general_logger
 import email_service
@@ -16,11 +15,12 @@ from settings_manager import settings
 
 AVG_STATS_TIMESPAN_DAYS = 7
 PERIOD_IF_PERIOD_INVALID = 86400  # 1 day
+DEFAULT_LOG_LEVEL = "INFO"
 
 
 class Monitor(Deserializable):
 
-    def __init__(self, unique_name: str = "undefined", period_in_seconds: int = 60, query: Query = None) -> None:
+    def __init__(self, unique_name: str = "undefined", period_in_seconds: int = 3600, query: Query = None) -> None:
         self.unique_name = unique_name
         # Default to an HttpQuery if none is provided
         if query is None:
@@ -38,6 +38,7 @@ class Monitor(Deserializable):
         self.time_at_last_status_change = datetime.now()
         self.stats_avg_uptime = 0
         self.stats_avg_latency = 0
+        self.__logger = None
 
         # Needed by the GUI as it doesn't have direct access to the query results
         # self.current_status DEPRACATED in favor of more descriptive last_query_passed
@@ -80,6 +81,27 @@ class Monitor(Deserializable):
         # HACK - Ended up with some state in the monitor CONFIGURATIONS... so I'll simply force save on every new result until I can think of a proper solution (just split it? Keep it this way?)
         mediator.get_monitors_manager().save_monitors_configs_to_file()
         return query_result
+
+    def log_monitor_event(self, event: str, level: str = "INFO"):
+        """Adds an entry to the monitoring file."""
+        if self.__logger is None:
+            self.__logger = get_new_monitor_logger(self.unique_name)
+
+        if level not in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
+            level = DEFAULT_LOG_LEVEL
+
+        if level == "DEBUG":
+            self.__logger.debug(event)
+        elif level == "INFO":
+            self.__logger.info(event)
+        elif level == "WARNING":
+            self.__logger.warning(event)
+        elif level == "ERROR":
+            self.__logger.error(event)
+        elif level == "CRITICAL":
+            self.__logger.critical(event)
+        else:
+            raise ValueError(f"Invalid log level: {level}")
 
     def set_next_run_time(self):
         """Sets the next run time based on the period_in_seconds, or a safe default if the period is invalid."""
@@ -321,6 +343,10 @@ class Monitor(Deserializable):
             return False
         if not isinstance(self.query, Query):
             self.error_preventing_execution = "Invalid configuration: query is not a Query object"
+            return False
+
+        if not self.query.parameters_are_valid():
+            self.error_preventing_execution = "Invalid configuration: query parameters are invalid"
             return False
 
         # Period is a positive integer

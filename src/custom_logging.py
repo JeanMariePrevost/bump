@@ -91,6 +91,13 @@ general_logger: logging.Logger = logger_manager.get_logger("general")
 monitoring_logger: logging.Logger = logger_manager.get_logger("monitoring")
 
 
+def get_new_monitor_logger(name: str):
+    # Create path and file if they don't exist
+    log_dir = os.path.join(logger_manager.log_dir, "monitors")
+    os.makedirs(log_dir, exist_ok=True)
+    return logger_manager.get_logger("monitors/" + name)
+
+
 # Example usage
 # from logger_manager import general_logger, monitoring_logger
 

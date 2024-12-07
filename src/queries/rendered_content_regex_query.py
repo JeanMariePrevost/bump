@@ -40,6 +40,30 @@ class RenderedContentRegexQuery(Query):
     def update_query_params_string(self):
         self.query_params_as_string = self.regex_to_find
 
+    def parameters_are_valid(self) -> bool:
+        if not self.regex_to_find:
+            return False
+
+        if not self.url:
+            return False
+
+        if not self.timeout:
+            return False
+
+        if not isinstance(self.timeout, (int, float)) or self.timeout <= 0:
+            return False
+
+        if not isinstance(self.multi_line, bool):
+            return False
+
+        if not isinstance(self.ignore_case, bool):
+            return False
+
+        if not isinstance(self.dot_all, bool):
+            return False
+
+        return super().parameters_are_valid()
+
     def execute(self) -> QueryResult:
         self._start_time = datetime.now()
         try:

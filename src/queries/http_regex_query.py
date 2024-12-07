@@ -37,6 +37,12 @@ class HttpRegexQuery(HttpQuery):
     def update_query_params_string(self):
         self.query_params_as_string = self.regex_to_find
 
+    def parameters_are_valid(self) -> bool:
+        if not self.regex_to_find:
+            return False
+
+        return super().parameters_are_valid()
+
     def _test_passed_predicate(self, response: HTTPResponse | Exception) -> bool:
         self.flags = 0
         if self.multi_line:

@@ -110,6 +110,7 @@ class JsApi:
         if targetMonitor is None:
             return f"Monitor with name {unique_name} not found"
         targetMonitor.paused = new_paused_value
+        targetMonitor.log_monitor_event("Monintor paused." if new_paused_value else "Monitor unpaused.")
         mediator.get_monitors_manager().save_monitors_configs_to_file()
         return "true"
 

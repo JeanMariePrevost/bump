@@ -39,3 +39,9 @@ class Query(Deserializable):
         E.g. to add rule failure information, like "if respons eif fine but test failed, set the reason to 'Did not contain the string'"
         """
         return query_result
+
+    def parameters_are_valid(self) -> bool:
+        """
+        Check if the parameters for the query are valid.
+        """
+        return True

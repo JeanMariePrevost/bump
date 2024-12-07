@@ -2,6 +2,7 @@ from frontend.main_page import MainPage
 import mediator
 from monitor.monitor import Monitor
 from monitor.monitors_manager import MonitorsManager
+from my_utils import util
 from my_utils.simple_queue import QueueEvents
 import serialization
 from custom_logging import general_logger
@@ -13,35 +14,64 @@ general_logger.info("Starting application...")
 
 settings_manager.load_configs()
 
-
-def create_default_testing_monitors_setup():
-    from queries.http_query import HttpQuery
-    from queries.http_regex_query import HttpRegexQuery
-
-    temp_query = HttpQuery(url="http://www.google.com", timeout=10)
-    monitor = Monitor(unique_name="Google", period_in_seconds=16, query=temp_query)
-    temp_query = HttpRegexQuery(url="https://github.com/JeanMariePrevost/p3-project-pew-pew", timeout=10, regex_to_find="proj.*pew")
-    monitor2 = Monitor(unique_name="GitHub_pew_pew", period_in_seconds=8, query=temp_query)
-    monitors_manager = MonitorsManager.get_instance()
-    monitors_manager.add_monitor(monitor)
-    monitors_manager.add_monitor(monitor2)
-    general_logger.info("Default monitors created successfully.")
-    monitors_manager.save_to_file()
-    general_logger.info("Default monitors configuration file created.")
-
-
 general_logger.debug("Trying to load monitors from file...")
 try:
     monitors_manager: MonitorsManager = serialization.load_from_json_file("data/monitors.json")
     general_logger.info("Monitors loaded successfully.")
 except FileNotFoundError:
-    general_logger.warning("data/monitors.json not found. Creating default monitors setup.")
-    create_default_testing_monitors_setup()
-    monitors_manager: MonitorsManager = serialization.load_from_json_file("data/monitors.json")
+    general_logger.warning("No monitors file found. Creating new empty file at 'data/monitors.json'.")
+    monitors_manager = MonitorsManager()
+    monitors_manager.save_monitors_configs_to_file()
 except Exception as e:
-    general_logger.error(f"An error occurred while loading monitors: {e}. Creating new monitors manager.")
-    create_default_testing_monitors_setup()
-    monitors_manager: MonitorsManager = serialization.load_from_json_file("data/monitors.json")
+    general_logger.error(f"An error occurred while loading monitors: {e}.")
+    # Prompt user through simple tkinter dialog
+    import tkinter as tk
+    from tkinter import messagebox
+    import os
+
+    root = tk.Tk()
+    root.withdraw()  # Hide the root window
+
+    # Ask the user if they want to overwrite the file and start fresh
+    message = (
+        f"An error occurred while trying to load the monitors configuration file at 'data/monitors.json'."
+        f"\n\nError: {e}"
+        f"\n\nOverwrite with a new empty configuration?"
+    )
+
+    response = messagebox.askyesno("Error", message, icon=messagebox.ERROR)
+
+    if response:
+        message = "'data/monitors.json' will be overwritten.\n\nProceed?"
+        response = messagebox.askyesno("Warning", message, icon=messagebox.WARNING)
+
+    if response:
+        # User chose to overwrite the file and start fresh
+        monitors_manager = MonitorsManager()
+        monitors_manager.save_monitors_configs_to_file()
+        root.destroy()
+    else:
+        # Message box informing that the application cannot continue without the monitors file,
+        # and that the user can try to fix it by revealing the file in Explorer
+        message = (
+            f"The application could not load the monitors configuration."
+            f"\n\nError message: {e}"
+            f"\n\nNo changes were made."
+            f"\n\nYou can reload the application to start with a new empty configuration"
+            f" or try to fix 'data/monitors.json' manually."
+            f"\n\nOpen the config file directory before exiting?"
+        )
+        response = messagebox.askyesno("Error", message, icon=messagebox.ERROR)
+
+        if response:
+            # Open the directory containing the config file in Explorer and exit the application
+            config_file_path = util.resource_path("data/monitors.json")
+            os.startfile(os.path.dirname(config_file_path))
+
+        root.destroy()
+        general_logger.warning("Failed to load monitors. Exiting application.")
+        exit()
+
 
 mediator.register_monitors_manager(monitors_manager)
 async_bg_monitoring_thread = monitors_manager.start_background_monitoring_thread()

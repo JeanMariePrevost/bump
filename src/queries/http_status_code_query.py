@@ -24,6 +24,12 @@ class HttpStatusCodeQuery(HttpQuery):
     def update_query_params_string(self):
         self.query_params_as_string = self.expected_status_code
 
+    def parameters_are_valid(self) -> bool:
+        if not self.expected_status_code:
+            return False
+
+        return super().parameters_are_valid()
+
     def _test_passed_predicate(self, response: HTTPResponse | Exception) -> bool:
         if hasattr(response, "code"):
             return response.code == self.expected_status_code

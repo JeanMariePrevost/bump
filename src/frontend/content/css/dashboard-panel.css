@@ -41,9 +41,9 @@
   transform: translate(0, -50%); /* Compensate for the element's own height */
 }
 
-.summary-card .card-content {
+/* .summary-card .card-content {
   color: var(--status-unknown-color-800);
-}
+} */
 
 /* .summary-card[data-status="up"],
 .summary-card[data-status="up"] .card-content {
