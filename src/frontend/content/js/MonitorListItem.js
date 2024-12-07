@@ -20,6 +20,7 @@ export class MonitorListItem {
       // Add various global event listeners like when an item should appear as selected or when it should refresh itself
       document.addEventListener("monitor-edit-panel-ready", (event) => this.#onMonitorEditPanelReady(event));
       document.addEventListener("monitor-results-received", (event) => this.#onMonitorResultsReceived(event));
+      window.addEventListener("new_monitor_results_in_backend", (event) => this.#onMonitorResultsReceived(event));
     } else {
       console.error("Could not add self to DOM");
     }

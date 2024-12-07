@@ -26,10 +26,7 @@ export class DashboardPanel extends BaseComponent {
     this.#updateRecentEvents();
 
     window.addEventListener("new_monitor_results_in_backend", (event) => {
-      // const concernedMonitorName = event.detail.monitorName;
-      // console.log("Received new_monitor_results_in_backend event", event.detail);
-
-      // Refresh monitor list
+      // Refresh monitorListResponseData and update the summary card and recent events
       requestMonitorsList().then((response) => {
         if (!response) {
           console.error("Failed to fetch monitor list");
@@ -50,8 +47,6 @@ export class DashboardPanel extends BaseComponent {
           console.error("Failed to fetch log entries");
           return;
         }
-
-        console.log("Log entries received:", response);
 
         //TODO - Add entires until we reach one that is already displayed, then stop?
 
