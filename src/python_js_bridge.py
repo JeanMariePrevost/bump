@@ -90,8 +90,12 @@ class JsApi:
         return "true"
 
     def request_log_entries(self, max_number_of_entries: int, min_level: str = "INFO", include_general: bool = True, include_monitoring: bool = True):
+        """
+        Reads from general and/or monitors logs and returns the last `max_number_of_entries` entries of at least `min_level`.
+        """
         print(f"Received request for log entries")
-        # Parse BOTH log files for entries of a given level or higher
+
+        # Get log entries from the general log and all monitors logs
         log_entries = []
         if include_general:
             # Add log entries from the general log
@@ -105,7 +109,7 @@ class JsApi:
         # Sort alphanumerically descending since they start with a timestamp
         log_entries.sort(reverse=True)
 
-        # Return the first max_number_of_entries
+        # Return the first (i.e. most recent) max_number_of_entries
         return log_entries[:max_number_of_entries]
 
     def set_monitor_pause_state(self, unique_name: str, new_paused_value: bool) -> str:

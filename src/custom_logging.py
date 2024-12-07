@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 
 from colorama import Fore, Back, Style, init
 
@@ -93,7 +94,6 @@ logger_manager = LoggerManager()
 
 # Predefined feeds
 general_logger: logging.Logger = logger_manager.get_logger("general")
-monitoring_logger: logging.Logger = logger_manager.get_logger("monitoring")
 
 
 def get_custom_logger(name: str) -> logging.Logger:
@@ -126,28 +126,45 @@ def extract_log_level_from_entry(log_entry: str) -> str:
 def read_entries_from_log_file(log_file_path: str, mnumber_of_entries: int, min_level: str = "INFO"):
     """
     Reads and returns the last `mnumber_of_entries` log entries from the specified log file with the specified level.
-    Expects log_file_path to be the ful path, not just relative to the log directory.
+    Expects log_file_path to be the full path, not just relative to the log directory.
     """
     log_entries = []
 
-    levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+    accepted_log_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
-    if min_level not in levels:
+    if min_level not in accepted_log_levels:
         general_logger.error(f"Invalid log level: {min_level}")
         return log_entries
-    levels = levels[levels.index(min_level) :]  # Get all levels from the specified level to the end
+    accepted_log_levels = accepted_log_levels[accepted_log_levels.index(min_level) :]
+
+    # The pattern that determines when to finish adding lines to the current entry and start a new one
+    entry_delimiter_pattern = re.compile(r"^\d{4}-\d{2}-\d{2}")
 
     try:
         with open(log_file_path, "r") as f:
             lines = f.readlines()
-            count = 0
-            for line in reversed(lines):
-                line_log_level = extract_log_level_from_entry(line)
-                if line_log_level in levels:
-                    log_entries.append(line)
-                    count += 1
-                    if count >= mnumber_of_entries:
-                        break
+
+        selected_entries_count = 0
+        current_entry = ""
+        # For every line in the log file, starting from the end (i.e. most recents)
+        for line in reversed(lines):
+            if selected_entries_count >= mnumber_of_entries:
+                break
+
+            # Append the current line to the current entry
+            current_entry = line + current_entry
+
+            if entry_delimiter_pattern.match(line):
+                # current_entry ends on this line, add it to the list if it has the right log level and start a new entry
+                line_log_level = extract_log_level_from_entry(current_entry)
+                if line_log_level in accepted_log_levels:
+                    log_entries.append(current_entry)
+                    selected_entries_count += 1
+
+                current_entry = ""
+
     except Exception as e:
         general_logger.error(f"Error while reading log file: {e}")
+        return []
+
     return log_entries

@@ -118,7 +118,9 @@ export async function requestMonitorHistory(monitorName, numberOfResults) {
  * @returns {Promise<Array<Object>>} Array of objects, each containing the log entry under its 'value' property
  */
 export async function requestLogEntries(numberOfEntries) {
-  const response = await pywebview.api.request_log_entries(numberOfEntries);
+  // Signature for reference:
+  // request_log_entries(self, max_number_of_entries: int, min_level: str = "INFO", include_general: bool = True, include_monitoring: bool = True)
+  const response = await pywebview.api.request_log_entries(numberOfEntries, "INFO", true, true);
   return response;
 }
 

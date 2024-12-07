@@ -53,8 +53,11 @@ export class DashboardPanel extends BaseComponent {
 
         console.log("Log entries received:", response);
 
-        // Add each to .recent-events-card .recent-events
+        // Clear the existing log entries
         const recentEvents = document.querySelector(".recent-events");
+        recentEvents.innerHTML = "";
+
+        // Add the new log entries
         for (let i = 0; i < response.length; i++) {
           const newElement = document.createElement("div");
           newElement.className = "recent-events-item";

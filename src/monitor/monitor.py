@@ -7,7 +7,7 @@ from my_utils.util import get_query_class_from_string, is_valid_filename, is_val
 from queries.query import Query
 from queries.query_result import QueryResult
 from serialization import Deserializable
-from custom_logging import get_custom_logger, monitoring_logger, read_entries_from_log_file
+from custom_logging import get_custom_logger, read_entries_from_log_file
 import serialization
 from custom_logging import general_logger
 import email_service
@@ -53,12 +53,11 @@ class Monitor(Deserializable):
         self.set_next_run_time()  # Has to happen before the paused/invalid checks otherwise it will fire every cycle
 
         if self.paused:
-            monitoring_logger.debug(f"Monitor {self.unique_name} is paused, skipping execution.")
+            # self.log_monitor_event("Monitor paused, skipped execution.", level="INFO")
             return QueryResult(exception_type="Paused", message="Monitor is paused", reason="Monitor is paused")
 
         if not self.validate_monitor_configuration():
-            monitoring_logger.error(f"Monitor {self.unique_name} has invalid configuration: {self.error_preventing_execution}")
-            self.log_monitor_event(f"Monitor should have executed but is stopped due to invalid configuration: {self.error_preventing_execution}")
+            self.log_monitor_event(f"Could not run due to invalid configuration: {self.error_preventing_execution}, level='ERROR'")
             # Execution stops, this result will not be dispatched nor saved
             return QueryResult(
                 exception_type="Invalid Configuration", message=self.error_preventing_execution, reason=self.error_preventing_execution
@@ -68,10 +67,10 @@ class Monitor(Deserializable):
         try:
             query_result: QueryResult = self.query.execute()
         except Exception as e:
-            monitoring_logger.error(f"Monitor {self.unique_name} failed to execute: {e}")
+            self.log_monitor_event(f"Execution failed: {e}", level="ERROR")
             self.error_preventing_execution = str(e)
 
-        monitoring_logger.debug(f"Monitor {self.unique_name} executed with result: {query_result}")
+        self.log_monitor_event(f"Executed with results: {query_result}", level="DEBUG")
 
         self.handle_new_query_result(query_result)
 
@@ -91,16 +90,18 @@ class Monitor(Deserializable):
         if level not in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
             level = DEFAULT_LOG_LEVEL
 
+        log_string = f"{self.unique_name} - {event}"
+
         if level == "DEBUG":
-            self.__logger.debug(event)
+            self.__logger.debug(log_string)
         elif level == "INFO":
-            self.__logger.info(event)
+            self.__logger.info(log_string)
         elif level == "WARNING":
-            self.__logger.warning(event)
+            self.__logger.warning(log_string)
         elif level == "ERROR":
-            self.__logger.error(event)
+            self.__logger.error(log_string)
         elif level == "CRITICAL":
-            self.__logger.critical(event)
+            self.__logger.critical(log_string)
         else:
             raise ValueError(f"Invalid log level: {level}")
 
@@ -127,16 +128,12 @@ class Monitor(Deserializable):
         # Trigger a status change if the status changed
         if not hasattr(self, "last_query_passed") or self.last_query_passed is None:
             current_status_string = "up" if query_result.test_passed else "down"
-            monitoring_logger.info(f"Monitor {self.unique_name} ran for the first time and it is {current_status_string}")
+            self.log_monitor_event(f"Monitor's first execution complete. Current status: {current_status_string}.", level="INFO")
         elif self.last_query_passed != query_result.test_passed:
             mediator.monitor_status_changed.trigger(self.unique_name)
             self.sendUserAlerts(query_result)
 
-            self.log_monitor_event(f"Status changed from {self.last_query_passed} to {query_result.test_passed}")
-
-            current_status_string = "up" if query_result.test_passed else "down"
-            previous_status_string = "up" if self.last_query_passed else "down"
-            monitoring_logger.warning(f"Monitor {self.unique_name} status changed from [{previous_status_string}] to [{current_status_string}]")
+            self.log_monitor_event(f"Monitor is {'back online' if query_result.test_passed else 'down'}", level="WARNING")
         self.last_query_passed = query_result.test_passed
 
     def sendUserAlerts(self, query_result: QueryResult):
