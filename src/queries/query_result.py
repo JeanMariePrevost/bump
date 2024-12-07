@@ -18,12 +18,12 @@ class QueryResult(Deserializable):
     ) -> None:
         self.start_time = start_time
         self.end_time = end_time
-        self.test_passed = test_passed
-        self.retries = retries
-        self.code_or_status = code_or_status
-        self.message = message
-        self.reason = reason
-        self.exception_type = exception_type
+        self.test_passed = bool(test_passed) if test_passed is not None else None
+        self.retries = int(retries) if retries else None
+        self.code_or_status = int(code_or_status) if code_or_status else None
+        self.message = str(message) if message else None
+        self.reason = str(reason) if reason else None
+        self.exception_type = str(exception_type) if exception_type else None
 
     def __str__(self):
         status = "Passed" if self.test_passed else "Failed"
