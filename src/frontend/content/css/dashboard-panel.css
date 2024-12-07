@@ -96,6 +96,16 @@ Log portion of the dashboard
   word-break: break-all;
 }
 
+.recent-events-item[data-extra-event-type="good"] {
+  background-color: var(--status-good-color-100);
+  color: var(--status-good-color-600) !important;
+}
+
+.recent-events-item[data-extra-event-type="bad"] {
+  background-color: var(--status-bad-color-100);
+  color: var(--status-bad-color-600) !important;
+}
+
 .expanded {
   max-height: 50rem; /* Unfolded */
 }

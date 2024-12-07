@@ -53,30 +53,64 @@ export class DashboardPanel extends BaseComponent {
 
         console.log("Log entries received:", response);
 
+        //TODO - Add entires until we reach one that is already displayed, then stop?
+
         // Clear the existing log entries
         const recentEvents = document.querySelector(".recent-events");
+        const scrollTop = recentEvents.parentElement.scrollTop; // Save the current scroll position
         recentEvents.innerHTML = "";
+
+        function formatLogEntryElement(logEntryElement, rawText) {
+          // Kinda jank/fragile method of applying color and formatting to log entries
+          // TODO - Come up with a more robust system than regex... tight coupling between string formats... at least it's visual-only
+          let processedText = rawText;
+
+          // Trim the timestamp to make it slightly easier to read (e.g. from "2024-12-07 15:27:14,060 " to "2024-12-07 15:27:14 ")
+          const timestampRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}/;
+          const timestampMatch = processedText.match(timestampRegex);
+          if (timestampMatch) {
+            const trimmedTimestamp = timestampMatch[0].replace(/,\d{3}$/, ""); // Remove milliseconds
+            processedText = processedText.replace(timestampRegex, trimmedTimestamp);
+          }
+
+          // Remove the module:line part of the log entry for anything that isn't a ERROR/CRITICAL
+          // E.g. " (monitor.log_monitor_event:ln96) "
+          if (!processedText.includes("[ERROR]") && !processedText.includes("[CRITICAL]")) {
+            const moduleLineRegex = /\s\(.+:.*?\d+\)\s/;
+            const moduleLineMatch = processedText.match(moduleLineRegex);
+            if (moduleLineMatch) {
+              processedText = processedText.replace(moduleLineRegex, " ");
+            }
+          }
+
+          // Apply color to the log level and remove it from the text
+          const logLevelRegex = /(\[DEBUG\]|\[INFO\]|\[WARNING\]|\[ERROR\]|\[CRITICAL\])/;
+          const logLevelMatch = processedText.match(logLevelRegex);
+          if (logLevelMatch) {
+            const logLevel = logLevelMatch[0].replace(/\[|\]/g, "");
+            logEntryElement.setAttribute("data-log-level", logLevel.toLowerCase());
+            processedText = processedText.replace(logLevelRegex, "");
+          } else {
+            logEntryElement.setAttribute("data-log-level", "info");
+          }
+
+          // HACK - Apply special case coloring for good/bad monitoring events
+          if (processedText.includes("onitor is back online")) {
+            logEntryElement.setAttribute("data-extra-event-type", "good");
+          }
+          if (processedText.includes("onitor is down")) {
+            logEntryElement.setAttribute("data-extra-event-type", "bad");
+          }
+
+          // Apply the text to the element
+          logEntryElement.innerText = processedText;
+        }
 
         // Add the new log entries
         for (let i = 0; i < response.length; i++) {
           const newElement = document.createElement("div");
           newElement.className = "recent-events-item";
-          newElement.innerText = response[i];
-          //Set a data-log-level attribute to the element based on whether the entry contains "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"
-          if (response[i].includes("CRITICAL")) {
-            newElement.setAttribute("data-log-level", "critical");
-          } else if (response[i].includes("ERROR")) {
-            newElement.setAttribute("data-log-level", "error");
-          } else if (response[i].includes("WARNING")) {
-            newElement.setAttribute("data-log-level", "warning");
-          } else if (response[i].includes("INFO")) {
-            newElement.setAttribute("data-log-level", "info");
-          } else if (response[i].includes("DEBUG")) {
-            newElement.setAttribute("data-log-level", "debug");
-          } else {
-            // Default to "INFO"
-            newElement.setAttribute("data-log-level", "info");
-          }
+          formatLogEntryElement(newElement, response[i]);
 
           recentEvents.appendChild(newElement);
 
@@ -100,6 +134,9 @@ export class DashboardPanel extends BaseComponent {
             }
           });
         }
+
+        // Restore the scroll position
+        recentEvents.parentElement.scrollTop = scrollTop;
       })
       .catch((error) => {
         console.error("Error while fetching log entries:", error);

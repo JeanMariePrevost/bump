@@ -263,7 +263,7 @@ class Monitor(Deserializable):
         """
 
         def log_and_raise_error(message: str):
-            self.log_monitor_event.error(f"Failed to new configuration: {message}")
+            self.log_monitor_event.error(f"Failed to apply new configuration: {message}")
             raise ValueError(message)
 
         # VALIDATION
