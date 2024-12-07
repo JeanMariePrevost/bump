@@ -7,7 +7,7 @@ from my_utils.util import get_query_class_from_string, is_valid_filename, is_val
 from queries.query import Query
 from queries.query_result import QueryResult
 from serialization import Deserializable
-from custom_logging import get_new_monitor_logger, monitoring_logger
+from custom_logging import get_custom_logger, monitoring_logger, read_entries_from_log_file
 import serialization
 from custom_logging import general_logger
 import email_service
@@ -77,7 +77,7 @@ class Monitor(Deserializable):
 
         self.append_query_result_to_history(query_result)
 
-        mediator.new_monitor_results.trigger()
+        mediator.new_monitor_results.trigger(self.unique_name)
 
         # HACK - Ended up with some state in the monitor CONFIGURATIONS... so I'll simply force save on every new result until I can think of a proper solution (just split it? Keep it this way?)
         mediator.get_monitors_manager().save_monitors_configs_to_file()
@@ -86,7 +86,7 @@ class Monitor(Deserializable):
     def log_monitor_event(self, event: str, level: str = "INFO"):
         """Adds an entry to the monitoring file."""
         if self.__logger is None:
-            self.__logger = get_new_monitor_logger(self.unique_name)
+            self.__logger = get_custom_logger("monitors/" + self.unique_name)
 
         if level not in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
             level = DEFAULT_LOG_LEVEL
@@ -104,6 +104,17 @@ class Monitor(Deserializable):
         else:
             raise ValueError(f"Invalid log level: {level}")
 
+    def read_monitor_log_entries(self, max_number_of_entries: int, min_level: str = "INFO"):
+        """Reads and returns the last `max_number_of_entries` log entries from the monitor's log file with the specified level."""
+        partial_path = f"logs/monitors/{self.unique_name}.log"
+        log_file_path = util.resource_path(partial_path)
+        # If file doesn't exist, log a warning and return []
+        if not os.path.exists(log_file_path):
+            general_logger.warning(f"Log file {partial_path} does not exist.")
+            return []
+        else:
+            return read_entries_from_log_file(log_file_path, max_number_of_entries, min_level)
+
     def set_next_run_time(self):
         """Sets the next run time based on the period_in_seconds, or a safe default if the period is invalid."""
         if getattr(self, "period_in_seconds", None) is None or self.period_in_seconds < 1:
@@ -118,7 +129,7 @@ class Monitor(Deserializable):
             current_status_string = "up" if query_result.test_passed else "down"
             monitoring_logger.info(f"Monitor {self.unique_name} ran for the first time and it is {current_status_string}")
         elif self.last_query_passed != query_result.test_passed:
-            # TODO - Signal the change / send alerts? E.g. to the GUI?
+            mediator.monitor_status_changed.trigger(self.unique_name)
             self.sendUserAlerts(query_result)
 
             self.log_monitor_event(f"Status changed from {self.last_query_passed} to {query_result.test_passed}")
@@ -333,16 +344,16 @@ class Monitor(Deserializable):
                     for handler in targetMonitor.__logger.handlers:
                         targetMonitor.__logger.removeHandler(handler)
                         handler.close()
-                # TODO: Don't hardcode the log path
+                # TODO: Don't hardcode the log path?
                 old_log_path = util.resource_path(f"logs/monitors/{config['original_name']}.log")
                 if os.path.exists(old_log_path):
                     os.rename(old_log_path, f"logs/{targetMonitor.unique_name}.log")
-                targetMonitor.__logger = get_new_monitor_logger(targetMonitor.unique_name)
+                targetMonitor.__logger = get_custom_logger("monitors/" + targetMonitor.unique_name)
         except Exception as e:
             general_logger.error(f"Error while renaming monitor history file: {e}")
             traceback.print_exc()
 
-        self.log_monitor_event(f"Configuration uchanged.")
+        self.log_monitor_event(f"Configuration modified by user.")
 
     def validate_monitor_configuration(self) -> bool:
         """

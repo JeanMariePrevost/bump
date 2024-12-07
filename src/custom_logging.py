@@ -3,6 +3,7 @@ import os
 
 from colorama import Fore, Back, Style, init
 
+
 init(autoreset=True)
 
 # Color definitions for logs
@@ -68,6 +69,10 @@ class LoggerManager:
         if self.log_to_file:
             # Separate log file for each logger
             log_file = os.path.join(self.log_dir, f"{name}.log")
+
+            # Ensure the directory exists
+            os.makedirs(os.path.dirname(log_file), exist_ok=True)
+
             file_handler = logging.FileHandler(log_file)
             file_handler.setFormatter(DynamicFormatter())
             handlers.append(file_handler)
@@ -91,22 +96,38 @@ general_logger: logging.Logger = logger_manager.get_logger("general")
 monitoring_logger: logging.Logger = logger_manager.get_logger("monitoring")
 
 
-def get_new_monitor_logger(name: str):
-    # Create path and file if they don't exist
-    log_dir = os.path.join(logger_manager.log_dir, "monitors")
-    os.makedirs(log_dir, exist_ok=True)
-    return logger_manager.get_logger("monitors/" + name)
+def get_custom_logger(name: str) -> logging.Logger:
+    """
+    Get a custom logger with the specified name.
+    The name is also used to create a log file with the same name/path.
+    Example:
+    custom_logger = get_custom_logger("monitors/monitor1")
+    Will create a log file at "{logger_manager.log_dir}/monitors/monitor1.log"
+    """
+    from my_utils import util
+
+    # Ensure the path exists
+    # relative_path = logger_manager.log_dir + "/" + name
+    # full_path = util.resource_path(relative_path)
+    # os.makedirs(full_path, exist_ok=True)
+    return logger_manager.get_logger(name)
 
 
-# Example usage
-# from logger_manager import general_logger, monitoring_logger
+def extract_log_level_from_entry(log_entry: str) -> str:
+    """Extracts the log level from a log entry."""
+    levels_patterns = ["[DEBUG]", "[INFO]", "[WARNING]", "[ERROR]", "[CRITICAL]"]
+    level_if_unknown = "INFO"
+    for level in levels_patterns:
+        if level in log_entry:
+            return level[1:-1]  # Remove brackets
+    return level_if_unknown
 
-# general_logger.info("This is a general log.")
-# monitoring_logger.debug("This is a monitoring-specific debug log.")
 
-
-def read_log_entries(log_file_path: str, mnumber_of_entries: int, min_level: str = "INFO"):
-    """Reads and returns the last `mnumber_of_entries` log entries from the specified log file with the specified level."""
+def read_entries_from_log_file(log_file_path: str, mnumber_of_entries: int, min_level: str = "INFO"):
+    """
+    Reads and returns the last `mnumber_of_entries` log entries from the specified log file with the specified level.
+    Expects log_file_path to be the ful path, not just relative to the log directory.
+    """
     log_entries = []
 
     levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
@@ -130,14 +151,3 @@ def read_log_entries(log_file_path: str, mnumber_of_entries: int, min_level: str
     except Exception as e:
         general_logger.error(f"Error while reading log file: {e}")
     return log_entries
-    # return log_entries[::-1]  # Reverse to maintain original order?
-
-
-def extract_log_level_from_entry(log_entry: str) -> str:
-    """Extracts the log level from a log entry."""
-    levels_patterns = ["[DEBUG]", "[INFO]", "[WARNING]", "[ERROR]", "[CRITICAL]"]
-    level_if_unknown = "INFO"
-    for level in levels_patterns:
-        if level in log_entry:
-            return level[1:-1]  # Remove brackets
-    return level_if_unknown

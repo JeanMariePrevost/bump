@@ -1,8 +1,8 @@
 import json
 import webview
 
-from custom_logging import general_logger
-import custom_logging
+from custom_logging import general_logger, read_entries_from_log_file
+import my_utils.util
 import mediator
 from monitor.monitor import Monitor
 from queries.query import Query
@@ -15,6 +15,17 @@ VALID_QUERY_TYPES = ["http_simple", "http_content", "http_headers", "http_status
 
 
 def send_event_to_js(window: webview.Window, event_type: str, data: dict):
+    """
+    Executes JavaScript code in the frontend to send an event to the Python backend.
+    Can be listened to in the frontend by simply adding an event listener to the global "window" object.
+
+    Example:
+
+        window.addEventListener("my_event_type_name", (event) => {
+            // No parsing needed, the event.detail is already a JS object
+            console.log("Received payload: ", event.detail);
+        });
+    """
     if window is None:
         general_logger.exception("send_event_to_js: Window is None, cannot send event.")
         return
@@ -35,11 +46,6 @@ class JsApi:
     def send_event_to_python(self, event_type, data):
         print(f"Received event: {event_type} with data: {data}")
         pass
-
-    def test_request_some_data(self, input_string: str):
-        print(f"Received request for data with input: {input_string}")
-        result = input_string + " - modified on the Python side"
-        return {"data": result}
 
     def request_all_monitors_data(self):
         print("Received request for monitors data")
@@ -88,9 +94,13 @@ class JsApi:
         # Parse BOTH log files for entries of a given level or higher
         log_entries = []
         if include_general:
-            log_entries += custom_logging.read_log_entries("logs/general.log", max_number_of_entries, min_level)
+            # Add log entries from the general log
+            general_log_path = my_utils.util.resource_path("logs/general.log")
+            log_entries += read_entries_from_log_file(general_log_path, max_number_of_entries, min_level)
         if include_monitoring:
-            log_entries += custom_logging.read_log_entries("logs/monitoring.log", max_number_of_entries, min_level)
+            # Add log entries for all monitors in the manager
+            for monitor in mediator.get_monitors_manager().monitors:
+                log_entries += monitor.read_monitor_log_entries(max_number_of_entries, min_level)
 
         # Sort alphanumerically descending since they start with a timestamp
         log_entries.sort(reverse=True)
@@ -177,3 +187,25 @@ def get_js_api():
     if __js_api is None:
         __js_api = JsApi()
     return __js_api
+
+
+def hook_frontend_to_backend_signals() -> None:
+    """
+    Hooks up signals from the backend to be forwarded to the frontend.
+    """
+
+    def send_new_results_event(monitor_name: str):
+        current_gui = mediator.get_active_gui()
+        if current_gui is None:
+            # No active GUI to send events to
+            return
+
+        try:
+            current_window = current_gui.window
+        except AttributeError:
+            general_logger.exception("hook_frontend_to_backend_signals: Could not get current window.")
+            return
+
+        send_event_to_js(current_window, "new_monitor_results_in_backend", {"monitor_name": monitor_name})
+
+    mediator.new_monitor_results.add(send_new_results_event)

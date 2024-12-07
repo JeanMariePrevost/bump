@@ -1,5 +1,5 @@
 import { BaseComponent } from "./BaseComponent.js";
-import { requestLogEntries } from "./PythonJsBridge.js";
+import { requestLogEntries, requestMonitorsList } from "./PythonJsBridge.js";
 
 /**
  * Handles the dashboard right-column panel
@@ -24,6 +24,23 @@ export class DashboardPanel extends BaseComponent {
 
     this.#updateSummaryCard(this.monitorListResponseData);
     this.#updateRecentEvents();
+
+    window.addEventListener("new_monitor_results_in_backend", (event) => {
+      // const concernedMonitorName = event.detail.monitorName;
+      // console.log("Received new_monitor_results_in_backend event", event.detail);
+
+      // Refresh monitor list
+      requestMonitorsList().then((response) => {
+        if (!response) {
+          console.error("Failed to fetch monitor list");
+          return;
+        }
+
+        this.monitorListResponseData = response;
+        this.#updateSummaryCard(this.monitorListResponseData);
+        this.#updateRecentEvents();
+      });
+    });
   }
 
   #updateRecentEvents() {

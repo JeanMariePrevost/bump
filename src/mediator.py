@@ -30,7 +30,8 @@ app_exit_requested = Signal()  # E.g. the user has requested the application to 
 all_monitors_now_up = Signal()  # all monitors are now up, change the tray icon to normal
 some_monitors_down = Signal()  # some monitors are now down, change the tray icon to down
 some_monitors_have_exceptions = Signal()  # some monitors now have exceptions, change the tray icon to warning
-new_monitor_results = Signal()  # new results have been received from any monitor
+new_monitor_results = Signal(str)  # new results have been received from any monitor, with the monitor's unique name as the argument
+monitor_status_changed = Signal(str)  # the status of a monitor has changed, with the monitor's unique name as the argument
 
 
 ############################################################################################
@@ -49,8 +50,6 @@ def register_active_gui(window: MainPage | None):
 
 
 def get_active_gui() -> MainPage | None:
-    if __active_gui is None:
-        raise ValueError("Active GUI not set")
     return __active_gui
 
 

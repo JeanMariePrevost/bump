@@ -7,14 +7,14 @@ from serialization import Deserializable
 from custom_logging import general_logger
 import serialization
 
-MONITOR_LOOP_INTERVAL_S = 30
+MONITOR_LOOP_INTERVAL_S = 5  # Defines the minimum "resolution" of monitor checks, i.e. even if your monitors are set to go every seconds, they will only be checked if due every MONITOR_LOOP_INTERVAL_S seconds
 
 
 class MonitorsManager(Deserializable):
 
     def __init__(self) -> None:
         self.monitors: list[Monitor] = []
-        mediator.new_monitor_results.add(self.checkIfAllMonitorsAreUpAndValid)
+        mediator.new_monitor_results.add(lambda _: self.checkIfAllMonitorsAreUpAndValid())
 
     def add_monitor(self, monitor: Monitor) -> None:
         # Ensure no duplicate names

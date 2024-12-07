@@ -4,6 +4,7 @@ from monitor.monitor import Monitor
 from monitor.monitors_manager import MonitorsManager
 from my_utils import util
 from my_utils.simple_queue import QueueEvents
+import python_js_bridge
 import serialization
 from custom_logging import general_logger
 from system_tray_icon import SystemTrayIcon
@@ -76,6 +77,7 @@ except Exception as e:
 mediator.register_monitors_manager(monitors_manager)
 async_bg_monitoring_thread = monitors_manager.start_background_monitoring_thread()
 
+python_js_bridge.hook_frontend_to_backend_signals()  # Allows the JS frontend to receive specific backend events
 
 # Start custom HTTP server in the background
 from bottle_server import BottleServer

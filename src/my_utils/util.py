@@ -9,7 +9,7 @@ from custom_logging import general_logger
 def resource_path(relative_path):
     """
     Resolves absolute path to resource, required for PyInstaller compatibility.
-    :param relative_path: The relative path to the resource
+    :param relative_path: The relative path to the resource, from the root directory
     :return: The absolute path to the resource
     """
     if hasattr(sys, "_MEIPASS"):

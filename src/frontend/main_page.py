@@ -13,7 +13,7 @@ DEFAULT_WINDOW_HEIGHT = 800
 
 class MainPage:
     def __init__(self) -> None:
-        self._window: webview.Window = None
+        self.window: webview.Window = None
         mediator.app_exit_requested.add(self.close)
         mediator.main_loop_exited.add(self.close)
         pass
@@ -24,12 +24,12 @@ class MainPage:
         else:
             general_logger.exception("MainPage.show: Calling from a non-main thread. This is not supported.")
             return
-        if self._window is not None:
+        if self.window is not None:
             general_logger.debug("MainPage.show: Window already open, not opening another one.")
             return
 
         # NOTE: pywebview uses the script's current working directory as the base directory for relative paths. E.g. /src/...
-        self._window: webview.Window = webview.create_window(
+        self.window: webview.Window = webview.create_window(
             title="BUMP - Dashboard",
             url=mediator.get_http_server(),
             js_api=python_js_bridge.get_js_api(),
@@ -38,27 +38,19 @@ class MainPage:
             height=DEFAULT_WINDOW_HEIGHT,
         )
 
-        self._window.events.closed += self.close
+        self.window.events.closed += self.close
         mediator.register_active_gui(self)
 
-        webview.start(self.webview_custom_logic_callback, icon=util.resource_path("assets/icon_32px.png"), debug=True)
+        webview.start(icon=util.resource_path("assets/icon_32px.png"), debug=True)
 
     def close(self):
-        if mediator.get_active_gui() == self._window:
+        if mediator.get_active_gui() == self.window:
             mediator.register_active_gui(None)
-        if self._window is not None:
-            self._window.events.closed -= self.close
-            self._window.destroy()
-        self._window = None
+        if self.window is not None:
+            self.window.events.closed -= self.close
+            self.window.destroy()
+        self.window = None
         print("MainPage.close: Window closed.")
 
     def is_open(self) -> bool:
-        return self._window is not None
-
-    def webview_custom_logic_callback(self):
-        # A separate thread handled by the webview?
-        print("Webview custom logic callback")
-        time.sleep(2)
-        # Dispatch dummy event to test communication
-        python_js_bridge.send_event_to_js(self._window, "py_js_test_event", {"data": "Hello from the backend!"})
-        pass
+        return self.window is not None
