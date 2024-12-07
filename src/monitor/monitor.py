@@ -120,6 +120,8 @@ class Monitor(Deserializable):
             # TODO - Signal the change / send alerts? E.g. to the GUI?
             self.sendUserAlerts(query_result)
 
+            self.log_monitor_event(f"Status changed from {self.last_query_passed} to {query_result.test_passed}")
+
             current_status_string = "up" if query_result.test_passed else "down"
             previous_status_string = "up" if self.last_query_passed else "down"
             monitoring_logger.warning(f"Monitor {self.unique_name} status changed from [{previous_status_string}] to [{current_status_string}]")
