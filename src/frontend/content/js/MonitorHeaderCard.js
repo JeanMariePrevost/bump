@@ -56,15 +56,20 @@ export class MonitorHeaderCard extends BaseComponent {
     const headerCardDiv = this.element.querySelector(".monitor-details-header-card");
     headerCardDiv?.setAttribute("data-status", dataStatus);
 
-    // Set the correctly visibility for pause or unpause buttons
+    // Set the correctly visibility for pause or unpause buttons, and active/inactive state for the "check now" button
     const pauseActionLink = this.element.querySelector(".monitor-action-link[data-action='pause']");
     const unpauseActionLink = this.element.querySelector(".monitor-action-link[data-action='unpause']");
+    const checkNowActionLink = this.element.querySelector(".monitor-action-link[data-action='execute']");
     if (monitorData.value.paused) {
       pauseActionLink.classList.add("display-none");
       unpauseActionLink.classList.remove("display-none");
+      if (checkNowActionLink) {
+        checkNowActionLink.classList.add("no-events", "opacity-50");
+      }
     } else {
       pauseActionLink.classList.remove("display-none");
       unpauseActionLink.classList.add("display-none");
+      checkNowActionLink.classList.remove("no-events", "opacity-50");
     }
 
     // Set the monitor name
