@@ -2,6 +2,7 @@ import { MonitorListItem } from "./MonitorListItem.js";
 import { requestMonitorsList, requestLogEntries, requestNewEmptyMonitor } from "./PythonJsBridge.js";
 import { DashboardPanel } from "./DashboardPanel.js";
 import { MonitorEditPanel } from "./MonitorEditPanel.js";
+import { NavbarComponent } from "./NavbarComponent.js";
 
 // Holds a ref of all the MonitorListItem loaded
 const monitorsInList = [];
@@ -17,6 +18,8 @@ export function addMonitorToList(monitorData) {
   console.log("Adding a new card to the page");
   const newItem = new MonitorListItem(monitorData);
   monitorsInList.push(newItem);
+
+  const navBar = new NavbarComponent(".navbar-container");
 
   updateNoMonitorsElementVisibility();
 }

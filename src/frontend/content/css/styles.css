@@ -112,6 +112,7 @@ html {
 }
 
 /* Navigation bar */
+
 .navbar {
   align-items: center; /* Vertically center */
   background-color: var(--background-dark-color);
