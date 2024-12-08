@@ -102,16 +102,3 @@ window.addEventListener("pywebviewready", function () {
     button.addEventListener("click", _onCardTitleButtonClick);
   });
 });
-
-// Custom pywebview events should be globally accessible
-// window.addEventListener("py_js_test_event", (event) => {
-//   console.log("Event received from Python:");
-//   // Print each key-value pair in the event payload
-//   for (const key in event.detail) {
-//     console.log(`${key}: ${event.detail[key]}`);
-//   }
-
-//   //extract the "data" key from the event payload
-//   const data = event.detail.data;
-//   console.log(`data: ${data}`);
-// });

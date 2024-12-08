@@ -17,6 +17,9 @@ class BottleServer:
         @self.server.route("/<path:path>")
         def serve_content(path):
             """Serves static files from the frontend content folder, where the html, css, js files are."""
+            if "." not in path:
+                # Default to serving html files if no extension is provided
+                path += ".html"
             return static_file(path, root="src/frontend/content")
 
         @self.server.route("/")
