@@ -1,0 +1,12 @@
+.about-title {
+  font-size: xx-large;
+  color: var(--accent-color);
+  margin-top: 1rem;
+  margin-bottom: 0.3rem;
+  text-align: center;
+}
+
+.about-text {
+  text-align: center;
+  padding-bottom: 0.2rem;
+}

@@ -3,23 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BUMP - Dashboard</title>
+    <title>BUMP - About</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="stylesheet" href="css/styles.css" />
-    <link rel="stylesheet" href="css/monitors-list.css" />
-    <link rel="stylesheet" href="css/dashboard-panel.css" />
-    <link rel="stylesheet" href="css/monitor-details-panel.css" />
-    <link rel="stylesheet" href="css/monitor-edit-panel.css" />
+    <link rel="stylesheet" href="css/about-page.css" />
   </head>
 
   <body>
     <div class="page">
       <nav class="navbar-container"></nav>
-      <main class="content">Hello world</main>
+      <main class="content">
+        <div class="single-column-content-layout">
+          <div class="card">
+            <div class="card-title">About</div>
+            <div class="card-content">
+              <div class="about-title">BUMP</div>
+              <div class="about-text">Basic Uptime Monitoring Program</div>
+              <br />
+              <div class="about-text" id="version-text">Version:</div>
+              <div class="about-text" id="release-date-text">Released on</div>
+              <br />
+              <div class="about-text">Developed by Jean-Marie Prévost</div>
+              <div class="about-text">
+                <a href="https://github.com/JeanMariePrevost/bump" class="external-link">https://github.com/JeanMariePrevost/bump</a>
+              </div>
+              <br />
+              <div class="about-text">Licensed under the MIT License</div>
+              <br />
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
 
-    <script type="module" src="js/MainPage.js"></script>
+    <script type="module" src="js/AboutPage.js"></script>
   </body>
 </html>

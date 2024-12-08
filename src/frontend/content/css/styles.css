@@ -185,6 +185,18 @@ html {
   box-sizing: border-box;
 }
 
+/* For pages like "about" or "settings" that have a single column layout */
+.single-column-content-layout {
+  display: flex;
+  flex-direction: column;
+  margin: 20px auto;
+  max-width: 1600px;
+  overflow: visible;
+  min-height: 0;
+  max-height: 100%;
+  width: 70%;
+}
+
 .horizontal-flex-container .left-column {
   display: flex;
   flex-direction: column;

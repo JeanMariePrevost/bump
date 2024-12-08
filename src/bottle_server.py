@@ -27,6 +27,11 @@ class BottleServer:
             """Required by pywebview to define an entry point when passing a server instead of a url to create_window."""
             return static_file("main_page.html", root="src/frontend/content/")
 
+        @self.server.route("/metadata.json")
+        def serve_metadata():
+            """Special case to serve the metadata.json file for the frontend."""
+            return static_file("metadata.json", root="")
+
         general_logger.info("bottle_server.py: Bottle server routes set up.")
 
     def __run(self):
