@@ -210,6 +210,7 @@ def hook_frontend_to_backend_signals() -> None:
             general_logger.exception("hook_frontend_to_backend_signals: Could not get current window.")
             return
 
-        send_event_to_js(current_window, "new_monitor_results_in_backend", {"monitorUniqueName": monitor_name})
+        if current_window:
+            send_event_to_js(current_window, "new_monitor_results_in_backend", {"monitorUniqueName": monitor_name})
 
     mediator.new_monitor_results.add(send_new_results_event)
