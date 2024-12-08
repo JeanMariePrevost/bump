@@ -78,6 +78,7 @@ export class MonitorEditPanel extends BaseComponent {
           original_name: this.monitorUniqueName,
           unique_name: form.name.value,
           query_url: form.url.value,
+          query_timeout: form.timeout.value,
           query_type: queryTypeNameToBackendClass(form["query-type"].value),
           query_params_string: form["condition-value"].value,
           period_in_seconds: form.interval.value,

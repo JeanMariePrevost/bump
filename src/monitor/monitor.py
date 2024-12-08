@@ -57,7 +57,7 @@ class Monitor(Deserializable):
             return QueryResult(exception_type="Paused", message="Monitor is paused", reason="Monitor is paused")
 
         if not self.validate_monitor_configuration():
-            self.log_monitor_event(f"Could not run due to invalid configuration: {self.error_preventing_execution}, level='ERROR'")
+            self.log_monitor_event(f"Could not execute: {self.error_preventing_execution}", level="ERROR")
             # Execution stops, this result will not be dispatched nor saved
             return QueryResult(
                 exception_type="Invalid Configuration", message=self.error_preventing_execution, reason=self.error_preventing_execution
@@ -263,7 +263,7 @@ class Monitor(Deserializable):
         """
 
         def log_and_raise_error(message: str):
-            self.log_monitor_event.error(f"Failed to apply new configuration: {message}")
+            self.log_monitor_event(f"Failed to apply new configuration: {message}", level="ERROR")
             raise ValueError(message)
 
         # VALIDATION
@@ -285,6 +285,10 @@ class Monitor(Deserializable):
             log_and_raise_error("query_url is missing or invalid")
         if not is_valid_url(config["query_url"]):
             log_and_raise_error("query_url is not a valid URL")
+
+        # query_timeout must be a non-negative number
+        if "query_timeout" not in config or type(config["query_timeout"]) is not str or int(config["query_timeout"]) <= 0:
+            log_and_raise_error("query_timeout is missing or invalid")
 
         # query_type must be a non-null, non-empty string that is also a valid query type
         if "query_type" not in config or type(config["query_type"]) is not str:
@@ -319,6 +323,7 @@ class Monitor(Deserializable):
         targetMonitor.query = get_query_class_from_string(f"{config['query_type']}")()
         targetMonitor.query.apply_query_params_string(config["query_params_string"])
         targetMonitor.query.url = config["query_url"]
+        targetMonitor.query.timeout = int(config["query_timeout"])
         targetMonitor.period_in_seconds = int(config["period_in_seconds"])
         targetMonitor.retries = int(config["retries"])
         targetMonitor.retries_interval_in_seconds = int(config["retries_interval_in_seconds"])

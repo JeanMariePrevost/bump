@@ -35,6 +35,9 @@ class HttpQuery(Query):
         if not self.url:
             return False
 
+        if not self.timeout or not isinstance(self.timeout, (int, float)) or self.timeout <= 0:
+            return False
+
         return super().parameters_are_valid()
 
         # If url cannot be made into a valid URL

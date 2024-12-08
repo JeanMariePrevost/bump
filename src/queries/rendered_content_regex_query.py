@@ -47,10 +47,7 @@ class RenderedContentRegexQuery(Query):
         if not self.url:
             return False
 
-        if not self.timeout:
-            return False
-
-        if not isinstance(self.timeout, (int, float)) or self.timeout <= 0:
+        if not self.timeout or not isinstance(self.timeout, (int, float)) or self.timeout <= 0:
             return False
 
         if not isinstance(self.multi_line, bool):
