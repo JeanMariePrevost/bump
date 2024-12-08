@@ -151,9 +151,7 @@ html {
   flex: 1; /* Fill the remaining space */
   display: flex; /* To size the children elements automatically */
   flex-direction: column;
-  /* padding: 20px 0; */
-  /* padding: 20px 10%; */
-  overflow: hidden;
+  overflow: auto; /* Allow for scrolling IF content doesn't already limits it ?*/
   max-height: 100%;
   max-width: 100%;
 }
@@ -195,6 +193,7 @@ html {
   min-height: 0;
   max-height: 100%;
   width: 70%;
+  gap: 20px;
 }
 
 .horizontal-flex-container .left-column {

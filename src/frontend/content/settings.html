@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BUMP - Settings</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/settings.css" />
+  </head>
+
+  <body>
+    <div class="page">
+      <nav class="navbar-container"></nav>
+      <main class="content">
+        <div class="single-column-content-layout">
+          <div class="card">
+            <div class="card-title">Settings</div>
+            <div class="card-content">
+              <form class="settings-form">
+                <!-- Interval -->
+                <div class="form-group-row" title="General interval at which the background process evaluates whether monitors are due or not.">
+                  <label for="monitoring-interval">Monitoring Interval (seconds)</label>
+                  <input type="text" id="monitoring-interval" name="monitoring-interval" placeholder="Enter a number" maxlength="6" />
+                </div>
+
+                <!-- Theme -->
+                <div class="form-group-row" title="Select the theme for the application.">
+                  <label for="theme">Theme</label>
+                  <select id="theme" name="theme">
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                  </select>
+                </div>
+
+                <!-- Alerts settings - Toasts -->
+                <div class="form-group-row" title="Enable/disable Windows notifications for all monitors.">
+                  <label for="toasts-enabled">Toasts Enabled</label>
+                  <select id="toasts-enabled" name="toasts-enabled">
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                  </select>
+                </div>
+
+                <!-- Alerts settings - SMTP / Email / SMS -->
+                <div class="form-group-row" title="Enable or disable email alerts.">
+                  <label for="email-enabled">Email Alerts Enabled</label>
+                  <select id="email-enabled" name="email-enabled">
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                  </select>
+                </div>
+                <div class="form-group-row" title="Enable or disable SMS alerts.">
+                  <label for="sms-enabled">SMS Alerts Enabled</label>
+                  <select id="sms-enabled" name="sms-enabled">
+                    <option value="true">True</option>
+                    <option value="false">False</option>
+                  </select>
+                </div>
+                <div class="form-group-row" title="SMTP server address for sending alerts.">
+                  <label for="smtp-server">SMTP Server</label>
+                  <input type="text" id="smtp-server" name="smtp-server" placeholder="e.g. smtp.gmail.com" />
+                </div>
+                <div class="form-group-row" title="Port used for the SMTP server.">
+                  <label for="smtp-port">SMTP Port</label>
+                  <input type="text" id="smtp-port" name="smtp-port" placeholder="e.g. 587" />
+                </div>
+                <div class="form-group-row" title="Username for the SMTP server.">
+                  <label for="username">Username</label>
+                  <input type="text" id="username" name="username" placeholder="e.g. your.email@example.com" />
+                </div>
+                <div class="form-group-row" title="Target email address for receiving alerts.">
+                  <label for="to-email">Email Alerts Target</label>
+                  <input type="text" id="to-email" name="to-email" placeholder="e.g. your.email@example.com" />
+                </div>
+                <div class="form-group-row" title="Target email address for sending SMS alerts via email-to-SMS gateway.">
+                  <label for="to-email-for-sms">Email-to-SMS Target</label>
+                  <input type="text" id="to-email-for-sms" name="to-email-for-sms" placeholder="e.g. 5551234567@vtext.com" />
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Export / Import</div>
+            <div class="card-content">TODO: Export / Import buttons <br /><br /><br /><br /><br /><br />Testing scrolling behavior</div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="js/SettingsPage.js"></script>
+  </body>
+</html>
