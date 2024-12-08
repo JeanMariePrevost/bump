@@ -104,8 +104,8 @@ export class MonitorListItem {
     //Completely remove everything in "right-column" and add a new element
     const rightColumn = document.querySelector("div.right-column");
     if (rightColumn) {
-      const newRightColumn = rightColumn.cloneNode(false); // `false` clones only the element, without its children.
-      rightColumn.parentNode.replaceChild(newRightColumn, rightColumn);
+      // Clear the right column
+      rightColumn.innerHTML = "";
 
       // Add a new element to the right column
       const monitorDetailsColumn = new MonitorDetailsPanel(".right-column", this.monitorData.unique_name);
@@ -116,7 +116,7 @@ export class MonitorListItem {
     // Request the latest data for this monitor
     requestSingleMonitor(this.monitorData.unique_name)
       .then((response) => {
-        console.log(`Received data for ${this.monitorData.unique_name}:`, response);
+        // console.log(`Received data for ${this.monitorData.unique_name}:`, response);
         this.monitorData = response.value;
         this.#refreshStatusIndicator();
         this.#refreshHistoryBars();
@@ -155,8 +155,6 @@ export class MonitorListItem {
     // Request the history data for this monitor to update the bars
     requestMonitorHistory(this.monitorData.unique_name, 12)
       .then((response) => {
-        console.log(`Received history data for ${this.monitorData.unique_name}:`, response);
-
         for (let i = 0; i < response.length; i++) {
           const bar = barChart.children[barChart.children.length - 1 - i]; // Start from the end
           const status = response[response.length - 1 - i].value.test_passed;

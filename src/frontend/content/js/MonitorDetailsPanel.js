@@ -317,7 +317,7 @@ export class MonitorDetailsPanel extends BaseComponent {
       }
 
       //Folding/unfolding behavior for long log entries
-      newElement.addEventListener("click", () => {
+      this.addManagedEventListener(newElement, "click", () => {
         if (newElement.getAttribute("data-text-overflows") === "true") {
           //If it has the class ".expanded", remove it, otherwise, add it
           newElement.classList.toggle("expanded");

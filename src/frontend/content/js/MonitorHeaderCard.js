@@ -21,7 +21,7 @@ export class MonitorHeaderCard extends BaseComponent {
     // Add event listeners to the action-links
     const actionLinks = this.element.querySelectorAll(".monitor-action-link");
     actionLinks.forEach((link) => {
-      link.addEventListener("click", (event) => {
+      this.addManagedEventListener(link, "click", (event) => {
         this.handleMonitorActionBarLinksClick(event, this.monitorUniqueName);
       });
     });

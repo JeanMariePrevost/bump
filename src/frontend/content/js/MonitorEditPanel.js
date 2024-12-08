@@ -42,7 +42,7 @@ export class MonitorEditPanel extends BaseComponent {
   }
 
   _onElementReady() {
-    // Add your custom logic here
+    // Add the "init" custom logic here
     console.log("MonitorEditPanel element is ready");
 
     // Get monitor data from the backend
@@ -50,13 +50,13 @@ export class MonitorEditPanel extends BaseComponent {
 
     // Add event listeners for any form changes (input, change...) NOT for submit
     const form = document.querySelector(".settings-form");
-    form.addEventListener("input", this.#onFormChange.bind(this));
-    form.addEventListener("change", this.#onFormChange.bind(this));
+    this.addManagedEventListener(form, "input", this.#onFormChange.bind(this));
+    this.addManagedEventListener(form, "change", this.#onFormChange.bind(this));
 
     // Add event listeners to the action-links
     const actionLinks = this.element.querySelectorAll(".monitor-action-link");
     actionLinks.forEach((link) => {
-      link.addEventListener("click", this._onActionLinkClick.bind(this));
+      this.addManagedEventListener(link, "click", this._onActionLinkClick.bind(this));
     });
 
     // Fire a global event to inform things like the list that a monitor should be selected
@@ -310,6 +310,7 @@ export class MonitorEditPanel extends BaseComponent {
         const form = document.querySelector(".settings-form");
         form.name.value = monitorData?.value?.unique_name ?? "ERROR";
         form.url.value = monitorData?.value?.query?.value?.url ?? "";
+        form.timeout.value = monitorData?.value?.query?.value?.timeout ?? "";
         form.interval.value = monitorData?.value?.period_in_seconds ?? "";
         form["query-type"].value = backendQueryClassToQueryTypeName(monitorData?.value?.query?.type);
         this.#updateConditionValueFieldFromQueryType(form, form["query-type"].value); // Update the condition-value field status based on the query type before setting its value
@@ -359,6 +360,10 @@ class FormValidator {
 
     if (!this._nonEmpty(this.form.url.value) || !this._isUrl(this.form.url.value)) {
       errors.url = "URL must be a valid URL (including protocol).";
+    }
+
+    if (!this._isNonNegativeNumber(this.form.timeout.value)) {
+      errors.timeout = "Timeout must be a non-negative number.";
     }
 
     if (!this._isPositiveIntegerString(this.form.interval.value)) {
@@ -413,32 +418,32 @@ class FormValidator {
     return errors;
   }
 
-  _nonEmpty(value) {
-    return value.trim() !== "";
+  _nonEmpty(valueString) {
+    return valueString.trim() !== "";
   }
 
-  _isUrl(value) {
+  _isUrl(valueString) {
     try {
-      new URL(value);
+      new URL(valueString);
       return true;
     } catch (_) {
       return false;
     }
   }
 
-  _isNumber(value) {
-    return !isNaN(value);
+  _isNonNegativeNumber(valueString) {
+    return !isNaN(valueString) && parseFloat(valueString) >= 0;
   }
 
-  _isNonNegativeIntegerString(value) {
-    return /^\d+$/.test(value);
+  _isNonNegativeIntegerString(valueString) {
+    return /^\d+$/.test(valueString);
   }
 
-  _isPositiveIntegerString(value) {
-    return /^[1-9]\d*$/.test(value);
+  _isPositiveIntegerString(valueString) {
+    return /^[1-9]\d*$/.test(valueString);
   }
 
-  _isUniqueName(value) {
+  _isUniqueName(name) {
     // TODO: pass this call to the backend to validate // It IS validated on the backend though, maybe validate against the list for the GUI would be enough?
     // WARNING - Currently always returns true
     return true;
