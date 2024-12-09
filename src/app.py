@@ -14,6 +14,7 @@ import settings_manager
 general_logger.info("Starting application...")
 
 settings_manager.load_configs()
+settings_manager.save_configs()
 
 general_logger.debug("Trying to load monitors from file...")
 try:
