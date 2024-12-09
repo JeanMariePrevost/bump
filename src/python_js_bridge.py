@@ -8,6 +8,7 @@ from monitor.monitor import Monitor
 from queries.query import Query
 import serialization
 from my_utils.util import is_valid_filename, is_valid_url, get_query_class_from_string
+import settings_manager
 
 __js_api = None
 
@@ -184,6 +185,10 @@ class JsApi:
         monitors_manager.save_monitors_configs_to_file()
         newMonitorData = self.request_monitor_data(new_monitor.unique_name)
         return newMonitorData
+
+    def request_app_settings(self) -> object:
+        general_logger.debug("Received request for app settings.")
+        return vars(settings_manager.settings)
 
 
 def get_js_api():

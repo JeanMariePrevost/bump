@@ -124,6 +124,15 @@ export async function requestLogEntries(numberOfEntries) {
   return response;
 }
 
+/**
+ * Requests the app settings object
+ * @returns {Promise<Object>} The settings object
+ */
+export async function requestAppSettings() {
+  const response = await pywebview.api.request_app_settings();
+  return response;
+}
+
 //
 //
 //

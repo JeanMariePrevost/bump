@@ -8,6 +8,8 @@ from types import SimpleNamespace
 # NOTE: accessed like a regular object, e.g. settings.alerts_use_toast (i.e. this isn't a dict)
 # NOTE: Password is entered during setup and stored using keyring (https://pypi.org/project/keyring/)
 settings = SimpleNamespace(
+    general_interval=60,
+    general_theme="dark",
     alerts_use_toast=True,
     alerts_use_email=False,
     alerts_use_sms=False,
@@ -76,10 +78,14 @@ def save_configs():
     yaml_data.yaml_set_start_comment("Configuration settings for the application\nAdjust the alert settings and SMTP server details as needed")
 
     # Add empty lines between sections
+    yaml_data.yaml_set_comment_before_after_key("general_interval", before="\n")
+    yaml_data.yaml_set_comment_before_after_key("general_theme", before="\n")
     yaml_data.yaml_set_comment_before_after_key("alerts_use_toast", before="\n")
     yaml_data.yaml_set_comment_before_after_key("smtp_server", before="\n")
 
     # Add "internal" comments
+    yaml_data.yaml_set_comment_before_after_key("general_interval", before='Integer in seconds that defines the monitoring "ticking rate"')
+    yaml_data.yaml_set_comment_before_after_key("general_theme", before='"light" or "dark"')
     yaml_data.yaml_set_comment_before_after_key("alerts_use_toast", before="Enable/disable alerts per type")
     yaml_data.yaml_set_comment_before_after_key(
         "smtp_server",

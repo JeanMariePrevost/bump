@@ -78,6 +78,13 @@
                   <label for="username">Username</label>
                   <input type="text" id="username" name="username" placeholder="e.g. your.email@example.com" />
                 </div>
+                <div class="form-group-row" title="Password for the SMTP server.">
+                  <label for="smtp-password">SMTP Password</label>
+                  <div class="button-group" id="smtp-password">
+                    <button type="button" id="change-password" title="Store a new password in the OS credentials manager">Change</button>
+                    <button type="button" id="remove-password" title="Clear the stored password in the OS credentials manager">Remove</button>
+                  </div>
+                </div>
                 <div class="form-group-row" title="Target email address for receiving alerts.">
                   <label for="to-email">Email Alerts Target</label>
                   <input type="text" id="to-email" name="to-email" placeholder="e.g. your.email@example.com" />
@@ -92,7 +99,12 @@
 
           <div class="card">
             <div class="card-title">Export / Import</div>
-            <div class="card-content">TODO: Export / Import buttons <br /><br /><br /><br /><br /><br />Testing scrolling behavior</div>
+            <div class="card-content">
+              <button type="button" id="export-config" title="Export all application data and configurations to a file">Export</button>
+              <button type="button" id="import-config" title="Import all application data and configurations from a file">Import</button>
+
+              TODO: Export / Import buttons <br /><br /><br /><br /><br /><br />Testing scrolling behavior
+            </div>
           </div>
         </div>
       </main>
