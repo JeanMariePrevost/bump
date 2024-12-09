@@ -21,9 +21,14 @@ export class FormCardHelper {
   #formSnapshot; // Holds a snapshot of the form data to compare against later or to revert to
   #validationRules = new Set(); // Holds the validation rules for each field as (fieldName, predicate) pairs
 
-  constructor(cardElementContainingTheForm) {
+  /**
+   * @param {HTMLElement} cardElementContainingTheForm - The card element containing the form
+   * @param {string} errorMessageParentSelector - The selector of the closest element to add to error messages, defaults to direct parent of the field if not provided
+   */
+  constructor(cardElementContainingTheForm, errorMessageParentSelector = undefined) {
     this.element = cardElementContainingTheForm;
     this.formElement = cardElementContainingTheForm.querySelector("form");
+    this.errorMessageParentSelector = errorMessageParentSelector;
     this.#formSnapshot = null;
     this.revertButton = document.getElementById("revert-edits");
     this.applyButton = document.getElementById("apply-edits");
@@ -84,8 +89,9 @@ export class FormCardHelper {
 
     // DEBUG - run and display the various functions
     console.log("DEBUG - Form contains changes:", this.formContainsChanges());
-    console.log("DEBUG - FOrm is valid:", this.isFormInputValid());
+    console.log("DEBUG - Form is valid:", this.isFormInputValid());
     console.log("DEBUG - Validation errors:", this.getValidationErrors());
+    this.applyValidationStylesAndMessages();
   }
 
   /**
@@ -136,6 +142,54 @@ export class FormCardHelper {
       }
     }
     return errors;
+  }
+
+  /**
+   * Applies formating to the form fields to indicate validation errors to the user.
+   * Also inserts/removes elements after the field with the error message.
+   * @param {string} invalidClassName - The class name to add to fields that fail validation
+   * @param {string} invalidMessageClassName - The class name to add to the error message element
+   */
+  applyValidationStylesAndMessages(invalidClassName = "validation-error", invalidMessageClassName = "validation-error-message") {
+    const errors = this.getValidationErrors();
+    // Clear current error styles
+    const fields = this.formElement.querySelectorAll(`.${invalidClassName}`);
+    for (const field of fields) {
+      field.classList.remove(invalidClassName);
+    }
+
+    // Clear current error messages
+    const errorMessages = this.element.querySelectorAll(`.${invalidMessageClassName}`);
+    for (const message of errorMessages) {
+      message.remove();
+    }
+
+    // Add new error styles and messages
+    for (const [fieldName, error] of errors) {
+      const field = this.formElement.querySelector(`[name="${fieldName}"]`);
+      if (!field) {
+        console.error(`Field "${fieldName}" not found in the form.`);
+        continue;
+      }
+
+      field.classList.add(invalidClassName);
+      this.#addErrorMessageForField(field, error, invalidMessageClassName);
+    }
+  }
+
+  #addErrorMessageForField(fieldElement, message, invalidMessageClassName) {
+    const targetElement = this.errorMessageParentSelector ? fieldElement.closest(this.errorMessageParentSelector) : fieldElement.parentElement;
+
+    // Skip if the element already has an error message
+    if (targetElement.querySelector(`.${invalidMessageClassName}`)) {
+      return;
+    }
+
+    const errorElement = document.createElement("div");
+    errorElement.className = invalidMessageClassName;
+    errorElement.innerText = message;
+    // Add to the target element
+    targetElement.insertAdjacentElement("afterend", errorElement);
   }
 
   warnIfValidatingWithNoRules() {
