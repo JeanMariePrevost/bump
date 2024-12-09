@@ -236,6 +236,18 @@ html {
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.card-title[data-changes="valid"] {
+  background-color: var(--status-good-color-100);
+  color: var(--status-good-color-800);
+}
+
+.card-title[data-changes="invalid"] {
+  background-color: var(--status-bad-color-100);
+  color: var(--status-bad-color-800);
 }
 
 .card-content {

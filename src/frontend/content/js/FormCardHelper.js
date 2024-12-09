@@ -188,15 +188,19 @@ export class FormCardHelper {
       this.#addErrorMessageForField(field, error, invalidMessageClassName);
     }
 
+    const cardTitle = this.element.querySelector(".card-title");
     if (this.formContainsChanges()) {
       if (this.isFormInputValid()) {
+        cardTitle.setAttribute("data-changes", "valid");
         this.applyButton.classList.remove("invisible");
         this.revertButton.classList.remove("invisible");
       } else {
+        cardTitle.setAttribute("data-changes", "invalid");
         this.applyButton.classList.add("invisible");
         this.revertButton.classList.remove("invisible");
       }
     } else {
+      cardTitle.setAttribute("data-changes", "no-changes");
       this.applyButton.classList.add("invisible");
       this.revertButton.classList.add("invisible");
     }

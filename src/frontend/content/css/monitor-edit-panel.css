@@ -27,16 +27,6 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
-.monitor-edit-card .card-title[data-changes="valid"] {
-  background-color: var(--status-good-color-100);
-  color: var(--status-good-color-800);
-}
-
-.monitor-edit-card .card-title[data-changes="invalid"] {
-  background-color: var(--status-bad-color-100);
-  color: var(--status-bad-color-800);
-}
-
 .monitor-edit-card .monitor-action-link {
   float: right;
 }
