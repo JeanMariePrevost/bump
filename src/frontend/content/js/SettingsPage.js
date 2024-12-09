@@ -1,5 +1,5 @@
 import { NavbarComponent } from "./NavbarComponent.js";
-import { requestAppSettings } from "./PythonJsBridge.js";
+import { requestAppSettings, requestEnterNewSmtpPassword, requestDeleteSmtpPassword, requestSmtpPasswordExists } from "./PythonJsBridge.js";
 
 // Wait for DOM content to be fully loaded before executing the fetch
 document.addEventListener("DOMContentLoaded", () => {
@@ -37,5 +37,38 @@ window.addEventListener("pywebviewready", function () {
     } catch (error) {
       console.error("Error loading settings into form: ", error);
     }
+  });
+
+  // Enable/disable the remove password button based on whether a password is stored
+  requestSmtpPasswordExists().then((exists) => {
+    document.getElementById("remove-password").disabled = !exists;
+  });
+
+  // Add event listeners to change/remove the stored SMTP password
+  document.getElementById("change-password").addEventListener("click", () => {
+    requestEnterNewSmtpPassword().then((response) => {
+      if (response === "true") {
+        alert("Password changed successfully!");
+        location.reload(); // Reload the page
+      } else {
+        alert("Error storing password: " + response);
+      }
+    });
+  });
+
+  document.getElementById("remove-password").addEventListener("click", () => {
+    // First confirm with user
+    const confirmDelete = confirm("Are you sure you want to remove the stored password?");
+    if (!confirmDelete) {
+      return;
+    }
+    requestDeleteSmtpPassword().then((response) => {
+      if (response === "true") {
+        // alert("Password removed successfully!");
+        location.reload(); // Reload the page
+      } else {
+        alert("Error removing password: " + response);
+      }
+    });
   });
 });

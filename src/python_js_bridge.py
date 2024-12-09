@@ -1,6 +1,7 @@
 import json
 import webview
 
+import credentials_manager
 from custom_logging import general_logger, read_entries_from_log_file
 import my_utils.util
 import mediator
@@ -189,6 +190,46 @@ class JsApi:
     def request_app_settings(self) -> object:
         general_logger.debug("Received request for app settings.")
         return vars(settings_manager.settings)
+
+    def request_enter_new_smtp_password(self) -> str:
+        """
+        Request the user to enter a new password for the SMTP server.
+        :return: "true" if successful, or an error message if not
+        """
+        general_logger.debug("Received request to enter a new SMTP password.")
+        try:
+            title = "Enter SMTP Password"
+            message = (
+                f"SMTP password change requested.\n\nPlease enter a new password, which will be stored through the OS credentials/keyring service."
+            )
+            credentials_manager.prompt_for_and_save_password(settings_manager.settings.smtp_username, title, message)
+        except Exception as e:
+            general_logger.exception(f"Error while entering new SMTP password: {e}")
+            return str(e)
+        return "true"
+
+    def request_delete_smtp_password(self) -> str:
+        """
+        Request to delete the stored password for the SMTP server.
+        :return: "true" if successful, or an error message if not
+        """
+        general_logger.debug("Received request to delete the SMTP password.")
+        try:
+            credentials_manager.delete_password_from_keyring(settings_manager.settings.smtp_username)
+        except Exception as e:
+            general_logger.exception(f"Error while deleting SMTP password: {e}")
+            return str(e)
+        return "true"
+
+    def request_smtp_password_exists(self) -> bool:
+        """
+        Request to check if a password exists for the SMTP server.
+        :return: True if a password exists, False otherwise
+        """
+        general_logger.debug("Received request to check if an SMTP password exists.")
+        exists = credentials_manager.password_exists(settings_manager.settings.smtp_username)
+        print(f"SMTP password exists: {exists}")
+        return exists
 
 
 def get_js_api():

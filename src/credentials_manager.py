@@ -37,6 +37,22 @@ def prompt_for_and_save_password(for_username: str, title: str, message: str) ->
     return password
 
 
+def password_exists(for_username: str) -> bool:
+    """
+    Check if a password exists for the given username in the keyring.
+    """
+    exists = keyring.get_password(KEYRING_SERVICE_NAME, for_username) is not None
+    return exists
+
+
+def delete_password_from_keyring(for_username: str):
+    """
+    Delete the stored password for the given username from the keyring.
+    """
+    if password_exists(for_username):
+        keyring.delete_password(KEYRING_SERVICE_NAME, for_username)
+
+
 class PasswordDialog(simpledialog.Dialog):
     """
     A simple dialog to prompt the user for a password. The password is stored in the result attribute after the dialog is closed.

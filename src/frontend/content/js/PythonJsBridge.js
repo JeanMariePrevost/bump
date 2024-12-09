@@ -133,6 +133,33 @@ export async function requestAppSettings() {
   return response;
 }
 
+/**
+ * Request the backend to prompt for a new SMTP password
+ * @returns {Promise<string>} Promise that resolves to "true" if the prompt was shown, or an error message if it was not
+ */
+export async function requestEnterNewSmtpPassword() {
+  const response = await pywebview.api.request_enter_new_smtp_password();
+  return response;
+}
+
+/**
+ * Request the backend to delete the stored SMTP password
+ * @returns {Promise<string>} Promise that resolves to "true" if the password was deleted, or an error message if it was not
+ */
+export async function requestDeleteSmtpPassword() {
+  const response = await pywebview.api.request_delete_smtp_password();
+  return response;
+}
+
+/**
+ * Request the backend to confirm whether the stored SMTP password is set
+ * @returns {Promise<boolean>} Promise that resolves to true if the password is set, false if it is not
+ */
+export async function requestSmtpPasswordExists() {
+  const response = await pywebview.api.request_smtp_password_exists();
+  return response;
+}
+
 //
 //
 //
