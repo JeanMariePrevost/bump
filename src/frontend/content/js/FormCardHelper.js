@@ -33,6 +33,18 @@ export class FormCardHelper {
     this.revertButton = document.getElementById("revert-edits");
     this.applyButton = document.getElementById("apply-edits");
 
+    // Error checks
+    if (!this.formElement) {
+      console.error("Form not found in the card element.");
+      return;
+    }
+    if (!this.revertButton) {
+      console.error("Revert button not found.");
+    }
+    if (!this.applyButton) {
+      console.error("Apply button not found.");
+    }
+
     // Add event listeners
     this.formElement.addEventListener("change", this.#onFormChange.bind(this));
     this.formElement.addEventListener("input", this.#onFormChange.bind(this));
@@ -174,6 +186,19 @@ export class FormCardHelper {
 
       field.classList.add(invalidClassName);
       this.#addErrorMessageForField(field, error, invalidMessageClassName);
+    }
+
+    if (this.formContainsChanges()) {
+      if (this.isFormInputValid()) {
+        this.applyButton.classList.remove("invisible");
+        this.revertButton.classList.remove("invisible");
+      } else {
+        this.applyButton.classList.add("invisible");
+        this.revertButton.classList.remove("invisible");
+      }
+    } else {
+      this.applyButton.classList.add("invisible");
+      this.revertButton.classList.add("invisible");
     }
   }
 

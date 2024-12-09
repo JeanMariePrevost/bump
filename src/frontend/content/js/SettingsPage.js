@@ -22,6 +22,8 @@ window.addEventListener("pywebviewready", function () {
       document.getElementById("username").value = settings.smtp_username;
       document.getElementById("to-email").value = settings.smtp_target_email;
       document.getElementById("to-email-for-sms").value = settings.smtp_target_email_for_sms;
+
+      initializeFormHelper();
     } catch (error) {
       console.error("Error loading settings into form: ", error);
     }
@@ -59,34 +61,21 @@ window.addEventListener("pywebviewready", function () {
       }
     });
   });
-
-  // Testing new helper class
-  setTimeout(() => {
-    //Temporary hack: delayed because it needs to wait for the form to be filled
-    const formHelper = new FormCardHelper(document.querySelector(".form-card"));
-    formHelper.saveFormSnapshot();
-
-    // Add validation conditions
-    // reference:
-    // - `monitoring-interval`
-    // - `theme`
-    // - `toasts-enabled`
-    // - `email-enabled`
-    // - `sms-enabled`
-    // - `smtp-server`
-    // - `smtp-port`
-    // - `username`
-    // - `to-email`
-    // - `to-email-for-sms`
-    formHelper.addValidationRule("monitoring-interval", "isPositiveInteger");
-    formHelper.addCustomValidationRule("theme", (value) => (value.toLowerCase() === "dark" || value.toLowerCase() === "light" ? true : "Invalid theme value"));
-    formHelper.addValidationRule("toasts-enabled", "isBoolean");
-    formHelper.addValidationRule("email-enabled", "isBoolean");
-    formHelper.addValidationRule("sms-enabled", "isBoolean");
-    formHelper.addValidationRule("smtp-server", "isNotEmpty");
-    formHelper.addValidationRule("smtp-port", "isNonNegativeInteger");
-    formHelper.addValidationRule("username", "isNotEmpty");
-    formHelper.addValidationRule("to-email", "isEmail");
-    formHelper.addValidationRule("to-email-for-sms", "isEmail");
-  }, 1000);
 });
+
+function initializeFormHelper() {
+  const formHelper = new FormCardHelper(document.querySelector(".form-card"));
+  formHelper.saveFormSnapshot();
+
+  // Add validation conditions
+  formHelper.addValidationRule("monitoring-interval", "isPositiveInteger");
+  formHelper.addCustomValidationRule("theme", (value) => (value.toLowerCase() === "dark" || value.toLowerCase() === "light" ? true : "Invalid theme value"));
+  formHelper.addValidationRule("toasts-enabled", "isBoolean");
+  formHelper.addValidationRule("email-enabled", "isBoolean");
+  formHelper.addValidationRule("sms-enabled", "isBoolean");
+  formHelper.addValidationRule("smtp-server", "isNotEmpty");
+  formHelper.addValidationRule("smtp-port", "isNonNegativeInteger");
+  formHelper.addValidationRule("username", "isNotEmpty");
+  formHelper.addValidationRule("to-email", "isEmail");
+  formHelper.addValidationRule("to-email-for-sms", "isEmail");
+}
