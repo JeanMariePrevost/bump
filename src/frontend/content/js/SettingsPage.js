@@ -1,5 +1,6 @@
 import { NavbarComponent } from "./NavbarComponent.js";
 import { requestAppSettings, requestEnterNewSmtpPassword, requestDeleteSmtpPassword, requestSmtpPasswordExists } from "./PythonJsBridge.js";
+import { FormCardHelper } from "./FormCardHelper.js";
 
 // Wait for DOM content to be fully loaded before executing the fetch
 document.addEventListener("DOMContentLoaded", () => {
@@ -9,19 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 window.addEventListener("pywebviewready", function () {
   // Load the settings into the form
-  // For reference:
-  // settings = SimpleNamespace(
-  //   general_interval=60,
-  //   general_theme="dark",
-  //   alerts_use_toast=True,
-  //   alerts_use_email=False,
-  //   alerts_use_sms=False,
-  //   smtp_server="",
-  //   smtp_port=587,
-  //   smtp_username="",
-  //   smtp_target_email="",
-  //   smtp_target_email_for_sms="",
-  // )
   requestAppSettings().then((settings) => {
     try {
       document.getElementById("monitoring-interval").value = settings.general_interval;
@@ -71,4 +59,34 @@ window.addEventListener("pywebviewready", function () {
       }
     });
   });
+
+  // Testing new helper class
+  setTimeout(() => {
+    //Temporary hack: delayed because it needs to wait for the form to be filled
+    const formHelper = new FormCardHelper(document.querySelector(".form-card"));
+    formHelper.saveFormSnapshot();
+
+    // Add validation conditions
+    // reference:
+    // - `monitoring-interval`
+    // - `theme`
+    // - `toasts-enabled`
+    // - `email-enabled`
+    // - `sms-enabled`
+    // - `smtp-server`
+    // - `smtp-port`
+    // - `username`
+    // - `to-email`
+    // - `to-email-for-sms`
+    formHelper.addValidationRule("monitoring-interval", "isPositiveInteger");
+    formHelper.addCustomValidationRule("theme", (value) => (value.toLowerCase() === "dark" || value.toLowerCase() === "light" ? true : "Invalid theme value"));
+    formHelper.addValidationRule("toasts-enabled", "isBoolean");
+    formHelper.addValidationRule("email-enabled", "isBoolean");
+    formHelper.addValidationRule("sms-enabled", "isBoolean");
+    formHelper.addValidationRule("smtp-server", "isNotEmpty");
+    formHelper.addValidationRule("smtp-port", "isNonNegativeInteger");
+    formHelper.addValidationRule("username", "isNotEmpty");
+    formHelper.addValidationRule("to-email", "isEmail");
+    formHelper.addValidationRule("to-email-for-sms", "isEmail");
+  }, 1000);
 });
