@@ -280,6 +280,23 @@ html {
   background-color: rgba(0, 0, 0, 0.2);
 }
 
+.card-title-button-large {
+  cursor: pointer;
+  text-decoration: underline;
+  background-color: rgba(0, 0, 0, 0);
+  padding: 10px;
+  border-radius: 5px;
+  user-select: none;
+}
+
+.card-title-button-large:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.card-title-button-large:active {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
 .monitors-list {
   margin-top: -12px; /* Compensate for the card content padding at the top */
 }

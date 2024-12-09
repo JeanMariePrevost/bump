@@ -94,6 +94,8 @@ export class FormCardHelper {
         element.value = this.#formSnapshot[element.name];
       }
     }
+
+    this.applyValidationStylesAndMessages();
   }
 
   #onFormChange(event) {
