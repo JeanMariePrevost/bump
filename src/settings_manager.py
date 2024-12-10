@@ -173,6 +173,7 @@ def apply_settings_dicitonary_from_frontend(configData: dict):
 
     # Everything seems valid, apply the settings
     apply_Settings_dictionary(configData)
+    save_configs()
 
 
 # Testing

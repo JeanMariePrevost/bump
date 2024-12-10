@@ -123,6 +123,11 @@ export class FormCardHelper {
     return data;
   }
 
+  /** Returns the form's snapshot */
+  getSnapshot() {
+    return this.#formSnapshot;
+  }
+
   #onFormChange(event) {
     console.log("DEBUG - Form changed");
 

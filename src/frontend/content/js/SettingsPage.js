@@ -3,6 +3,8 @@ import { requestAppSettings, requestEnterNewSmtpPassword, requestDeleteSmtpPassw
 import { FormCardHelper } from "./FormCardHelper.js";
 import { applyTheme } from "./utils.js";
 
+let formHelper;
+
 // Wait for DOM content to be fully loaded before executing the fetch
 document.addEventListener("DOMContentLoaded", () => {
   // Add the navbar to the page
@@ -68,7 +70,7 @@ window.addEventListener("pywebviewready", function () {
 });
 
 function initializeFormHelper() {
-  const formHelper = new FormCardHelper(document.querySelector(".form-card"), handleFormSubmit);
+  formHelper = new FormCardHelper(document.querySelector(".form-card"), handleFormSubmit);
   formHelper.saveFormSnapshot();
 
   // Add validation conditions
@@ -86,9 +88,23 @@ function initializeFormHelper() {
 
 function handleFormSubmit(formData) {
   console.log("Form submitted with data: ", formData);
+
+  // if general_interval from formData differs from the one in the FormHelper's snapshot, a restart is required
+  let restartRequired = false;
+  try {
+    restartRequired = formData.general_interval !== formHelper.getSnapshot().general_interval;
+  } catch (error) {
+    console.error("Error checking interval change: ", error);
+  }
+
   submitAppSettings(formData).then((response) => {
     if (response === "true") {
       console.log("Settings saved successfully!");
+
+      if (restartRequired) {
+        // Alter the user
+        alert("Some settings require a restart to take effect.");
+      }
       // Reload page
       location.reload();
     } else {

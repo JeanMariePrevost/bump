@@ -1,6 +1,17 @@
+import os
+
+# HACK - Set work directory before anything gets initialized, otherwise it doesn't work outside of VSCode
+# TODO - Make the "core app" into another module or class? Place the "launch app" logic into a function?
+script_path = os.path.abspath(__file__)  # Get the absolute path of the current script
+project_root = os.path.dirname(os.path.dirname(script_path))  # Determine the root directory (parent of 'src')
+os.chdir(project_root)  # Set the working directory to the project root
+print(f"Working directory set to: {os.getcwd()}")  # Debug: Print the current working directory
+
+
+import subprocess
+import time
 from frontend.main_page import MainPage
 import mediator
-from monitor.monitor import Monitor
 from monitor.monitors_manager import MonitorsManager
 from my_utils import util
 from my_utils.simple_queue import QueueEvents
@@ -9,9 +20,11 @@ import serialization
 from custom_logging import general_logger, set_log_level
 from system_tray_icon import SystemTrayIcon
 import settings_manager
-
+import sys
+from bottle_server import BottleServer
 
 general_logger.info("Starting application...")
+
 
 settings_manager.load_configs()
 settings_manager.save_configs()
@@ -80,9 +93,8 @@ async_bg_monitoring_thread = monitors_manager.start_background_monitoring_thread
 
 python_js_bridge.hook_frontend_to_backend_signals()  # Allows the JS frontend to receive specific backend events
 
-# Start custom HTTP server in the background
-from bottle_server import BottleServer
 
+# Start custom HTTP server in the background
 BottleServer().start_as_background_thread()
 
 

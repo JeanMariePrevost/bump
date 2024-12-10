@@ -3,6 +3,7 @@ import webview
 
 import credentials_manager
 from custom_logging import general_logger, read_entries_from_log_file
+from my_utils.simple_queue import QueueEvents
 import my_utils.util
 import mediator
 from monitor.monitor import Monitor
@@ -202,7 +203,6 @@ class JsApi:
 
         try:
             settings_manager.apply_settings_dicitonary_from_frontend(new_settings)
-            settings_manager.save_configs()
             general_logger.debug("App settings applied successfully.")
         except Exception as e:
             general_logger.exception(f"Error while applying app settings: {e}")
