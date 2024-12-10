@@ -96,6 +96,19 @@ logger_manager = LoggerManager()
 general_logger: logging.Logger = logger_manager.get_logger("general")
 
 
+def set_log_level(log_level: str):
+    """Set the log level for all loggers."""
+    log_level = log_level.upper()
+    if log_level not in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
+        general_logger.error(f"Invalid log level: {log_level}")
+        return
+
+    for logger in logger_manager.loggers.values():
+        logger.setLevel(log_level)
+
+    general_logger.debug(f"Log level set to: {log_level}")
+
+
 def get_custom_logger(name: str) -> logging.Logger:
     """
     Get a custom logger with the specified name.

@@ -125,6 +125,9 @@ def apply_Settings_dictionary(dictionary: dict):
             # Not a known setting, don't load
             __warn_of_incorrect_key(key)
 
+    # TODO: Refresh the application's settings based on the new settings, e.g. custom_loggin.set_log_level(settings.general_log_level), main loop interval...
+    # NOTE: Currently, the settings are only applied when the application is started, not during runtime.
+
 
 def apply_settings_dicitonary_from_frontend(configData: dict):
     """

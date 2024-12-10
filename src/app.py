@@ -6,7 +6,7 @@ from my_utils import util
 from my_utils.simple_queue import QueueEvents
 import python_js_bridge
 import serialization
-from custom_logging import general_logger
+from custom_logging import general_logger, set_log_level
 from system_tray_icon import SystemTrayIcon
 import settings_manager
 
@@ -92,6 +92,9 @@ tray_icon = SystemTrayIcon()
 
 # Right before entiring the main loop, refresh things like the tray icon
 monitors_manager.checkIfAllMonitorsAreUpAndValid()
+
+# Apply various settings before entering the main loop
+set_log_level(settings_manager.settings.general_log_level)
 
 
 def main_thread_loop():
