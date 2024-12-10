@@ -28,16 +28,25 @@
               <form class="settings-form">
                 <!-- Interval -->
                 <div class="form-group-row" title="General interval at which the background process evaluates whether monitors are due or not.">
-                  <label for="monitoring-interval">Monitoring Interval (seconds)</label>
-                  <input type="text" id="monitoring-interval" name="monitoring-interval" placeholder="Enter a number" maxlength="6" />
+                  <label for="general_interval">Monitoring Interval (seconds)</label>
+                  <input type="text" id="general_interval" name="general_interval" placeholder="Enter a number" maxlength="6" />
                 </div>
 
-                <hr />
+                <!-- Leg Level -->
+                <div class="form-group-row" title="Log level for the application.">
+                  <label for="general_log_level">Log Level</label>
+                  <select id="general_log_level" name="general_log_level">
+                    <option value="DEBUG">DEBUG (verbose)</option>
+                    <option value="INFO">INFO (default)</option>
+                    <option value="WARNING">WARNING</option>
+                    <option value="ERROR">ERROR</option>
+                  </select>
+                </div>
 
                 <!-- Theme -->
                 <div class="form-group-row" title="Select the theme for the application.">
-                  <label for="theme">Theme</label>
-                  <select id="theme" name="theme">
+                  <label for="general_theme">Theme</label>
+                  <select id="general_theme" name="general_theme">
                     <option value="light">Light</option>
                     <option value="dark">Dark</option>
                   </select>
@@ -47,8 +56,8 @@
 
                 <!-- Alerts settings - Toasts -->
                 <div class="form-group-row" title="Enable/disable Windows notifications for all monitors.">
-                  <label for="toasts-enabled">Toasts Enabled</label>
-                  <select id="toasts-enabled" name="toasts-enabled">
+                  <label for="alerts_use_toast">Toasts Enabled</label>
+                  <select id="alerts_use_toast" name="alerts_use_toast">
                     <option value="true">True</option>
                     <option value="false">False</option>
                   </select>
@@ -56,15 +65,15 @@
 
                 <!-- Alerts settings - SMTP / Email / SMS -->
                 <div class="form-group-row" title="Enable or disable email alerts.">
-                  <label for="email-enabled">Email Alerts Enabled</label>
-                  <select id="email-enabled" name="email-enabled">
+                  <label for="alerts_use_email">Email Alerts Enabled</label>
+                  <select id="alerts_use_email" name="alerts_use_email">
                     <option value="true">True</option>
                     <option value="false">False</option>
                   </select>
                 </div>
                 <div class="form-group-row" title="Enable or disable SMS alerts.">
-                  <label for="sms-enabled">SMS Alerts Enabled</label>
-                  <select id="sms-enabled" name="sms-enabled">
+                  <label for="alerts_use_sms">SMS Alerts Enabled</label>
+                  <select id="alerts_use_sms" name="alerts_use_sms">
                     <option value="true">True</option>
                     <option value="false">False</option>
                   </select>
@@ -73,16 +82,16 @@
                 <hr />
 
                 <div class="form-group-row" title="SMTP server address for sending alerts.">
-                  <label for="smtp-server">SMTP Server</label>
-                  <input type="text" id="smtp-server" name="smtp-server" placeholder="e.g. smtp.gmail.com" />
+                  <label for="smtp_server">SMTP Server</label>
+                  <input type="text" id="smtp_server" name="smtp_server" placeholder="e.g. smtp.gmail.com" />
                 </div>
                 <div class="form-group-row" title="Port used for the SMTP server.">
-                  <label for="smtp-port">SMTP Port</label>
-                  <input type="text" id="smtp-port" name="smtp-port" placeholder="e.g. 587" />
+                  <label for="smtp_port">SMTP Port</label>
+                  <input type="text" id="smtp_port" name="smtp_port" placeholder="e.g. 587" />
                 </div>
                 <div class="form-group-row" title="Username for the SMTP server.">
-                  <label for="username">Username</label>
-                  <input type="text" id="username" name="username" placeholder="e.g. your.email@example.com" />
+                  <label for="smtp_username">Username</label>
+                  <input type="text" id="smtp_username" name="smtp_username" placeholder="e.g. your.email@example.com" />
                 </div>
                 <div class="form-group-row" title="Password for the SMTP server.">
                   <label for="smtp-password">SMTP Password</label>
@@ -92,12 +101,12 @@
                   </div>
                 </div>
                 <div class="form-group-row" title="Target email address for receiving alerts.">
-                  <label for="to-email">Email Alerts Target</label>
-                  <input type="text" id="to-email" name="to-email" placeholder="e.g. your.email@example.com" />
+                  <label for="smtp_target_email">Email Alerts Target</label>
+                  <input type="text" id="smtp_target_email" name="smtp_target_email" placeholder="e.g. your.email@example.com" />
                 </div>
                 <div class="form-group-row" title="Target email address for sending SMS alerts via email-to-SMS gateway.">
-                  <label for="to-email-for-sms">Email-to-SMS Target</label>
-                  <input type="text" id="to-email-for-sms" name="to-email-for-sms" placeholder="e.g. 5551234567@vtext.com" />
+                  <label for="smtp_target_email_for_sms">Email-to-SMS Target</label>
+                  <input type="text" id="smtp_target_email_for_sms" name="smtp_target_email_for_sms" placeholder="e.g. 5551234567@vtext.com" />
                 </div>
               </form>
             </div>

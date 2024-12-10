@@ -69,6 +69,7 @@ class Monitor(Deserializable):
         except Exception as e:
             self.log_monitor_event(f"Execution failed: {e}", level="ERROR")
             self.error_preventing_execution = str(e)
+            query_result = QueryResult(test_passed=False, exception_type=type(e).__name__, message=str(e), reason=str(e))
 
         self.log_monitor_event(f"Executed with results: {query_result}", level="DEBUG")
 

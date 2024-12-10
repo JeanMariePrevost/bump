@@ -134,6 +134,16 @@ export async function requestAppSettings() {
 }
 
 /**
+ * Submits new settings to the backend
+ * @param {Object} newSettings - The new settings object
+ * @returns {Promise<string>} Promise that resolves to "true" if the settings were accepted, or an error message if they were rejected
+ */
+export async function submitAppSettings(newSettings) {
+  const response = await pywebview.api.submit_app_settings(newSettings);
+  return response;
+}
+
+/**
  * Request the backend to prompt for a new SMTP password
  * @returns {Promise<string>} Promise that resolves to "true" if the prompt was shown, or an error message if it was not
  */

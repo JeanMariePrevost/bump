@@ -1,5 +1,5 @@
 import { NavbarComponent } from "./NavbarComponent.js";
-import { requestAppSettings, requestEnterNewSmtpPassword, requestDeleteSmtpPassword, requestSmtpPasswordExists } from "./PythonJsBridge.js";
+import { requestAppSettings, requestEnterNewSmtpPassword, requestDeleteSmtpPassword, requestSmtpPasswordExists, submitAppSettings } from "./PythonJsBridge.js";
 import { FormCardHelper } from "./FormCardHelper.js";
 
 // Wait for DOM content to be fully loaded before executing the fetch
@@ -12,16 +12,17 @@ window.addEventListener("pywebviewready", function () {
   // Load the settings into the form
   requestAppSettings().then((settings) => {
     try {
-      document.getElementById("monitoring-interval").value = settings.general_interval;
-      document.getElementById("theme").value = settings.general_theme;
-      document.getElementById("toasts-enabled").value = settings.alerts_use_toast.toString();
-      document.getElementById("email-enabled").value = settings.alerts_use_email.toString();
-      document.getElementById("sms-enabled").value = settings.alerts_use_sms.toString();
-      document.getElementById("smtp-server").value = settings.smtp_server;
-      document.getElementById("smtp-port").value = settings.smtp_port;
-      document.getElementById("username").value = settings.smtp_username;
-      document.getElementById("to-email").value = settings.smtp_target_email;
-      document.getElementById("to-email-for-sms").value = settings.smtp_target_email_for_sms;
+      document.getElementById("general_interval").value = settings.general_interval;
+      document.getElementById("general_log_level").value = settings.general_log_level;
+      document.getElementById("general_theme").value = settings.general_theme;
+      document.getElementById("alerts_use_toast").value = settings.alerts_use_toast.toString();
+      document.getElementById("alerts_use_email").value = settings.alerts_use_email.toString();
+      document.getElementById("alerts_use_sms").value = settings.alerts_use_sms.toString();
+      document.getElementById("smtp_server").value = settings.smtp_server;
+      document.getElementById("smtp_port").value = settings.smtp_port;
+      document.getElementById("smtp_username").value = settings.smtp_username;
+      document.getElementById("smtp_target_email").value = settings.smtp_target_email;
+      document.getElementById("smtp_target_email_for_sms").value = settings.smtp_target_email_for_sms;
 
       initializeFormHelper();
     } catch (error) {
@@ -64,18 +65,29 @@ window.addEventListener("pywebviewready", function () {
 });
 
 function initializeFormHelper() {
-  const formHelper = new FormCardHelper(document.querySelector(".form-card"));
+  const formHelper = new FormCardHelper(document.querySelector(".form-card"), handleFormSubmit);
   formHelper.saveFormSnapshot();
 
   // Add validation conditions
-  formHelper.addValidationRule("monitoring-interval", "isPositiveInteger");
-  formHelper.addCustomValidationRule("theme", (value) => (value.toLowerCase() === "dark" || value.toLowerCase() === "light" ? true : "Invalid theme value"));
-  formHelper.addValidationRule("toasts-enabled", "isBoolean");
-  formHelper.addValidationRule("email-enabled", "isBoolean");
-  formHelper.addValidationRule("sms-enabled", "isBoolean");
-  formHelper.addValidationRule("smtp-server", "isNotEmpty");
-  formHelper.addValidationRule("smtp-port", "isNonNegativeInteger");
-  formHelper.addValidationRule("username", "isNotEmpty");
-  formHelper.addValidationRule("to-email", "isEmail");
-  formHelper.addValidationRule("to-email-for-sms", "isEmail");
+  formHelper.addValidationRule("general_interval", "isPositiveInteger");
+  formHelper.addCustomValidationRule("general_theme", (value) => (value.toLowerCase() === "dark" || value.toLowerCase() === "light" ? true : "Invalid theme value"));
+  formHelper.addValidationRule("alerts_use_toast", "isBoolean");
+  formHelper.addValidationRule("alerts_use_email", "isBoolean");
+  formHelper.addValidationRule("alerts_use_sms", "isBoolean");
+  formHelper.addValidationRule("smtp_server", "isNotEmpty");
+  formHelper.addValidationRule("smtp_port", "isNonNegativeInteger");
+  formHelper.addValidationRule("smtp_username", "isNotEmpty");
+  formHelper.addValidationRule("smtp_target_email", "isEmail");
+  formHelper.addValidationRule("smtp_target_email_for_sms", "isEmail");
+}
+
+function handleFormSubmit(formData) {
+  console.log("Form submitted with data: ", formData);
+  submitAppSettings(formData).then((response) => {
+    if (response === "true") {
+      console.log("Settings saved successfully!");
+    } else {
+      alert("Could not save settings: " + response);
+    }
+  });
 }

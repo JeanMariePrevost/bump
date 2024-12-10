@@ -9,6 +9,7 @@ from types import SimpleNamespace
 # NOTE: Password is entered during setup and stored using keyring (https://pypi.org/project/keyring/)
 settings = SimpleNamespace(
     general_interval=60,
+    general_log_level="INFO",
     general_theme="dark",
     alerts_use_toast=True,
     alerts_use_email=False,
@@ -40,18 +41,7 @@ def load_configs():
         general_logger.error(f"Error loading app_config.yaml: {e}")
         return
 
-    for key, value in loadedConfigsDict.items():
-        if hasattr(settings, key):  # If it's a known setting
-            if isinstance(value, type(getattr(settings, key))):  # If it's the right type
-                setattr(settings, key, value)  # Set the value
-            else:
-                # Actual setting, but wrong type, don't load
-                general_logger.warning(
-                    f"app_config.yaml: {key} is not the correct type. Expected {type(getattr(settings, key))}, got {value}:{type(value)}"
-                )
-        else:
-            # Not a known setting, don't load
-            __warn_of_incorrect_key(key)
+    apply_Settings_dictionary(loadedConfigsDict)
 
     general_logger.debug("App settings loaded successfully.")
 
@@ -79,12 +69,14 @@ def save_configs():
 
     # Add empty lines between sections
     yaml_data.yaml_set_comment_before_after_key("general_interval", before="\n")
+    yaml_data.yaml_set_comment_before_after_key("general_log_level", before="\n")
     yaml_data.yaml_set_comment_before_after_key("general_theme", before="\n")
     yaml_data.yaml_set_comment_before_after_key("alerts_use_toast", before="\n")
     yaml_data.yaml_set_comment_before_after_key("smtp_server", before="\n")
 
     # Add "internal" comments
     yaml_data.yaml_set_comment_before_after_key("general_interval", before='Integer in seconds that defines the monitoring "ticking rate"')
+    yaml_data.yaml_set_comment_before_after_key("general_log_level", before='One of "DEBUG", "INFO", "WARNING", "ERROR"')
     yaml_data.yaml_set_comment_before_after_key("general_theme", before='"light" or "dark"')
     yaml_data.yaml_set_comment_before_after_key("alerts_use_toast", before="Enable/disable alerts per type")
     yaml_data.yaml_set_comment_before_after_key(
@@ -111,6 +103,70 @@ def __warn_of_incorrect_key(key: str):
         general_logger.warning(f"app_config.yaml: {key} is not a known setting. Did you mean '{suggestion}'?")
     else:
         general_logger.warning(f"app_config.yaml: {key} is not a known setting.")
+
+
+def apply_Settings_dictionary(dictionary: dict):
+    """
+    Safely apply the settings from a dictionary to the settings object.
+    """
+    for key, value in dictionary.items():
+        if hasattr(settings, key):  # If it's a known setting
+            if isinstance(value, type(getattr(settings, key))):  # If it's the right type
+                setattr(settings, key, value)  # Set the value
+            else:
+                # Actual setting, but wrong type, don't load
+                general_logger.warning(
+                    f"Dictionary: {key} is not the correct type. Expected {type(getattr(settings, key))}, got {value}:{type(value)}"
+                )
+        else:
+            # Not a known setting, don't load
+            __warn_of_incorrect_key(key)
+
+
+def apply_settings_dicitonary_from_frontend(configData: dict):
+    """
+    Prepares and validates input before passing it to apply_Settings_dictionary()
+    """
+    print(configData)
+    # general_interval casts to a positive integer
+    try:
+        configData["general_interval"] = int(configData["general_interval"])
+    except ValueError:
+        general_logger.warning("general_interval must be a positive integer.")
+        return
+
+    # general_log_level must be one of the following: "DEBUG", "INFO", "WARNING", "ERROR"
+    if configData["general_log_level"] not in ["DEBUG", "INFO", "WARNING", "ERROR"]:
+        general_logger.warning("general_log_level must be one of the following: 'DEBUG', 'INFO', 'WARNING', 'ERROR'")
+        return
+
+    # general_theme must be one of the following: "light", "dark"
+    if configData["general_theme"] not in ["light", "dark"]:
+        general_logger.warning("general_theme must be one of the following: 'light', 'dark'")
+        return
+
+    # alerts_use_toast, alerts_use_email, alerts_use_sms must be string that represents a boolean, and be converted to a boolean
+    for key in ["alerts_use_toast", "alerts_use_email", "alerts_use_sms"]:
+        if configData[key].lower() not in ["true", "false"]:
+            general_logger.warning(f"{key} must be a string that represents a boolean.")
+            return
+        configData[key] = configData[key].lower == "true"
+
+    # smtp_port casts to a positive integer
+    try:
+        configData["smtp_port"] = int(configData["smtp_port"])
+    except ValueError:
+        general_logger.warning("smtp_port must be a positive integer.")
+        return
+
+    # smtp_server, smtp_username, smtp_target_email, smtp_target_email_for_sms must be strings
+    for key in ["smtp_server", "smtp_username", "smtp_target_email", "smtp_target_email_for_sms"]:
+        if not isinstance(configData[key], str):
+            general_logger.warning(f"{key} must be a string.")
+            return
+
+    # Everything seems valid, apply the settings
+    apply_Settings_dictionary(configData)
 
 
 # Testing

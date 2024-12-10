@@ -191,6 +191,25 @@ class JsApi:
         general_logger.debug("Received request for app settings.")
         return vars(settings_manager.settings)
 
+    def submit_app_settings(self, new_settings: dict) -> str:
+        """
+        Call to apply a new app settings configuration received from the frontend.
+        Input is validated by the settings manager itself then applied.
+        :param new_settings: The configuration object received from the frontend
+        :return: "true" if successful, or an error message if not
+        """
+        general_logger.debug(f"Received app settings submission: {new_settings}")
+
+        try:
+            settings_manager.apply_settings_dicitonary_from_frontend(new_settings)
+            settings_manager.save_configs()
+            general_logger.debug("App settings applied successfully.")
+        except Exception as e:
+            general_logger.exception(f"Error while applying app settings: {e}")
+            return str(e)
+
+        return "true"
+
     def request_enter_new_smtp_password(self) -> str:
         """
         Request the user to enter a new password for the SMTP server.

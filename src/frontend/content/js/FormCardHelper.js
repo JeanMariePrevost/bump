@@ -23,11 +23,13 @@ export class FormCardHelper {
 
   /**
    * @param {HTMLElement} cardElementContainingTheForm - The card element containing the form
+   * @param {function} submitHandler - The function to call when the form is submitted, takes in the form data as an object
    * @param {string} errorMessageParentSelector - The selector of the closest element to add to error messages, defaults to direct parent of the field if not provided
    */
-  constructor(cardElementContainingTheForm, errorMessageParentSelector = undefined) {
+  constructor(cardElementContainingTheForm, submitHandler, errorMessageParentSelector = undefined) {
     this.element = cardElementContainingTheForm;
     this.formElement = cardElementContainingTheForm.querySelector("form");
+    this.submitHandler = submitHandler;
     this.errorMessageParentSelector = errorMessageParentSelector;
     this.#formSnapshot = null;
     this.revertButton = document.getElementById("revert-edits");
@@ -48,9 +50,21 @@ export class FormCardHelper {
     // Add event listeners
     this.formElement.addEventListener("change", this.#onFormChange.bind(this));
     this.formElement.addEventListener("input", this.#onFormChange.bind(this));
+
     this.revertButton = document.getElementById("revert-edits");
     if (this.revertButton) {
       this.revertButton.addEventListener("click", this.revertForm.bind(this));
+    }
+
+    this.applyButton = document.getElementById("apply-edits");
+    if (this.applyButton) {
+      this.applyButton.addEventListener("click", () => {
+        if (this.isFormInputValid()) {
+          this.submitHandler(this.getFormData());
+        } else {
+          alert("Cannot apply changes: form contains errors.");
+        }
+      });
     }
   }
 
@@ -96,6 +110,17 @@ export class FormCardHelper {
     }
 
     this.applyValidationStylesAndMessages();
+  }
+
+  /** Returns the form data as an object with field names as keys and field values as values */
+  getFormData() {
+    const data = {};
+    for (const element of this.formElement.elements) {
+      if (element.name) {
+        data[element.name] = element.value;
+      }
+    }
+    return data;
   }
 
   #onFormChange(event) {
