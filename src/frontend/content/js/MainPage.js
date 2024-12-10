@@ -3,6 +3,7 @@ import { requestMonitorsList, requestLogEntries, requestNewEmptyMonitor } from "
 import { DashboardPanel } from "./DashboardPanel.js";
 import { MonitorEditPanel } from "./MonitorEditPanel.js";
 import { NavbarComponent } from "./NavbarComponent.js";
+import { applyTheme } from "./utils.js";
 
 // Holds a ref of all the MonitorListItem loaded
 const monitorsInList = [];
@@ -18,8 +19,6 @@ export function addMonitorToList(monitorData) {
   console.log("Adding a new card to the page");
   const newItem = new MonitorListItem(monitorData);
   monitorsInList.push(newItem);
-
-  const navBar = new NavbarComponent(".navbar-container");
 
   updateNoMonitorsElementVisibility();
 }
@@ -66,6 +65,9 @@ window.addEventListener("pywebviewready", function () {
   //Get url parameters, look for monitor_edit, which tells you to jump to that monitor's edit panel (e.g. because it was just renamed)
   const urlParams = new URLSearchParams(window.location.search);
   const monitorEdit = urlParams.get("monitor_edit");
+
+  applyTheme();
+  const navBar = new NavbarComponent(".navbar-container");
 
   // Build the currently "hard-coded" monitor list of the main page
   requestMonitorsList()
