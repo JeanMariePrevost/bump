@@ -7,7 +7,7 @@ from serialization import Deserializable
 from custom_logging import general_logger
 import serialization
 
-MONITOR_LOOP_INTERVAL_S = 5  # Defines the minimum "resolution" of monitor checks, i.e. even if your monitors are set to go every seconds, they will only be checked if due every MONITOR_LOOP_INTERVAL_S seconds
+from settings_manager import settings
 
 
 class MonitorsManager(Deserializable):
@@ -70,7 +70,7 @@ class MonitorsManager(Deserializable):
                 self.execute_due_monitors()
 
                 # Wait listening for an event for a time, or continue after the timeout
-                event = mediator.bg_monitoring_queue.get(timeout_s=MONITOR_LOOP_INTERVAL_S)
+                event = mediator.bg_monitoring_queue.get(timeout_s=settings.general_interval)
                 if event == QueueEvents.EXIT_APP:
                     general_logger.debug("Background monitoring loop exiting")
                     break
