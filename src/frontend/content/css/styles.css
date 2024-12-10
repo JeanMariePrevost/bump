@@ -24,7 +24,7 @@
   --background-light-color-hover: #e9e9e9;
   --background-light-color-active: #dfdfdf;
   --background-dark-color: #333;
-  --nav-background-color: #333;
+  --input-background-color: #f9f9f9;
   --nav-hover-color: #444444;
   --nav-active-color: #393939;
   --extra-light-border-color: rgba(0, 0, 0, 0.08);
@@ -89,6 +89,82 @@
   --card-padding: 20px;
   --card-border-radius: 3px;
   --default-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+[general-theme="dark"] {
+  /* Colors */
+  /* --accent-color: #2e8f2e; */
+  /* --accent-color-hover: #36a436; */
+  /* --accent-color-active: #43b543; */
+  /* --accent-light-color: #5e9162; */
+  /* --accent-light-color-hover: #4f8354; */
+  /* --accent-light-color-active: #426f48; */
+  /* --secondary-color: #888888; */
+  /* --secondary-color-hover: #9a9a9a; */
+  /* --secondary-color-active: #707070; */
+  --tertiary-color: hsl(0, 0%, 18%);
+  --tertiary-color-hover: hsl(0, 0%, 22%);
+  --tertiary-color-active: hsl(0, 0%, 25%);
+  --background-fullbright-color: hsl(0, 0%, 25%);
+  --background-light-color: hsl(0, 0%, 16%);
+  --background-light-color-hover: hsl(0, 0%, 19%);
+  --background-light-color-active: hsl(0, 0%, 14%);
+  --background-dark-color: hsl(0, 0%, 10%);
+  --input-background-color: #d6d6d6;
+  /* --nav-hover-color: #2a2a2a; */
+  /* --nav-active-color: #202020; */
+  --extra-light-border-color: rgba(255, 255, 255, 0.08);
+  --light-border-color: rgba(255, 255, 255, 0.2);
+  --text-color-100: hsl(0, 0%, 80%);
+  --text-color-200: color-mix(in srgb, var(--text-color-100), var(--text-color-500) 25%);
+  --text-color-300: color-mix(in srgb, var(--text-color-100), var(--text-color-500) 50%);
+  --text-color-400: color-mix(in srgb, var(--text-color-100), var(--text-color-500) 75%);
+  --text-color-500: hsl(0, 0%, 70%);
+  --text-color-600: color-mix(in srgb, var(--text-color-500), var(--text-color-900) 25%);
+  --text-color-700: color-mix(in srgb, var(--text-color-500), var(--text-color-900) 50%);
+  --text-color-800: color-mix(in srgb, var(--text-color-500), var(--text-color-900) 75%);
+  --text-color-900: hsl(0, 0%, 45%);
+
+  /* Status colors */
+  --status-no-data-color-100: hsl(0, 0%, 75%);
+  --status-no-data-color-200: color-mix(in srgb, var(--status-no-data-color-100), var(--status-no-data-color-500) 25%);
+  --status-no-data-color-300: color-mix(in srgb, var(--status-no-data-color-100), var(--status-no-data-color-500) 50%);
+  --status-no-data-color-400: color-mix(in srgb, var(--status-no-data-color-100), var(--status-no-data-color-500) 75%);
+  --status-no-data-color-500: hsl(0, 0%, 50%);
+  --status-no-data-color-600: color-mix(in srgb, var(--status-no-data-color-500), var(--status-no-data-color-900) 25%);
+  --status-no-data-color-700: color-mix(in srgb, var(--status-no-data-color-500), var(--status-no-data-color-900) 50%);
+  --status-no-data-color-800: color-mix(in srgb, var(--status-no-data-color-500), var(--status-no-data-color-900) 75%);
+  --status-no-data-color-900: hsl(0, 0%, 25%);
+
+  --status-unknown-color-100: rgb(67, 55, 33);
+  --status-unknown-color-200: color-mix(in srgb, var(--status-unknown-color-100), var(--status-unknown-color-500) 25%);
+  --status-unknown-color-300: color-mix(in srgb, var(--status-unknown-color-100), var(--status-unknown-color-500) 50%);
+  --status-unknown-color-400: color-mix(in srgb, var(--status-unknown-color-100), var(--status-unknown-color-500) 75%);
+  --status-unknown-color-500: rgb(155, 92, 21);
+  --status-unknown-color-600: color-mix(in srgb, var(--status-unknown-color-500), var(--status-unknown-color-900) 25%);
+  --status-unknown-color-700: color-mix(in srgb, var(--status-unknown-color-500), var(--status-unknown-color-900) 50%);
+  --status-unknown-color-800: color-mix(in srgb, var(--status-unknown-color-500), var(--status-unknown-color-900) 75%);
+  --status-unknown-color-900: rgb(204, 162, 120);
+
+  --status-good-color-100: hsl(120, 41%, 14%);
+  --status-good-color-200: color-mix(in srgb, var(--status-good-color-100), var(--status-good-color-500) 25%);
+  --status-good-color-300: color-mix(in srgb, var(--status-good-color-100), var(--status-good-color-500) 50%);
+  --status-good-color-400: color-mix(in srgb, var(--status-good-color-100), var(--status-good-color-500) 75%);
+  --status-good-color-500: hsl(120, 73%, 32%);
+  --status-good-color-600: color-mix(in srgb, var(--status-good-color-500), var(--status-good-color-900) 25%);
+  --status-good-color-700: color-mix(in srgb, var(--status-good-color-500), var(--status-good-color-900) 50%);
+  --status-good-color-800: color-mix(in srgb, var(--status-good-color-500), var(--status-good-color-900) 75%);
+  --status-good-color-900: hsl(120, 29%, 70%);
+
+  --status-bad-color-100: rgb(84, 33, 33);
+  --status-bad-color-200: color-mix(in srgb, var(--status-bad-color-100), var(--status-bad-color-500) 25%);
+  --status-bad-color-300: color-mix(in srgb, var(--status-bad-color-100), var(--status-bad-color-500) 50%);
+  --status-bad-color-400: color-mix(in srgb, var(--status-bad-color-100), var(--status-bad-color-500) 75%);
+  --status-bad-color-500: rgb(150, 40, 40);
+  --status-bad-color-600: color-mix(in srgb, var(--status-bad-color-500), var(--status-bad-color-900) 25%);
+  --status-bad-color-700: color-mix(in srgb, var(--status-bad-color-500), var(--status-bad-color-900) 50%);
+  --status-bad-color-800: color-mix(in srgb, var(--status-bad-color-500), var(--status-bad-color-900) 75%);
+  --status-bad-color-900: rgb(211, 125, 125);
 }
 
 /* Reset some basic styles */
@@ -299,6 +375,11 @@ html {
 
 .monitors-list {
   margin-top: -12px; /* Compensate for the card content padding at the top */
+}
+
+input,
+select {
+  background-color: var(--input-background-color);
 }
 
 /* 

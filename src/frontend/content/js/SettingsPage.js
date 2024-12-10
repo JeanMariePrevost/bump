@@ -1,6 +1,7 @@
 import { NavbarComponent } from "./NavbarComponent.js";
 import { requestAppSettings, requestEnterNewSmtpPassword, requestDeleteSmtpPassword, requestSmtpPasswordExists, submitAppSettings } from "./PythonJsBridge.js";
 import { FormCardHelper } from "./FormCardHelper.js";
+import { applyTheme } from "./utils.js";
 
 // Wait for DOM content to be fully loaded before executing the fetch
 document.addEventListener("DOMContentLoaded", () => {
@@ -9,6 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 window.addEventListener("pywebviewready", function () {
+  applyTheme();
+
   // Load the settings into the form
   requestAppSettings().then((settings) => {
     try {

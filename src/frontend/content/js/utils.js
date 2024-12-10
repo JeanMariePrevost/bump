@@ -1,3 +1,5 @@
+import { requestAppSettings } from "./PythonJsBridge.js";
+
 /**
  * Load a fragment from a URL and return the content.
  * E.g. loadfragment("fragments/monitor-details.html") -> Promise<DocumentFragment> which you can then append to the DOM.
@@ -55,4 +57,18 @@ export function backendQueryClassToQueryTypeName(backendValue) {
     console.warn(`No frontend query type found for backend class: ${backendValue}`);
   }
   return entry ? entry[0] : null;
+}
+
+export function applyTheme() {
+  requestAppSettings().then((settings) => {
+    const theme = settings.general_theme;
+    if (theme === "dark") {
+      // Add the "[general-theme="dark"]" attribute to the body tag
+      console.log("Applying dark theme");
+      document.body.setAttribute("general-theme", "dark");
+    } else {
+      console.log("general_theme = " + theme + ", applying default theme");
+      // Nothing atm, only dark and default
+    }
+  });
 }

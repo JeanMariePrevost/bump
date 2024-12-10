@@ -1,4 +1,5 @@
 import { NavbarComponent } from "./NavbarComponent.js";
+import { applyTheme } from "./utils.js";
 
 // Wait for DOM content to be fully loaded before executing the fetch
 document.addEventListener("DOMContentLoaded", () => {
@@ -31,4 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch((error) => {
       console.error("Error fetching metadata:", error);
     });
+});
+
+window.addEventListener("pywebviewready", function () {
+  applyTheme();
 });
