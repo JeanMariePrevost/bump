@@ -89,6 +89,8 @@ function handleFormSubmit(formData) {
   submitAppSettings(formData).then((response) => {
     if (response === "true") {
       console.log("Settings saved successfully!");
+      // Reload page
+      location.reload();
     } else {
       alert("Could not save settings: " + response);
     }

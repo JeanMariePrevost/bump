@@ -60,15 +60,21 @@ export function backendQueryClassToQueryTypeName(backendValue) {
 }
 
 export function applyTheme() {
+  // Pre-emptively apply last known theme
+  const lastTheme = localStorage.getItem("general_theme");
+  if (lastTheme === "dark") {
+    document.body.setAttribute("general-theme", "dark");
+  }
   requestAppSettings().then((settings) => {
     const theme = settings.general_theme;
+    localStorage.setItem("general_theme", theme);
     if (theme === "dark") {
       // Add the "[general-theme="dark"]" attribute to the body tag
       console.log("Applying dark theme");
       document.body.setAttribute("general-theme", "dark");
     } else {
       console.log("general_theme = " + theme + ", applying default theme");
-      // Nothing atm, only dark and default
+      document.body.removeAttribute("general-theme");
     }
   });
 }
