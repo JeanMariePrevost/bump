@@ -1,25 +1,28 @@
+from dataclasses import dataclass
 import difflib
 from ruamel.yaml import YAML, CommentedMap
 from my_utils import util
 from custom_logging import general_logger
-from types import SimpleNamespace
 
-# Defaults values
-# NOTE: accessed like a regular object, e.g. settings.alerts_use_toast (i.e. this isn't a dict)
+
+# Defaults values and the "struct" settings object
 # NOTE: Password is entered during setup and stored using keyring (https://pypi.org/project/keyring/)
-settings = SimpleNamespace(
-    general_interval=60,
-    general_log_level="INFO",
-    general_theme="dark",
-    alerts_use_toast=True,
-    alerts_use_email=False,
-    alerts_use_sms=False,
-    smtp_server="",
-    smtp_port=587,
-    smtp_username="",
-    smtp_target_email="",
-    smtp_target_email_for_sms="",
-)
+@dataclass
+class Settings:
+    general_interval: int = 60
+    general_log_level: str = "INFO"
+    general_theme: str = "dark"
+    alerts_use_toast: bool = True
+    alerts_use_email: bool = False
+    alerts_use_sms: bool = False
+    smtp_server: str = ""
+    smtp_port: int = 587
+    smtp_username: str = ""
+    smtp_target_email: str = ""
+    smtp_target_email_for_sms: str = ""
+
+
+settings = Settings()
 
 
 def load_configs():
