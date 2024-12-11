@@ -1,17 +1,29 @@
-# Welcome to MkDocs
+# Welcome to BUMP
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+BUMP (_Basic Uptime Monitoring Program_) is a locally-hosted application designed to monitor the availability and performance of web resources. Developed as a learning project, BUMP offers a simple solution for tracking uptime, response times, and content validation.
 
-## Commands
+While functional, BUMP is **primarily intended as a learning exercise and not as a replacement for professional or cloud-based monitoring tools.**
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+It is available on github at [https://github.com/JeanMariePrevost/bump](https://github.com/JeanMariePrevost/bump)
 
-## Project layout
+---
 
-    mkdocs.yml    # The configuration file.
-    docs/
-        index.md  # The documentation homepage.
-        ...       # Other markdown pages, images and other files.
+## Key Features
+- **Availability Monitoring**: Track whether web resources are reachable.
+- **Response Time Tracking**: Measure the time it takes for resources to respond.
+- **Content Validation**: Validate content to ensure it matches expected results.
+- **Alerting System**: Send notifications via toast/banner notifications, email, and email-to-SMS for status changes.
+- **History Logs**: Maintain a record of status changes and events.
+- **Timeline Visualization**: Display a graphical timeline of monitored resources.
+
+---
+
+## Get Started
+- [Installation](installation.md): Learn how to set up BUMP on your system.
+- [Basic Usage Guide](usage.md): Understand how to run the program and monitor resources.
+- [GUI and Interface](interface.md): Understand the interface and how the application runs
+
+---
+
+## Disclaimer
+BUMP is provided as-is, with no guarantees or active support. It is not recommended for production use.

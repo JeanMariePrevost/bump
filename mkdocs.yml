@@ -1,4 +1,13 @@
 site_name: BUMP Documentation
+repo_url: https://github.com/JeanMariePrevost/bump
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Basic Usage Guide: usage.md
+  - GUI and Interface: interface.md
+  - Query Types: queries.md
+  - Alerts and Notifications: alerts.md
 
 theme:
   name: material
@@ -6,3 +15,6 @@ theme:
   palette:
     scheme: slate
     primary: green
+
+markdown_extensions:
+  - attr_list
