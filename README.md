@@ -14,12 +14,18 @@ This project is provided as-is, primarily as a demonstration of learning and exp
 - Maintain a history of different statuses and events.
 - Displays a timeline and history logs per monitored resource.
 
-## Quick Start and Demo
-BUMP is easy to use, with a simple installation process and intuitive interface. This section will include:
-- **Screenshots**: Visuals showcasing the app's main features.
-- **Video Walkthrough**: A quick overview of BUMP in action.
+## Screenshots
 
-*(Content pending)*
+<div align="center">
+  <img src="https://github.com/JeanMariePrevost/bump/blob/main/screenshots/light-dashboard.png" alt="Dashboard - Light Theme" width="45%"/>
+  <img src="https://github.com/JeanMariePrevost/bump/blob/main/screenshots/dark-dashboard.png" alt="Dashboard - Dark Theme" width="45%"/>
+  <br>
+  <img src="https://github.com/JeanMariePrevost/bump/blob/main/screenshots/dark-details.png" alt="Monitor Details" width="45%"/>
+  <img src="https://github.com/JeanMariePrevost/bump/blob/main/screenshots/dark-settings.png" alt="App Settings" width="45%"/>
+</div>
+
+
+
 
 ## Stack
 BUMP is built using a combination of technologies designed to provide a simple but functional uptime monitoring solution:
