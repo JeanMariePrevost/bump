@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 import difflib
 from ruamel.yaml import YAML, CommentedMap
-from my_utils import util
-from custom_logging import get_general_logger
+from common import util
+from common.custom_logging import get_general_logger
 
 
 # Defaults values and the "struct" settings object

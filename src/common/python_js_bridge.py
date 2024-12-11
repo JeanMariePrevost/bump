@@ -1,16 +1,16 @@
 import json
 import webview
 
-import credentials_manager
-from custom_logging import get_general_logger, read_entries_from_log_file
-from my_utils.simple_queue import QueueEvents
-import my_utils.util
-import mediator
+import common.credentials_manager as credentials_manager
+from common.custom_logging import get_general_logger, read_entries_from_log_file
+from common.simple_queue import QueueEvents
+import common.util
+import common.mediator as mediator
 from monitor.monitor import Monitor
 from queries.query import Query
-import serialization
-from my_utils.util import is_valid_filename, is_valid_url, get_query_class_from_string
-import settings_manager
+import common.serialization as serialization
+from common.util import is_valid_filename, is_valid_url, get_query_class_from_string
+import common.settings_manager as settings_manager
 
 __js_api = None
 
@@ -51,12 +51,11 @@ class JsApi:
         pass
 
     def request_all_monitors_data(self):
-        print("Received request for monitors data")
-        # return mediator.get_monitors_manager().monitors
+        # print("Received request for monitors data")
         return serialization.to_dict_encoded_with_types(mediator.get_monitors_manager().monitors)
 
     def request_monitor_data(self, unique_name: str) -> dict:
-        print(f"Received request for monitor data: {unique_name}")
+        # print(f"Received request for monitor data: {unique_name}")
         targetMonitor = mediator.get_monitors_manager().get_monitor_by_name(unique_name)
         if targetMonitor is None:
             raise ValueError(f"No monitor found with name {unique_name}")
@@ -64,17 +63,16 @@ class JsApi:
         return serialization.to_dict_encoded_with_types(targetMonitor)
 
     def request_monitor_history(self, unique_name: str, max_number_of_entries: int):
-        print(f"Received request for monitor history: {unique_name}")
+        # print(f"Received request for monitor history: {unique_name}")
         targetMonitor = mediator.get_monitors_manager().get_monitor_by_name(unique_name)
         if targetMonitor is None:
             get_general_logger().error(f"Monitor {unique_name} requested but not found.")
             return {}
         history = targetMonitor.read_results_from_history(max_number_of_entries)
-        # encodedJson = serialization.to_dict_encoded_with_types(history)
         return serialization.to_dict_encoded_with_types(history)
 
     def request_delete_monitor(self, unique_name: str):
-        print(f"Received request to delete monitor: {unique_name}")
+        # print(f"Received request to delete monitor: {unique_name}")
         monitors_manager = mediator.get_monitors_manager()
         targetMonitor = monitors_manager.get_monitor_by_name(unique_name)
         if targetMonitor is None:
@@ -85,7 +83,7 @@ class JsApi:
         return "true"
 
     def request_monitor_execution(self, unique_name: str):
-        print(f"Received request to execute monitor: {unique_name}")
+        # print(f"Received request to execute monitor: {unique_name}")
         targetMonitor = mediator.get_monitors_manager().get_monitor_by_name(unique_name)
         if targetMonitor is None:
             return f"Monitor with name {unique_name} not found"
@@ -96,13 +94,13 @@ class JsApi:
         """
         Reads from general and/or monitors logs and returns the last `max_number_of_entries` entries of at least `min_level`.
         """
-        print(f"Received request for log entries")
+        # print(f"Received request for log entries")
 
         # Get log entries from the general log and all monitors logs
         log_entries = []
         if include_general:
             # Add log entries from the general log
-            general_log_path = my_utils.util.resource_path("logs/general.log")
+            general_log_path = common.util.resource_path("logs/general.log")
             log_entries += read_entries_from_log_file(general_log_path, max_number_of_entries, min_level)
         if include_monitoring:
             # Add log entries for all monitors in the manager
@@ -189,7 +187,7 @@ class JsApi:
         return newMonitorData
 
     def request_app_settings(self) -> object:
-        get_general_logger().debug("Received request for app settings.")
+        # get_general_logger().debug("Received request for app settings.")
         return vars(settings_manager.settings)
 
     def submit_app_settings(self, new_settings: dict) -> str:
@@ -245,7 +243,7 @@ class JsApi:
         Request to check if a password exists for the SMTP server.
         :return: True if a password exists, False otherwise
         """
-        get_general_logger().debug("Received request to check if an SMTP password exists.")
+        # get_general_logger().debug("Received request to check if an SMTP password exists.")
         exists = credentials_manager.password_exists(settings_manager.settings.smtp_username)
         print(f"SMTP password exists: {exists}")
         return exists
@@ -257,7 +255,7 @@ class JsApi:
         """
         get_general_logger().debug("Received request to complete export.")
         try:
-            my_utils.util.export_app_config_and_logs_to_zip()
+            common.util.export_app_config_and_logs_to_zip()
         except Exception as e:
             get_general_logger().exception(f"Error while exporting app config and logs: {e}")
             return str(e)
@@ -271,7 +269,7 @@ class JsApi:
         get_general_logger().debug("Received request to complete import.")
         try:
             # TODO - File picker, then safe import
-            my_utils.util.import_app_config_and_logs_from_zip()
+            common.util.import_app_config_and_logs_from_zip()
         except Exception as e:
             get_general_logger().exception(f"Error while importing app config and logs: {e}")
             return str(e)

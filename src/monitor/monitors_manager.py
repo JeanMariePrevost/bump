@@ -1,13 +1,13 @@
 import asyncio
 import threading
-import mediator
+import common.mediator as mediator
 from monitor.monitor import Monitor
-from my_utils.simple_queue import QueueEvents
-from serialization import Deserializable
-from custom_logging import get_general_logger
-import serialization
+from common.simple_queue import QueueEvents
+from common.serialization import Deserializable
+from common.custom_logging import get_general_logger
+import common.serialization as serialization
 
-from settings_manager import settings
+from common.settings_manager import settings
 
 
 class MonitorsManager(Deserializable):

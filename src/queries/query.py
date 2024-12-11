@@ -1,5 +1,5 @@
 from queries.query_result import QueryResult
-from serialization import Deserializable
+from common.serialization import Deserializable
 
 
 class Query(Deserializable):

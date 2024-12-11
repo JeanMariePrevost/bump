@@ -128,7 +128,7 @@ def get_custom_logger(name: str) -> logging.Logger:
     custom_logger = get_custom_logger("monitors/monitor1")
     Will create a log file at "{logger_manager.log_dir}/monitors/monitor1.log"
     """
-    from my_utils import util
+    from common import util
 
     # Ensure the path exists
     # relative_path = logger_manager.log_dir + "/" + name

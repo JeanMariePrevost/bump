@@ -5,9 +5,9 @@ import zipfile
 import pathvalidate
 from importlib import import_module
 from urllib.parse import urlparse
-from custom_logging import get_general_logger
-import mediator
-from my_utils.simple_queue import QueueEvents
+from common.custom_logging import get_general_logger
+import common.mediator as mediator
+from common.simple_queue import QueueEvents
 
 
 def resource_path(relative_path):

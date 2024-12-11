@@ -2,8 +2,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from bottle import Bottle
 
-from my_utils.simple_queue import SimpleQueue
-from my_utils.signal import Signal
+from common.simple_queue import SimpleQueue
+from common.signal import Signal
 
 if TYPE_CHECKING:
     from frontend.gui_window import GuiWindow

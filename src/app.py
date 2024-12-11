@@ -2,20 +2,20 @@ import os
 import tkinter as tk
 from tkinter import messagebox
 
-import custom_logging
-import mediator
-import python_js_bridge
+import common.custom_logging as custom_logging
+import common.mediator as mediator
+import common.python_js_bridge as python_js_bridge
 import sys
 
-from bottle_server import BottleServer
-from custom_logging import get_general_logger, set_log_level
+from frontend.bottle_server import BottleServer
+from common.custom_logging import get_general_logger, set_log_level
 from frontend.gui_window import GuiWindow
 from monitor.monitors_manager import MonitorsManager
-from my_utils import util
-from my_utils.simple_queue import QueueEvents
-import serialization
-from system_tray_icon import SystemTrayIcon
-import settings_manager
+from common import util
+from common.simple_queue import QueueEvents
+import common.serialization as serialization
+from common.system_tray_icon import SystemTrayIcon
+import common.settings_manager as settings_manager
 
 
 def define_cwd():

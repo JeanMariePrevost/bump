@@ -1,6 +1,6 @@
 from queue import Empty, LifoQueue
 from enum import Enum, auto
-from custom_logging import get_general_logger
+from common.custom_logging import get_general_logger
 
 
 class QueueEvents(Enum):

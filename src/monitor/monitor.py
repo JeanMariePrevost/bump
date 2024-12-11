@@ -1,17 +1,17 @@
 from datetime import datetime, timedelta
 import os
 import traceback
-import mediator
-from my_utils import util
-from my_utils.util import get_query_class_from_string, is_valid_filename, is_valid_url
+import common.mediator as mediator
+from common import util
+from common.util import get_query_class_from_string, is_valid_filename, is_valid_url
 from queries.query import Query
 from queries.query_result import QueryResult
-from serialization import Deserializable
-from custom_logging import get_custom_logger, read_entries_from_log_file
-import serialization
-from custom_logging import get_general_logger
-import email_service
-from settings_manager import settings
+from common.serialization import Deserializable
+from common.custom_logging import get_custom_logger, read_entries_from_log_file
+import common.serialization as serialization
+from common.custom_logging import get_general_logger
+import common.email_service as email_service
+from common.settings_manager import settings
 
 AVG_STATS_TIMESPAN_DAYS = 7
 PERIOD_IF_PERIOD_INVALID = 86400  # 1 day

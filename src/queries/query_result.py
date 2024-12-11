@@ -1,5 +1,5 @@
 from datetime import datetime
-from serialization import Deserializable
+from common.serialization import Deserializable
 
 
 class QueryResult(Deserializable):

@@ -1,7 +1,7 @@
 from inspect import signature
 from typing import Callable, List, Tuple, Type
 
-from custom_logging import get_general_logger
+from common.custom_logging import get_general_logger
 
 
 class Signal:

@@ -1,6 +1,6 @@
 from bottle import Bottle, static_file
-from custom_logging import get_general_logger
-import mediator
+from common.custom_logging import get_general_logger
+import common.mediator as mediator
 
 
 class BottleServer:

@@ -5,10 +5,10 @@ THis module uses pystray to create a system tray icon and allow the program to k
 import PIL.Image
 import pystray
 
-from custom_logging import get_general_logger
-import mediator
-from my_utils.simple_queue import QueueEvents
-from my_utils import util
+from common.custom_logging import get_general_logger
+import common.mediator as mediator
+from common.simple_queue import QueueEvents
+from common import util
 
 
 class SystemTrayIcon:

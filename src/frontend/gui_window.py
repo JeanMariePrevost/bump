@@ -2,10 +2,10 @@ import threading
 import time
 import webview
 
-import mediator
-import python_js_bridge
-from custom_logging import get_general_logger
-from my_utils import util
+import common.mediator as mediator
+import common.python_js_bridge as python_js_bridge
+from common.custom_logging import get_general_logger
+from common import util
 
 DEFAULT_WINDOW_WIDTH = 1280
 DEFAULT_WINDOW_HEIGHT = 800

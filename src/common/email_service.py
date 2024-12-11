@@ -2,9 +2,9 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from credentials_manager import get_password_from_keyring_or_user, prompt_for_and_save_password
-from custom_logging import get_general_logger
-from settings_manager import settings
+from common.credentials_manager import get_password_from_keyring_or_user, prompt_for_and_save_password
+from common.custom_logging import get_general_logger
+from common.settings_manager import settings
 
 
 def send_email_alert(subject, body):
