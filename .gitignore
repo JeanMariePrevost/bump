@@ -167,4 +167,3 @@ cython_debug/
 data/
 config/
 exports/
-requirements.txt
