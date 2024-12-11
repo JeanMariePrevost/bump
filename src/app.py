@@ -5,6 +5,7 @@ from tkinter import messagebox
 import custom_logging
 import mediator
 import python_js_bridge
+import sys
 
 from bottle_server import BottleServer
 from custom_logging import get_general_logger, set_log_level
@@ -43,7 +44,8 @@ def load_monitors_configuration():
         monitors_manager = MonitorsManager()
         monitors_manager.save_monitors_configs_to_file()
     except Exception as e:
-        # Failed to load the monitors configuration file, prompt the user about overwriting faulty config with a new empty one
+        # Failed to load the monitors configuration file.
+        # Prompt the user about overwriting the faulty config with a new empty one.
         get_general_logger().error(f"An error occurred while loading monitors: {e}.")
 
         root = tk.Tk()
@@ -53,6 +55,7 @@ def load_monitors_configuration():
             f"\n\nError: {e}"
             f"\n\nOverwrite with a new empty configuration?"
         )
+        user_wish_to_overwrite = messagebox.askyesno(title="Error", message=message, icon=messagebox.ERROR)
         user_wish_to_overwrite = messagebox.askyesno("Error", message, icon=messagebox.ERROR)
 
         if user_wish_to_overwrite:
@@ -83,7 +86,7 @@ def load_monitors_configuration():
 
             root.destroy()
             get_general_logger().warning("Failed to load monitors. Exiting application.")
-            exit()
+            sys.exit()
 
     # Reaching this point means the monitors were loaded successfully or a new empty configuration was created
     mediator.register_monitors_manager(monitors_manager)
