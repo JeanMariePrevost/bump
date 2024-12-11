@@ -80,7 +80,7 @@ window.addEventListener("pywebviewready", function () {
   document.getElementById("export-config").addEventListener("click", () => {
     requestCompleteExport().then((response) => {
       if (response === "true") {
-        alert("Configuration exported successfully!");
+        // alert("Configuration exported successfully!"); //Handled by the backend for now
       } else {
         alert("Error exporting configuration: " + response);
       }
@@ -89,7 +89,7 @@ window.addEventListener("pywebviewready", function () {
   document.getElementById("import-config").addEventListener("click", () => {
     requestCompleteImport().then((response) => {
       if (response === "true") {
-        alert("Configuration imported successfully!");
+        // alert("Configuration imported successfully!"); //Handled by the backend for now
         location.reload(); // Reload the page
         // TODO - Requires a full restart, so close the app?
       } else {

@@ -6,6 +6,8 @@ import pathvalidate
 from importlib import import_module
 from urllib.parse import urlparse
 from custom_logging import general_logger
+import mediator
+from my_utils.simple_queue import QueueEvents
 
 
 def resource_path(relative_path):
@@ -108,7 +110,53 @@ def export_app_config_and_logs_to_zip():
 
     general_logger.debug("Export complete")
 
+    from tkinter import messagebox
+
+    messagebox.showinfo("Export complete", f"Exported to {output_path}")
+
     # Reveal the file in the file explorer
     full_directory = resource_path(subdirectory)
     print(f"Exported to {full_directory}")
     os.startfile(full_directory)
+
+
+def import_app_config_and_logs_from_zip():
+    """
+    Imports the whole ./config/, ./data/ and ./logs/ directories from a zip file.
+    Application must be stopped and restarted
+    """
+
+    exports_folder_exists = os.path.exists(resource_path("exports"))
+    initial_folder = "exports" if exports_folder_exists else "."
+    initial_folder = resource_path(initial_folder)
+
+    # Ask the user to select a file
+    from tkinter import Tk
+    from tkinter.filedialog import askopenfilename
+
+    Tk().withdraw()  # Prevents the root window from appearing
+    filepath = askopenfilename(title="Select the BUMP export ZIP file to import", filetypes=[("ZIP files", "*.zip")], initialdir=initial_folder)
+    if not filepath:
+        general_logger.debug("Import cancelled - no file selected")
+        return
+
+    # Get confirmation from user that they wish to crush all existing data
+    from tkinter import messagebox
+
+    confirm_import = messagebox.askokcancel("Confirm import", "This will overwrite all existing data. Continue?")
+    if not confirm_import:
+        general_logger.debug("Import cancelled - user declined")
+        return
+
+    # Extract the zip file
+    extract_location = resource_path(".")
+    with zipfile.ZipFile(filepath, "r") as zipf:
+        zipf.extractall(extract_location)
+
+    general_logger.debug("Import complete")
+
+    # Warn the user that the application will now exit
+    messagebox.showinfo("Import complete", "The application will now exit. Please restart to apply the imported data.")
+    mediator.app_exit_requested.trigger()
+    mediator.bg_monitoring_queue.put_nowait(QueueEvents.EXIT_APP)
+    mediator.main_thread_blocking_queue.put(QueueEvents.EXIT_APP, 1)

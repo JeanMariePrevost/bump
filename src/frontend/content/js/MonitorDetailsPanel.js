@@ -209,7 +209,7 @@ export class MonitorDetailsPanel extends BaseComponent {
           0.01 // Minimum width to avoid collapsing
         );
       } else {
-        bar.style.flex = 1 - statusChangeResults[i].normalizedTime;
+        bar.style.flex = Math.max((bar.style.flex = 1 - statusChangeResults[i].normalizedTime), 0.01);
       }
 
       //Set listeners for tooltips

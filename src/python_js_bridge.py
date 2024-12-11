@@ -271,8 +271,7 @@ class JsApi:
         general_logger.debug("Received request to complete import.")
         try:
             # TODO - File picker, then safe import
-            # my_utils.util.import_app_config_and_logs_from_zip()
-            general_logger.error("Import not implemented yet.")
+            my_utils.util.import_app_config_and_logs_from_zip()
         except Exception as e:
             general_logger.exception(f"Error while importing app config and logs: {e}")
             return str(e)
