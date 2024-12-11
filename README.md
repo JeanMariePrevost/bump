@@ -82,8 +82,6 @@ BUMP is provided as-is with no plans for future development.
 ## License
 This project is licensed under the MIT License. See the LICENSE file for details.
 
-Here's an even more neutral version:
-
 ## Acknowledgments
 This project was made possible by the following libraries and tools:
 - **Pywebview**: For the GUI framework.

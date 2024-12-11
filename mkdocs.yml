@@ -1,0 +1,8 @@
+site_name: BUMP Documentation
+
+theme:
+  name: material
+  color_mode: dark
+  palette:
+    scheme: slate
+    primary: green
