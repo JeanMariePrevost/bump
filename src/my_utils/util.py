@@ -1,5 +1,7 @@
+from datetime import datetime
 import os
 import sys
+import zipfile
 import pathvalidate
 from importlib import import_module
 from urllib.parse import urlparse
@@ -65,3 +67,48 @@ def get_query_class_from_string(fully_qualified_query_class_name: str) -> type |
         general_logger.error(f"Class {class_name} not found in module {module_name}")
 
     return None
+
+
+def export_app_config_and_logs_to_zip():
+    """
+    Exports the whole ./config/, ./data/ and ./logs/ directories to a zip file.
+    """
+
+    # Define the folders to export
+    folders = [
+        resource_path("config"),
+        resource_path("data"),
+        resource_path("logs"),
+    ]
+
+    # Ensure source paths already exist
+    for folder in folders:
+        if not os.path.exists(folder):
+            general_logger.error(f"Export failed: {folder} does not exist")
+            return
+
+    # Ensure target path exists
+    os.makedirs("exports", exist_ok=True)
+
+    # Create the zip file
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = timestamp + "_BUMP_EXPORT.zip"
+    subdirectory = "exports"
+    output_path = resource_path(subdirectory + "/" + filename)
+    general_logger.debug(f"Exporting app data and logs to {output_path}")
+    with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+        for folder in folders:
+            for root, _, files in os.walk(folder):
+                for file in files:
+                    # Get the full file path
+                    full_path = os.path.join(root, file)
+                    # Add file to the zip, preserving folder structure
+                    arcname = os.path.relpath(full_path, os.path.dirname(folder))
+                    zipf.write(full_path, arcname)
+
+    general_logger.debug("Export complete")
+
+    # Reveal the file in the file explorer
+    full_directory = resource_path(subdirectory)
+    print(f"Exported to {full_directory}")
+    os.startfile(full_directory)

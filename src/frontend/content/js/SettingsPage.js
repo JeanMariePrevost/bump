@@ -1,5 +1,13 @@
 import { NavbarComponent } from "./NavbarComponent.js";
-import { requestAppSettings, requestEnterNewSmtpPassword, requestDeleteSmtpPassword, requestSmtpPasswordExists, submitAppSettings } from "./PythonJsBridge.js";
+import {
+  requestAppSettings,
+  requestEnterNewSmtpPassword,
+  requestDeleteSmtpPassword,
+  requestSmtpPasswordExists,
+  submitAppSettings,
+  requestCompleteExport,
+  requestCompleteImport,
+} from "./PythonJsBridge.js";
 import { FormCardHelper } from "./FormCardHelper.js";
 import { applyTheme } from "./utils.js";
 
@@ -64,6 +72,28 @@ window.addEventListener("pywebviewready", function () {
         location.reload(); // Reload the page
       } else {
         alert("Error removing password: " + response);
+      }
+    });
+  });
+
+  // Add event listener to the export and import buttons
+  document.getElementById("export-config").addEventListener("click", () => {
+    requestCompleteExport().then((response) => {
+      if (response === "true") {
+        alert("Configuration exported successfully!");
+      } else {
+        alert("Error exporting configuration: " + response);
+      }
+    });
+  });
+  document.getElementById("import-config").addEventListener("click", () => {
+    requestCompleteImport().then((response) => {
+      if (response === "true") {
+        alert("Configuration imported successfully!");
+        location.reload(); // Reload the page
+        // TODO - Requires a full restart, so close the app?
+      } else {
+        alert("Error importing configuration: " + response);
       }
     });
   });

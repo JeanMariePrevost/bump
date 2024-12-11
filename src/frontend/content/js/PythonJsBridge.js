@@ -170,6 +170,23 @@ export async function requestSmtpPasswordExists() {
   return response;
 }
 
+/**
+ * Request the backend to export the app state (config, monitors, logs, etc) to a file
+ * @returns {Promise<string>} Promise that resolves to "true" if the export was successful, or an error message if it was not
+ */
+export async function requestCompleteExport() {
+  const response = await pywebview.api.request_complete_export();
+  return response;
+}
+
+/**
+ * Request the backend to import the app state from a file
+ * @returns {Promise<string>} Promise that resolves to "true" if the export was successful, or an error message if it was not
+ */
+export async function requestCompleteImport() {
+  const response = await pywebview.api.request_complete_import();
+  return response;
+}
 //
 //
 //

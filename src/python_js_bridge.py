@@ -250,6 +250,34 @@ class JsApi:
         print(f"SMTP password exists: {exists}")
         return exists
 
+    def request_complete_export(self) -> str:
+        """
+        Request to export the whole application configuration and logs to a zip file.
+        :return: "true" if successful, or an error message if not
+        """
+        general_logger.debug("Received request to complete export.")
+        try:
+            my_utils.util.export_app_config_and_logs_to_zip()
+        except Exception as e:
+            general_logger.exception(f"Error while exporting app config and logs: {e}")
+            return str(e)
+        return "true"
+
+    def request_complete_import(self) -> str:
+        """
+        Request to import the whole application configuration and logs from a zip file.
+        :return: "true" if successful, or an error message if not
+        """
+        general_logger.debug("Received request to complete import.")
+        try:
+            # TODO - File picker, then safe import
+            # my_utils.util.import_app_config_and_logs_from_zip()
+            general_logger.error("Import not implemented yet.")
+        except Exception as e:
+            general_logger.exception(f"Error while importing app config and logs: {e}")
+            return str(e)
+        return "true"
+
 
 def get_js_api():
     global __js_api
