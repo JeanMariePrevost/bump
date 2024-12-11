@@ -9,7 +9,7 @@ import sys
 
 from bottle_server import BottleServer
 from custom_logging import get_general_logger, set_log_level
-from frontend.main_page import MainPage
+from frontend.gui_window import GuiWindow
 from monitor.monitors_manager import MonitorsManager
 from my_utils import util
 from my_utils.simple_queue import QueueEvents
@@ -94,7 +94,7 @@ def load_monitors_configuration():
 
 def main_thread_loop():
     get_general_logger().debug("Main loop started.")
-    test_window = MainPage()
+    test_window = GuiWindow()
     test_window.show()
     # global_events.main_thread_event_queue.put("show_gui")
     while True:
@@ -108,7 +108,7 @@ def main_thread_loop():
             get_general_logger().info("Exiting application...")
             break
         elif event == QueueEvents.OPEN_GUI:
-            test_window = MainPage()
+            test_window = GuiWindow()
             test_window.show()
             print("Main window was closed.")
         else:

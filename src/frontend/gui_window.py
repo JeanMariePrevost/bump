@@ -11,7 +11,7 @@ DEFAULT_WINDOW_WIDTH = 1280
 DEFAULT_WINDOW_HEIGHT = 800
 
 
-class MainPage:
+class GuiWindow:
     def __init__(self) -> None:
         self.window: webview.Window = None
         mediator.app_exit_requested.add(self.close)
@@ -20,12 +20,12 @@ class MainPage:
 
     def show(self):
         if threading.current_thread() is threading.main_thread():
-            get_general_logger().debug("MainPage.show called from the main thread. Proceeding.")
+            get_general_logger().debug("GuiWindow.show called from the main thread. Proceeding.")
         else:
-            get_general_logger().exception("MainPage.show: Calling from a non-main thread. This is not supported.")
+            get_general_logger().exception("GuiWindow.show: Calling from a non-main thread. This is not supported.")
             return
         if self.window is not None:
-            get_general_logger().debug("MainPage.show: Window already open, not opening another one.")
+            get_general_logger().debug("GuiWindow.show: Window already open, not opening another one.")
             return
 
         # NOTE: pywebview uses the script's current working directory as the base directory for relative paths. E.g. /src/...
@@ -50,7 +50,7 @@ class MainPage:
             self.window.events.closed -= self.close
             self.window.destroy()
         self.window = None
-        print("MainPage.close: Window closed.")
+        print("GuiWindow.close: Window closed.")
 
     def is_open(self) -> bool:
         return self.window is not None

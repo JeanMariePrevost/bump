@@ -6,7 +6,7 @@ from my_utils.simple_queue import SimpleQueue
 from my_utils.signal import Signal
 
 if TYPE_CHECKING:
-    from frontend.main_page import MainPage
+    from frontend.gui_window import GuiWindow
     from monitor.monitors_manager import MonitorsManager
 
 """
@@ -37,19 +37,19 @@ monitor_status_changed = Signal(str)  # the status of a monitor has changed, wit
 ############################################################################################
 # Shared state / blackboard
 # For shared *safe* info to be accessed anywhere
-__active_gui: MainPage | None = None
+__active_gui: GuiWindow | None = None
 __monitors_manager: MonitorsManager | None = None
 __http_server: Bottle | None = None
 
 
-def register_active_gui(window: MainPage | None):
-    if window.__class__.__name__ != "MainPage":
+def register_active_gui(window: GuiWindow | None):
+    if window.__class__.__name__ != "GuiWindow":
         raise ValueError("Invalid type")
     global __active_gui
     __active_gui = window
 
 
-def get_active_gui() -> MainPage | None:
+def get_active_gui() -> GuiWindow | None:
     return __active_gui
 
 
