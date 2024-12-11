@@ -9,7 +9,7 @@ from queries.query_result import QueryResult
 from serialization import Deserializable
 from custom_logging import get_custom_logger, read_entries_from_log_file
 import serialization
-from custom_logging import general_logger
+from custom_logging import get_general_logger
 import email_service
 from settings_manager import settings
 
@@ -112,7 +112,7 @@ class Monitor(Deserializable):
         log_file_path = util.resource_path(partial_path)
         # If file doesn't exist, log a warning and return []
         if not os.path.exists(log_file_path):
-            general_logger.warning(f"Log file {partial_path} does not exist.")
+            get_general_logger().warning(f"Log file {partial_path} does not exist.")
             return []
         else:
             return read_entries_from_log_file(log_file_path, max_number_of_entries, min_level)
@@ -120,7 +120,7 @@ class Monitor(Deserializable):
     def set_next_run_time(self):
         """Sets the next run time based on the period_in_seconds, or a safe default if the period is invalid."""
         if getattr(self, "period_in_seconds", None) is None or self.period_in_seconds < 1:
-            general_logger.warning(f"Monitor {self.unique_name} has an invalid period, usin default of {PERIOD_IF_PERIOD_INVALID} seconds.")
+            get_general_logger().warning(f"Monitor {self.unique_name} has an invalid period, usin default of {PERIOD_IF_PERIOD_INVALID} seconds.")
             self._next_run_time = datetime.now() + timedelta(seconds=PERIOD_IF_PERIOD_INVALID)
         else:
             self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
@@ -140,7 +140,7 @@ class Monitor(Deserializable):
     def sendUserAlerts(self, query_result: QueryResult):
         from plyer import notification
 
-        general_logger.debug(f"Sending alert for monitor {self.unique_name}")
+        get_general_logger().debug(f"Sending alert for monitor {self.unique_name}")
 
         messageTitleString = f"Monitor {self.unique_name}"
 
@@ -166,7 +166,7 @@ class Monitor(Deserializable):
         try:
             target_path = self.get_history_file_path()
             if not os.path.exists(target_path):
-                general_logger.warning(f"Requested history file {target_path} does not exist.")
+                get_general_logger().warning(f"Requested history file {target_path} does not exist.")
                 return []
             with open(target_path, "r") as f:
                 lines = f.readlines()
@@ -176,7 +176,7 @@ class Monitor(Deserializable):
                         resultsList.append(serialization.from_encoded_json(line))
                     return resultsList
         except Exception as e:
-            general_logger.error(f"Error while getting previous query result: {e}")
+            get_general_logger().error(f"Error while getting previous query result: {e}")
             traceback.print_exc()
             return []
         return resultsList
@@ -186,7 +186,7 @@ class Monitor(Deserializable):
         try:
             target_path = self.get_history_file_path()
             if not os.path.exists(target_path):
-                general_logger.warning(f"Requested history file {target_path} does not exist.")
+                get_general_logger().warning(f"Requested history file {target_path} does not exist.")
                 return []
             with open(target_path, "r") as f:
                 lines = f.readlines()
@@ -197,7 +197,7 @@ class Monitor(Deserializable):
                             resultsList.append(result)
                     return resultsList
         except Exception as e:
-            general_logger.error(f"Error while getting previous query result: {e}")
+            get_general_logger().error(f"Error while getting previous query result: {e}")
             traceback.print_exc()
             return []
         return resultsList
@@ -206,7 +206,7 @@ class Monitor(Deserializable):
         if datetime.now() > self._next_run_time:
             return self.execute()
         else:  # DEBUG - Remove this cause it'll spam the logs
-            general_logger.debug(f"Monitor {self.unique_name} not due yet, next run in {self._next_run_time - datetime.now()}")
+            get_general_logger().debug(f"Monitor {self.unique_name} not due yet, next run in {self._next_run_time - datetime.now()}")
         return None
 
     def append_query_result_to_history(self, query_result):
@@ -218,13 +218,13 @@ class Monitor(Deserializable):
                 f.write(encoded_query_result + "\n")
 
         except Exception as e:
-            general_logger.error(f"Error while appending query result to history: {e}")
+            get_general_logger().error(f"Error while appending query result to history: {e}")
 
     def create_history_file_if_not_exists(self):
         target_path = self.get_history_file_path()
         os.makedirs(os.path.dirname(target_path), exist_ok=True)
         if not os.path.exists(target_path):
-            general_logger.debug(f"Monitor {self.unique_name} did not have a history file, creating one now.")
+            get_general_logger().debug(f"Monitor {self.unique_name} did not have a history file, creating one now.")
             with open(target_path, "w") as f:
                 f.write("")  # Create an empty file
 
@@ -232,7 +232,7 @@ class Monitor(Deserializable):
         target_path = self.get_history_file_path()
         if os.path.exists(target_path):
             os.remove(target_path)
-            general_logger.debug(f"Monitor {self.unique_name} history file deleted.")
+            get_general_logger().debug(f"Monitor {self.unique_name} history file deleted.")
 
     def recalculate_stats(self):
         results = self.read_results_from_history_days(AVG_STATS_TIMESPAN_DAYS)
@@ -353,7 +353,7 @@ class Monitor(Deserializable):
                     os.rename(old_log_path, f"logs/{targetMonitor.unique_name}.log")
                 targetMonitor.__logger = get_custom_logger("monitors/" + targetMonitor.unique_name)
         except Exception as e:
-            general_logger.error(f"Error while renaming monitor history file: {e}")
+            get_general_logger().error(f"Error while renaming monitor history file: {e}")
             traceback.print_exc()
 
         self.log_monitor_event(f"Configuration modified by user.")

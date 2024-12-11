@@ -5,7 +5,7 @@ THis module uses pystray to create a system tray icon and allow the program to k
 import PIL.Image
 import pystray
 
-from custom_logging import general_logger
+from custom_logging import get_general_logger
 import mediator
 from my_utils.simple_queue import QueueEvents
 from my_utils import util
@@ -14,7 +14,7 @@ from my_utils import util
 class SystemTrayIcon:
 
     def __init__(self) -> None:
-        general_logger.debug("system_tray.initialize_system_tray: Initializing system tray...")
+        get_general_logger().debug("system_tray.initialize_system_tray: Initializing system tray...")
         # Load the image for the icon
         image = PIL.Image.open(util.resource_path("assets/icon_32px.png"))
 
@@ -55,24 +55,24 @@ class SystemTrayIcon:
 
     # Define actions for the RMB menu of the tray icon
     def on_clicked_exit(self, icon, item):
-        general_logger.debug(f'system_tray.on_clicked_exit: Clicked "{item}"')
+        get_general_logger().debug(f'system_tray.on_clicked_exit: Clicked "{item}"')
         # global_events.main_thread_event_queue.put("exit")
         mediator.app_exit_requested.trigger()
         mediator.bg_monitoring_queue.put_nowait(QueueEvents.EXIT_APP)
         mediator.main_thread_blocking_queue.put(QueueEvents.EXIT_APP, 1)
 
     def stop(self):
-        general_logger.debug("system_tray.stop: Stopping system tray...")
+        get_general_logger().debug("system_tray.stop: Stopping system tray...")
         # HACK : hide, because "zombie" icons linger in the tray after the program exits otehrwise. Not live threads, just the icon for some reason
         __pystray_icon_object.visible = False
         __pystray_icon_object.stop()
 
     # Define actions for the RMB menu of the tray icon
     def on_clicked_open_gui(self, icon, item):
-        general_logger.debug(f'system_tray.on_clicked_open_gui: Clicked "{item}"')
+        get_general_logger().debug(f'system_tray.on_clicked_open_gui: Clicked "{item}"')
         # global_events.main_thread_event_queue.put("show_gui")
         if not mediator.get_active_gui().is_open():
             mediator.main_thread_blocking_queue.put(QueueEvents.OPEN_GUI, 1)
         else:
-            general_logger.debug("system_tray.on_clicked_open_gui: Main window already open.")
+            get_general_logger().debug("system_tray.on_clicked_open_gui: Main window already open.")
             pass

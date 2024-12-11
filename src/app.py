@@ -1,139 +1,142 @@
 import os
+import tkinter as tk
+from tkinter import messagebox
 
-# HACK - Set work directory before anything gets initialized, otherwise it doesn't work outside of VSCode
-# TODO - Make the "core app" into another module or class? Place the "launch app" logic into a function?
-script_path = os.path.abspath(__file__)  # Get the absolute path of the current script
-project_root = os.path.dirname(os.path.dirname(script_path))  # Determine the root directory (parent of 'src')
-os.chdir(project_root)  # Set the working directory to the project root
-print(f"Working directory set to: {os.getcwd()}")  # Debug: Print the current working directory
-
-
-import subprocess
-import time
-from frontend.main_page import MainPage
+import custom_logging
 import mediator
+import python_js_bridge
+
+from bottle_server import BottleServer
+from custom_logging import get_general_logger, set_log_level
+from frontend.main_page import MainPage
 from monitor.monitors_manager import MonitorsManager
 from my_utils import util
 from my_utils.simple_queue import QueueEvents
-import python_js_bridge
 import serialization
-from custom_logging import general_logger, set_log_level
 from system_tray_icon import SystemTrayIcon
 import settings_manager
-import sys
-from bottle_server import BottleServer
-
-general_logger.info("Starting application...")
 
 
-settings_manager.load_configs()
-settings_manager.save_configs()
+def define_cwd():
+    """
+    Set the working directory to the project root directory.
+    Required for the application to work identically when run as a script, in an IDE, or as a bundled app.
+    """
+    current_script_path = os.path.abspath(__file__)  # Get the absolute path of the current script
+    project_root_directory = os.path.dirname(os.path.dirname(current_script_path))  # Determine the root directory (parent of 'src')
+    os.chdir(project_root_directory)  # Set the working directory to the project root
+    print(f"Working directory set to: {os.getcwd()}")  # Debug: Print the current working directory
 
-general_logger.debug("Trying to load monitors from file...")
-try:
-    monitors_manager: MonitorsManager = serialization.load_from_json_file("data/monitors.json")
-    general_logger.info("Monitors loaded successfully.")
-except FileNotFoundError:
-    general_logger.warning("No monitors file found. Creating new empty file at 'data/monitors.json'.")
-    monitors_manager = MonitorsManager()
-    monitors_manager.save_monitors_configs_to_file()
-except Exception as e:
-    general_logger.error(f"An error occurred while loading monitors: {e}.")
-    # Prompt user through simple tkinter dialog
-    import tkinter as tk
-    from tkinter import messagebox
-    import os
 
-    root = tk.Tk()
-    root.withdraw()  # Hide the root window
+def load_monitors_configuration():
+    """
+    Load the monitors configuration from the 'data/monitors.json' file.
+    Handles cases like file not found or errors during loading.
+    """
 
-    # Ask the user if they want to overwrite the file and start fresh
-    message = (
-        f"An error occurred while trying to load the monitors configuration file at 'data/monitors.json'."
-        f"\n\nError: {e}"
-        f"\n\nOverwrite with a new empty configuration?"
-    )
-
-    response = messagebox.askyesno("Error", message, icon=messagebox.ERROR)
-
-    if response:
-        message = "'data/monitors.json' will be overwritten.\n\nProceed?"
-        response = messagebox.askyesno("Warning", message, icon=messagebox.WARNING)
-
-    if response:
-        # User chose to overwrite the file and start fresh
+    get_general_logger().debug("Trying to load monitors from file...")
+    try:
+        monitors_manager = serialization.load_from_json_file("data/monitors.json")
+        get_general_logger().info("Monitors loaded successfully.")
+    except FileNotFoundError:
+        get_general_logger().warning("No monitors file found. Creating new empty file at 'data/monitors.json'.")
         monitors_manager = MonitorsManager()
         monitors_manager.save_monitors_configs_to_file()
-        root.destroy()
-    else:
-        # Message box informing that the application cannot continue without the monitors file,
-        # and that the user can try to fix it by revealing the file in Explorer
+    except Exception as e:
+        # Failed to load the monitors configuration file, prompt the user about overwriting faulty config with a new empty one
+        get_general_logger().error(f"An error occurred while loading monitors: {e}.")
+
+        root = tk.Tk()
+        root.withdraw()
         message = (
-            f"The application could not load the monitors configuration."
-            f"\n\nError message: {e}"
-            f"\n\nNo changes were made."
-            f"\n\nYou can reload the application to start with a new empty configuration"
-            f" or try to fix 'data/monitors.json' manually."
-            f"\n\nOpen the config file directory before exiting?"
+            f"An error occurred while trying to load the monitors configuration file at 'data/monitors.json'."
+            f"\n\nError: {e}"
+            f"\n\nOverwrite with a new empty configuration?"
         )
-        response = messagebox.askyesno("Error", message, icon=messagebox.ERROR)
+        user_wish_to_overwrite = messagebox.askyesno("Error", message, icon=messagebox.ERROR)
 
-        if response:
-            # Open the directory containing the config file in Explorer and exit the application
-            config_file_path = util.resource_path("data/monitors.json")
-            os.startfile(os.path.dirname(config_file_path))
+        if user_wish_to_overwrite:
+            message = "'data/monitors.json' will be overwritten.\n\nProceed?"
+            user_confirmed = messagebox.askyesno("Warning", message, icon=messagebox.WARNING)
 
-        root.destroy()
-        general_logger.warning("Failed to load monitors. Exiting application.")
-        exit()
+        if user_wish_to_overwrite and user_confirmed:
+            # User chose to overwrite the file and start fresh
+            monitors_manager = MonitorsManager()
+            monitors_manager.save_monitors_configs_to_file()
+            root.destroy()
+        else:
+            # Could not load and user refused to start fresh, cannot proceed
+            message = (
+                f"The application could not load the monitors configuration."
+                f"\n\nError message: {e}"
+                f"\n\nNo changes were made."
+                f"\n\nYou can reload the application to start with a new empty configuration"
+                f" or try to fix 'data/monitors.json' manually."
+                f"\n\nOpen the config file directory before exiting?"
+            )
+            reveal_config_file = messagebox.askyesno("Error", message, icon=messagebox.ERROR)
 
+            if reveal_config_file:
+                # Open the directory containing the config file in Explorer
+                config_file_path = util.resource_path("data/monitors.json")
+                os.startfile(os.path.dirname(config_file_path))
 
-mediator.register_monitors_manager(monitors_manager)
-async_bg_monitoring_thread = monitors_manager.start_background_monitoring_thread()
+            root.destroy()
+            get_general_logger().warning("Failed to load monitors. Exiting application.")
+            exit()
 
-python_js_bridge.hook_frontend_to_backend_signals()  # Allows the JS frontend to receive specific backend events
-
-
-# Start custom HTTP server in the background
-BottleServer().start_as_background_thread()
-
-
-print("We started the background monitoring thread. Now we can do other things in the main thread.")
-
-tray_icon = SystemTrayIcon()
-
-# Right before entiring the main loop, refresh things like the tray icon
-monitors_manager.checkIfAllMonitorsAreUpAndValid()
-
-# Apply various settings before entering the main loop
-set_log_level(settings_manager.settings.general_log_level)
+    # Reaching this point means the monitors were loaded successfully or a new empty configuration was created
+    mediator.register_monitors_manager(monitors_manager)
 
 
 def main_thread_loop():
-    general_logger.debug("Main loop started.")
+    get_general_logger().debug("Main loop started.")
     test_window = MainPage()
     test_window.show()
     # global_events.main_thread_event_queue.put("show_gui")
     while True:
-        general_logger.debug("Main loop ticking.")
+        get_general_logger().debug("Main loop ticking.")
 
-        general_logger.debug("Main loop listening for next event...")
+        get_general_logger().debug("Main loop listening for next event...")
         event = mediator.main_thread_blocking_queue.get()  # Blocks until an event is received
-        general_logger.debug(f"Main loop received event: {event}")
+        get_general_logger().debug(f"Main loop received event: {event}")
 
         if event == QueueEvents.EXIT_APP:
-            general_logger.info("Exiting application...")
+            get_general_logger().info("Exiting application...")
             break
         elif event == QueueEvents.OPEN_GUI:
             test_window = MainPage()
             test_window.show()
             print("Main window was closed.")
         else:
-            general_logger.error(f"Unknown event received: {event}")
+            get_general_logger().error(f"Unknown event received: {event}")
 
 
-main_thread_loop()
+if __name__ == "__main__":
+    # NOTE: Order of operations is important in multiple places here
+    # (e.g. defining the working directory before loading settings, loading settings before setting log level, etc.)
 
-mediator.main_loop_exited.trigger()
+    define_cwd()  # Has to be called before any code that relies on relative paths
+    custom_logging.initialize()
+    settings_manager.load_configs()
+    set_log_level(settings_manager.settings.general_log_level)
+    get_general_logger().info("Application starting...")
 
-print("Main window was closed. End of script reached.")
+    load_monitors_configuration()
+    python_js_bridge.hook_frontend_to_backend_signals()  # Allows the JS frontend to receive specific backend events
+    BottleServer().start_as_background_thread()  # Start custom HTTP server for the pywebview GUI
+    async_bg_monitoring_thread = mediator.get_monitors_manager().start_background_monitoring_thread()
+    tray_icon = SystemTrayIcon()  # Create the tray icon
+
+    # Once all background services are set up,
+    # check monitors validity and status to immediately refresh things like the tray icon
+    mediator.get_monitors_manager().checkIfAllMonitorsAreUpAndValid()
+
+    # Start the main thread loop
+    main_thread_loop()
+
+    # Main loop exited, stop all background services and exit the application
+    mediator.main_loop_exited.trigger()
+
+    print("Main window was closed. End of script reached.")
+    exit()

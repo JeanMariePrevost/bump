@@ -1,11 +1,11 @@
 from bottle import Bottle, static_file
-from custom_logging import general_logger
+from custom_logging import get_general_logger
 import mediator
 
 
 class BottleServer:
     def __init__(self):
-        general_logger.info("bottle_server.py: Setting up Bottle server routes.")
+        get_general_logger().info("bottle_server.py: Setting up Bottle server routes.")
 
         self.server: Bottle = Bottle()
 
@@ -32,7 +32,7 @@ class BottleServer:
             """Special case to serve the metadata.json file for the frontend."""
             return static_file("metadata.json", root="")
 
-        general_logger.info("bottle_server.py: Bottle server routes set up.")
+        get_general_logger().info("bottle_server.py: Bottle server routes set up.")
 
     def __run(self):
         self.server.run(host="localhost", port=8081, debug=True)

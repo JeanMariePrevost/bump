@@ -1,6 +1,6 @@
 from queue import Empty, LifoQueue
 from enum import Enum, auto
-from custom_logging import general_logger
+from custom_logging import get_general_logger
 
 
 class QueueEvents(Enum):
@@ -28,7 +28,7 @@ class SimpleQueue:
         Put a payload into the queue.
         """
         if not isinstance(event, QueueEvents):
-            general_logger.error(f"Invalid payload {event}. Expected types: {QueueEvents}")
+            get_general_logger().error(f"Invalid payload {event}. Expected types: {QueueEvents}")
             raise TypeError(f"Invalid payload {event}. Expected types: {QueueEvents}")
         if self.__queue.full():
             # Log as debug, then empty the queue and put the new event. SimpleQueue only keeps the latest event
@@ -40,7 +40,7 @@ class SimpleQueue:
         Put a payload into the queue.
         """
         if not isinstance(event, QueueEvents):
-            general_logger.error(f"Invalid payload {event}. Expected types: {QueueEvents}")
+            get_general_logger().error(f"Invalid payload {event}. Expected types: {QueueEvents}")
             raise TypeError(f"Invalid payload {event}. Expected types: {QueueEvents}")
         if self.__queue.full():
             # Log as debug, then empty the queue and put the new event. SimpleQueue only keeps the latest event
@@ -57,5 +57,5 @@ class SimpleQueue:
             # Timeout and no events were received
             return QueueEvents.NO_EVENT
         except Exception as e:
-            general_logger.error(f"Queue get failed: {e}")
+            get_general_logger().error(f"Queue get failed: {e}")
             return QueueEvents.NO_EVENT

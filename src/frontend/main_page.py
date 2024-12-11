@@ -4,7 +4,7 @@ import webview
 
 import mediator
 import python_js_bridge
-from custom_logging import general_logger
+from custom_logging import get_general_logger
 from my_utils import util
 
 DEFAULT_WINDOW_WIDTH = 1280
@@ -20,12 +20,12 @@ class MainPage:
 
     def show(self):
         if threading.current_thread() is threading.main_thread():
-            general_logger.debug("MainPage.show called from the main thread. Proceeding.")
+            get_general_logger().debug("MainPage.show called from the main thread. Proceeding.")
         else:
-            general_logger.exception("MainPage.show: Calling from a non-main thread. This is not supported.")
+            get_general_logger().exception("MainPage.show: Calling from a non-main thread. This is not supported.")
             return
         if self.window is not None:
-            general_logger.debug("MainPage.show: Window already open, not opening another one.")
+            get_general_logger().debug("MainPage.show: Window already open, not opening another one.")
             return
 
         # NOTE: pywebview uses the script's current working directory as the base directory for relative paths. E.g. /src/...

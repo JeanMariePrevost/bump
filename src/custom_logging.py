@@ -5,8 +5,6 @@ import re
 from colorama import Fore, Back, Style, init
 
 
-init(autoreset=True)
-
 # Color definitions for logs
 LEVEL_COLORS = {
     logging.DEBUG: Fore.BLUE,
@@ -89,24 +87,37 @@ class LoggerManager:
         return logger
 
 
-# Initialize the logger manager
-logger_manager = LoggerManager()
+__logger_manager = None
+__general_logger = None
 
-# Predefined feeds
-general_logger: logging.Logger = logger_manager.get_logger("general")
+
+def initialize():
+    """Initialize the logger manager."""
+    init(autoreset=True)  # Have colorama reset colors after each print statement
+
+    global __logger_manager
+    __logger_manager = LoggerManager()
+    global __general_logger
+    __general_logger = __logger_manager.get_logger("general")
+
+
+def get_general_logger() -> logging.Logger:
+    if __general_logger is None:
+        raise ValueError("The logger manager has not been initialized. DId you forget to call custom_logging.initialize()?")
+    return __general_logger
 
 
 def set_log_level(log_level: str):
     """Set the log level for all loggers."""
     log_level = log_level.upper()
     if log_level not in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
-        general_logger.error(f"Invalid log level: {log_level}")
+        __general_logger.error(f"Invalid log level: {log_level}")
         return
 
-    for logger in logger_manager.loggers.values():
+    for logger in __logger_manager.loggers.values():
         logger.setLevel(log_level)
 
-    general_logger.debug(f"Log level set to: {log_level}")
+    __general_logger.debug(f"Log level set to: {log_level}")
 
 
 def get_custom_logger(name: str) -> logging.Logger:
@@ -123,7 +134,7 @@ def get_custom_logger(name: str) -> logging.Logger:
     # relative_path = logger_manager.log_dir + "/" + name
     # full_path = util.resource_path(relative_path)
     # os.makedirs(full_path, exist_ok=True)
-    return logger_manager.get_logger(name)
+    return __logger_manager.get_logger(name)
 
 
 def extract_log_level_from_entry(log_entry: str) -> str:
@@ -146,7 +157,7 @@ def read_entries_from_log_file(log_file_path: str, mnumber_of_entries: int, min_
     accepted_log_levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
     if min_level not in accepted_log_levels:
-        general_logger.error(f"Invalid log level: {min_level}")
+        __general_logger.error(f"Invalid log level: {min_level}")
         return log_entries
     accepted_log_levels = accepted_log_levels[accepted_log_levels.index(min_level) :]
 
@@ -177,7 +188,7 @@ def read_entries_from_log_file(log_file_path: str, mnumber_of_entries: int, min_
                 current_entry = ""
 
     except Exception as e:
-        general_logger.error(f"Error while reading log file: {e}")
+        __general_logger.error(f"Error while reading log file: {e}")
         return []
 
     return log_entries

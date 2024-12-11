@@ -4,7 +4,7 @@ import mediator
 from monitor.monitor import Monitor
 from my_utils.simple_queue import QueueEvents
 from serialization import Deserializable
-from custom_logging import general_logger
+from custom_logging import get_general_logger
 import serialization
 
 from settings_manager import settings
@@ -52,8 +52,8 @@ class MonitorsManager(Deserializable):
         """Executes all monitors and prints the result."""
 
         for monitor in self.monitors:
-            general_logger.debug(f"Executing monitor {monitor.unique_name}")
-            general_logger.debug(monitor.execute())
+            get_general_logger().debug(f"Executing monitor {monitor.unique_name}")
+            get_general_logger().debug(monitor.execute())
 
     def execute_due_monitors(self) -> None:
         """Executes all monitors that are due and prints the result."""
@@ -72,7 +72,7 @@ class MonitorsManager(Deserializable):
                 # Wait listening for an event for a time, or continue after the timeout
                 event = mediator.bg_monitoring_queue.get(timeout_s=settings.general_interval)
                 if event == QueueEvents.EXIT_APP:
-                    general_logger.debug("Background monitoring loop exiting")
+                    get_general_logger().debug("Background monitoring loop exiting")
                     break
 
         def thread_target():

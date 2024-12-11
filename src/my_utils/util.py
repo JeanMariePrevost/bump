@@ -5,7 +5,7 @@ import zipfile
 import pathvalidate
 from importlib import import_module
 from urllib.parse import urlparse
-from custom_logging import general_logger
+from custom_logging import get_general_logger
 import mediator
 from my_utils.simple_queue import QueueEvents
 
@@ -50,7 +50,7 @@ def get_query_class_from_string(fully_qualified_query_class_name: str) -> type |
     """
     # Confirm package
     if not fully_qualified_query_class_name.startswith("queries."):
-        general_logger.error(f"Query class name {fully_qualified_query_class_name} not in queries package")
+        get_general_logger().error(f"Query class name {fully_qualified_query_class_name} not in queries package")
         return None
 
     # Try to resolve the class object
@@ -64,9 +64,9 @@ def get_query_class_from_string(fully_qualified_query_class_name: str) -> type |
         # Get the class object
         return getattr(module, class_name, None)
     except ImportError as e:
-        general_logger.error(f"Error importing module {module_name}: {e}")
+        get_general_logger().error(f"Error importing module {module_name}: {e}")
     except AttributeError:
-        general_logger.error(f"Class {class_name} not found in module {module_name}")
+        get_general_logger().error(f"Class {class_name} not found in module {module_name}")
 
     return None
 
@@ -86,7 +86,7 @@ def export_app_config_and_logs_to_zip():
     # Ensure source paths already exist
     for folder in folders:
         if not os.path.exists(folder):
-            general_logger.error(f"Export failed: {folder} does not exist")
+            get_general_logger().error(f"Export failed: {folder} does not exist")
             return
 
     # Ensure target path exists
@@ -97,7 +97,7 @@ def export_app_config_and_logs_to_zip():
     filename = timestamp + "_BUMP_EXPORT.zip"
     subdirectory = "exports"
     output_path = resource_path(subdirectory + "/" + filename)
-    general_logger.debug(f"Exporting app data and logs to {output_path}")
+    get_general_logger().debug(f"Exporting app data and logs to {output_path}")
     with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zipf:
         for folder in folders:
             for root, _, files in os.walk(folder):
@@ -108,7 +108,7 @@ def export_app_config_and_logs_to_zip():
                     arcname = os.path.relpath(full_path, os.path.dirname(folder))
                     zipf.write(full_path, arcname)
 
-    general_logger.debug("Export complete")
+    get_general_logger().debug("Export complete")
 
     from tkinter import messagebox
 
@@ -137,7 +137,7 @@ def import_app_config_and_logs_from_zip():
     Tk().withdraw()  # Prevents the root window from appearing
     filepath = askopenfilename(title="Select the BUMP export ZIP file to import", filetypes=[("ZIP files", "*.zip")], initialdir=initial_folder)
     if not filepath:
-        general_logger.debug("Import cancelled - no file selected")
+        get_general_logger().debug("Import cancelled - no file selected")
         return
 
     # Get confirmation from user that they wish to crush all existing data
@@ -145,7 +145,7 @@ def import_app_config_and_logs_from_zip():
 
     confirm_import = messagebox.askokcancel("Confirm import", "This will overwrite all existing data. Continue?")
     if not confirm_import:
-        general_logger.debug("Import cancelled - user declined")
+        get_general_logger().debug("Import cancelled - user declined")
         return
 
     # Extract the zip file
@@ -153,7 +153,7 @@ def import_app_config_and_logs_from_zip():
     with zipfile.ZipFile(filepath, "r") as zipf:
         zipf.extractall(extract_location)
 
-    general_logger.debug("Import complete")
+    get_general_logger().debug("Import complete")
 
     # Warn the user that the application will now exit
     messagebox.showinfo("Import complete", "The application will now exit. Please restart to apply the imported data.")

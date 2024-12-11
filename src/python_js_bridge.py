@@ -2,7 +2,7 @@ import json
 import webview
 
 import credentials_manager
-from custom_logging import general_logger, read_entries_from_log_file
+from custom_logging import get_general_logger, read_entries_from_log_file
 from my_utils.simple_queue import QueueEvents
 import my_utils.util
 import mediator
@@ -30,7 +30,7 @@ def send_event_to_js(window: webview.Window, event_type: str, data: dict):
         });
     """
     if window is None:
-        general_logger.exception("send_event_to_js: Window is None, cannot send event.")
+        get_general_logger().exception("send_event_to_js: Window is None, cannot send event.")
         return
     js_code = f"window.dispatchEvent(new CustomEvent('{event_type}', {{ detail: {json.dumps(data)} }}));"
     window.evaluate_js(js_code)
@@ -67,7 +67,7 @@ class JsApi:
         print(f"Received request for monitor history: {unique_name}")
         targetMonitor = mediator.get_monitors_manager().get_monitor_by_name(unique_name)
         if targetMonitor is None:
-            general_logger.error(f"Monitor {unique_name} requested but not found.")
+            get_general_logger().error(f"Monitor {unique_name} requested but not found.")
             return {}
         history = targetMonitor.read_results_from_history(max_number_of_entries)
         # encodedJson = serialization.to_dict_encoded_with_types(history)
@@ -122,7 +122,7 @@ class JsApi:
         :param is_paused: The new pause state
         :return: "true" if successful, or an error message if not
         """
-        general_logger.debug(f'Received request to set monitor pause state: "{unique_name}" to {new_paused_value}')
+        get_general_logger().debug(f'Received request to set monitor pause state: "{unique_name}" to {new_paused_value}')
         targetMonitor = mediator.get_monitors_manager().get_monitor_by_name(unique_name)
         if targetMonitor is None:
             return f"Monitor with name {unique_name} not found"
@@ -140,19 +140,19 @@ class JsApi:
         :param monitor_config: The configuration object received from the frontend
         :return: "true" if successful, or an error message if not
         """
-        general_logger.debug(f"Received monitor config submission: {monitor_config}")
+        get_general_logger().debug(f"Received monitor config submission: {monitor_config}")
 
         try:
             targetMonitor: Monitor = mediator.get_monitors_manager().get_monitor_by_name(monitor_config["original_name"])
             if targetMonitor is None:
                 return f"Monitor with name {monitor_config['original_name']} not found"
             targetMonitor.validate_and_apply_config_from_frontend(monitor_config)
-            general_logger.debug("Monitor config applied successfully.")
-            general_logger.debug(f"Monitor after applying config: {targetMonitor}")
+            get_general_logger().debug("Monitor config applied successfully.")
+            get_general_logger().debug(f"Monitor after applying config: {targetMonitor}")
             # Save the new config to disk
             mediator.get_monitors_manager().save_monitors_configs_to_file()
         except Exception as e:
-            general_logger.exception(f"Error while applying monitor config: {e}")
+            get_general_logger().exception(f"Error while applying monitor config: {e}")
             return str(e)
 
         return "true"
@@ -162,7 +162,7 @@ class JsApi:
         Create and returns a new empty monitor with a unique name.
         :return: The unique name of the newly created monitor
         """
-        general_logger.debug("Received request to create a new empty monitor.")
+        get_general_logger().debug("Received request to create a new empty monitor.")
         monitors_manager = mediator.get_monitors_manager()
         new_monitor = monitors_manager.create_and_add_empty_monitor()
         monitors_manager.save_monitors_configs_to_file()
@@ -175,7 +175,7 @@ class JsApi:
         :param original_name: The name of the monitor to duplicate
         :return: The unique name of the newly created monitor
         """
-        general_logger.debug(f"Received request to duplicate monitor: {original_name}")
+        get_general_logger().debug(f"Received request to duplicate monitor: {original_name}")
         monitors_manager = mediator.get_monitors_manager()
         original_monitor = monitors_manager.get_monitor_by_name(original_name)
         if original_monitor is None:
@@ -189,7 +189,7 @@ class JsApi:
         return newMonitorData
 
     def request_app_settings(self) -> object:
-        general_logger.debug("Received request for app settings.")
+        get_general_logger().debug("Received request for app settings.")
         return vars(settings_manager.settings)
 
     def submit_app_settings(self, new_settings: dict) -> str:
@@ -199,13 +199,13 @@ class JsApi:
         :param new_settings: The configuration object received from the frontend
         :return: "true" if successful, or an error message if not
         """
-        general_logger.debug(f"Received app settings submission: {new_settings}")
+        get_general_logger().debug(f"Received app settings submission: {new_settings}")
 
         try:
             settings_manager.apply_settings_dicitonary_from_frontend(new_settings)
-            general_logger.debug("App settings applied successfully.")
+            get_general_logger().debug("App settings applied successfully.")
         except Exception as e:
-            general_logger.exception(f"Error while applying app settings: {e}")
+            get_general_logger().exception(f"Error while applying app settings: {e}")
             return str(e)
 
         return "true"
@@ -215,7 +215,7 @@ class JsApi:
         Request the user to enter a new password for the SMTP server.
         :return: "true" if successful, or an error message if not
         """
-        general_logger.debug("Received request to enter a new SMTP password.")
+        get_general_logger().debug("Received request to enter a new SMTP password.")
         try:
             title = "Enter SMTP Password"
             message = (
@@ -223,7 +223,7 @@ class JsApi:
             )
             credentials_manager.prompt_for_and_save_password(settings_manager.settings.smtp_username, title, message)
         except Exception as e:
-            general_logger.exception(f"Error while entering new SMTP password: {e}")
+            get_general_logger().exception(f"Error while entering new SMTP password: {e}")
             return str(e)
         return "true"
 
@@ -232,11 +232,11 @@ class JsApi:
         Request to delete the stored password for the SMTP server.
         :return: "true" if successful, or an error message if not
         """
-        general_logger.debug("Received request to delete the SMTP password.")
+        get_general_logger().debug("Received request to delete the SMTP password.")
         try:
             credentials_manager.delete_password_from_keyring(settings_manager.settings.smtp_username)
         except Exception as e:
-            general_logger.exception(f"Error while deleting SMTP password: {e}")
+            get_general_logger().exception(f"Error while deleting SMTP password: {e}")
             return str(e)
         return "true"
 
@@ -245,7 +245,7 @@ class JsApi:
         Request to check if a password exists for the SMTP server.
         :return: True if a password exists, False otherwise
         """
-        general_logger.debug("Received request to check if an SMTP password exists.")
+        get_general_logger().debug("Received request to check if an SMTP password exists.")
         exists = credentials_manager.password_exists(settings_manager.settings.smtp_username)
         print(f"SMTP password exists: {exists}")
         return exists
@@ -255,11 +255,11 @@ class JsApi:
         Request to export the whole application configuration and logs to a zip file.
         :return: "true" if successful, or an error message if not
         """
-        general_logger.debug("Received request to complete export.")
+        get_general_logger().debug("Received request to complete export.")
         try:
             my_utils.util.export_app_config_and_logs_to_zip()
         except Exception as e:
-            general_logger.exception(f"Error while exporting app config and logs: {e}")
+            get_general_logger().exception(f"Error while exporting app config and logs: {e}")
             return str(e)
         return "true"
 
@@ -268,12 +268,12 @@ class JsApi:
         Request to import the whole application configuration and logs from a zip file.
         :return: "true" if successful, or an error message if not
         """
-        general_logger.debug("Received request to complete import.")
+        get_general_logger().debug("Received request to complete import.")
         try:
             # TODO - File picker, then safe import
             my_utils.util.import_app_config_and_logs_from_zip()
         except Exception as e:
-            general_logger.exception(f"Error while importing app config and logs: {e}")
+            get_general_logger().exception(f"Error while importing app config and logs: {e}")
             return str(e)
         return "true"
 
@@ -299,7 +299,7 @@ def hook_frontend_to_backend_signals() -> None:
         try:
             current_window = current_gui.window
         except AttributeError:
-            general_logger.exception("hook_frontend_to_backend_signals: Could not get current window.")
+            get_general_logger().exception("hook_frontend_to_backend_signals: Could not get current window.")
             return
 
         if current_window:

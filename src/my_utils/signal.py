@@ -1,7 +1,7 @@
 from inspect import signature
 from typing import Callable, List, Tuple, Type
 
-from custom_logging import general_logger
+from custom_logging import get_general_logger
 
 
 class Signal:
@@ -100,7 +100,7 @@ class Signal:
             raise TypeError(f"Callback {target_function} does not match signal signature {self.arg_types}")
 
         if self.function_in_list(target_function):
-            general_logger.debug(f"Trying to add {target_function} which is already in the signal's list")
+            get_general_logger().debug(f"Trying to add {target_function} which is already in the signal's list")
 
     def _payload_is_valid_type(self, args: Tuple) -> bool:
         """

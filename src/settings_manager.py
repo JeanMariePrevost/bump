@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import difflib
 from ruamel.yaml import YAML, CommentedMap
 from my_utils import util
-from custom_logging import general_logger
+from custom_logging import get_general_logger
 
 
 # Defaults values and the "struct" settings object
@@ -30,7 +30,7 @@ def load_configs():
     Set module-level variables from the app_config.yaml file.
     """
 
-    general_logger.debug("Loading app settings from app_config.yaml")
+    get_general_logger().debug("Loading app settings from app_config.yaml")
 
     yaml = YAML()
 
@@ -38,15 +38,15 @@ def load_configs():
         with open(util.resource_path("config/app_config.yaml"), "r") as file:
             loadedConfigsDict = yaml.load(file)
     except FileNotFoundError:
-        general_logger.error("app_config.yaml not found. Settings could not be loaded.")
+        get_general_logger().error("app_config.yaml not found. Settings could not be loaded.")
         return
     except Exception as e:
-        general_logger.error(f"Error loading app_config.yaml: {e}")
+        get_general_logger().error(f"Error loading app_config.yaml: {e}")
         return
 
     apply_Settings_dictionary(loadedConfigsDict)
 
-    general_logger.debug("App settings loaded successfully.")
+    get_general_logger().debug("App settings loaded successfully.")
 
 
 def save_configs():
@@ -58,7 +58,7 @@ def save_configs():
     # NOTE: THe order of operations AND the order of the properties in the object matter to keep the layout of the yaml file
     # (The *data* is unaffected however, it will only result in a messy yaml file with misplaced comments)
 
-    general_logger.debug("Saving app settings to app_config.yaml")
+    get_general_logger().debug("Saving app settings to app_config.yaml")
 
     yaml = YAML()
     yaml_data = CommentedMap()  # Allows us to add comments to the output file
@@ -92,10 +92,10 @@ def save_configs():
         with open(util.resource_path("config/app_config.yaml"), "w") as file:
             yaml.dump(yaml_data, file)
     except Exception as e:
-        general_logger.error(f"Error saving app_config.yaml: {e}")
+        get_general_logger().error(f"Error saving app_config.yaml: {e}")
         return
 
-    general_logger.debug("App settings saved successfully.")
+    get_general_logger().debug("App settings saved successfully.")
 
 
 def __warn_of_incorrect_key(key: str):
@@ -103,9 +103,9 @@ def __warn_of_incorrect_key(key: str):
     suggestions = difflib.get_close_matches(key, vars(settings).keys(), n=1, cutoff=0.1)
     if suggestions:
         suggestion = suggestions[0]
-        general_logger.warning(f"app_config.yaml: {key} is not a known setting. Did you mean '{suggestion}'?")
+        get_general_logger().warning(f"app_config.yaml: {key} is not a known setting. Did you mean '{suggestion}'?")
     else:
-        general_logger.warning(f"app_config.yaml: {key} is not a known setting.")
+        get_general_logger().warning(f"app_config.yaml: {key} is not a known setting.")
 
 
 def apply_Settings_dictionary(dictionary: dict):
@@ -118,7 +118,7 @@ def apply_Settings_dictionary(dictionary: dict):
                 setattr(settings, key, value)  # Set the value
             else:
                 # Actual setting, but wrong type, don't load
-                general_logger.warning(
+                get_general_logger().warning(
                     f"Dictionary: {key} is not the correct type. Expected {type(getattr(settings, key))}, got {value}:{type(value)}"
                 )
         else:
@@ -138,23 +138,23 @@ def apply_settings_dicitonary_from_frontend(configData: dict):
     try:
         configData["general_interval"] = int(configData["general_interval"])
     except ValueError:
-        general_logger.warning("general_interval must be a positive integer.")
+        get_general_logger().warning("general_interval must be a positive integer.")
         return
 
     # general_log_level must be one of the following: "DEBUG", "INFO", "WARNING", "ERROR"
     if configData["general_log_level"] not in ["DEBUG", "INFO", "WARNING", "ERROR"]:
-        general_logger.warning("general_log_level must be one of the following: 'DEBUG', 'INFO', 'WARNING', 'ERROR'")
+        get_general_logger().warning("general_log_level must be one of the following: 'DEBUG', 'INFO', 'WARNING', 'ERROR'")
         return
 
     # general_theme must be one of the following: "light", "dark"
     if configData["general_theme"] not in ["light", "dark"]:
-        general_logger.warning("general_theme must be one of the following: 'light', 'dark'")
+        get_general_logger().warning("general_theme must be one of the following: 'light', 'dark'")
         return
 
     # alerts_use_toast, alerts_use_email, alerts_use_sms must be string that represents a boolean, and be converted to a boolean
     for key in ["alerts_use_toast", "alerts_use_email", "alerts_use_sms"]:
         if configData[key].lower() not in ["true", "false"]:
-            general_logger.warning(f"{key} must be a string that represents a boolean.")
+            get_general_logger().warning(f"{key} must be a string that represents a boolean.")
             return
         configData[key] = configData[key].lower == "true"
 
@@ -162,13 +162,13 @@ def apply_settings_dicitonary_from_frontend(configData: dict):
     try:
         configData["smtp_port"] = int(configData["smtp_port"])
     except ValueError:
-        general_logger.warning("smtp_port must be a positive integer.")
+        get_general_logger().warning("smtp_port must be a positive integer.")
         return
 
     # smtp_server, smtp_username, smtp_target_email, smtp_target_email_for_sms must be strings
     for key in ["smtp_server", "smtp_username", "smtp_target_email", "smtp_target_email_for_sms"]:
         if not isinstance(configData[key], str):
-            general_logger.warning(f"{key} must be a string.")
+            get_general_logger().warning(f"{key} must be a string.")
             return
 
     # Everything seems valid, apply the settings
