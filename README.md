@@ -3,6 +3,8 @@
 ## Overview
 BUMP is a locally-hosted application for monitoring the availability of web resources. It was developed as a learning project to gain experience with Python, front-end technologies (HTML, CSS, JavaScript), and the pywebview library. While functional, this tool is not intended to replace professional or cloud-hosted monitoring solutions.
 
+You can access the full documentation at [https://jeanmarieprevost.github.io/bump/](https://jeanmarieprevost.github.io/bump/)
+
 ### Disclaimer
 This project is provided as-is, primarily as a demonstration of learning and experimentation. For real-world uptime monitoring, better alternatives are available.
 
