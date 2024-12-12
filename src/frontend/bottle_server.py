@@ -1,3 +1,5 @@
+import ctypes
+import threading
 from bottle import Bottle, static_file
 from common.custom_logging import get_general_logger
 import common.mediator as mediator
@@ -8,6 +10,7 @@ class BottleServer:
         get_general_logger().info("bottle_server.py: Setting up Bottle server routes.")
 
         self.server: Bottle = Bottle()
+        self.thread = None
 
         @self.server.route("/assets/<path:path>")
         def serve_asset(path):
@@ -38,37 +41,19 @@ class BottleServer:
         self.server.run(host="localhost", port=8081, debug=True)
 
     def start_as_background_thread(self):
-        import threading
 
-        thread = threading.Thread(target=self.__run)
-        thread.start()
+        self.thread = threading.Thread(target=self.__run)
+        self.thread.start()
         mediator.register_http_server(self.server)
-        return thread
 
+        mediator.app_exit_requested.add(self.stop)
 
-# general_logger.info("bottle_server.py: Setting up Bottle server routes.")
+        return self.thread
 
-# server: Bottle = Bottle()
+    def stop(self):
+        # Taken straight from https://stackoverflow.com/questions/43399652/cant-quit-python-script-with-ctrl-c-if-a-thread-ran-webbrowser-open
+        stop = ctypes.pythonapi.PyThreadState_SetAsyncExc(ctypes.c_long(self.thread.ident), ctypes.py_object(KeyboardInterrupt))
+        self.thread.join()
 
-
-# @server.route("/assets/<filename>")
-# def serve_asset(filename):
-#     """Serves static files from the assets folder."""
-#     return static_file(filename, root="assets")
-
-
-# @server.route("/<filename>")
-# def serve_content(filename):
-#     """Serves static files from the frontend content folder, where the html, css, js files are."""
-#     return static_file(filename, root="src/frontend/content")
-
-
-# @server.route("/")
-# def serve_default():
-#     """Required by pywebview to define an entry point when passing a server instead of a url to create_window."""
-#     return static_file("main_page.html", root="src/frontend/content/")
-
-
-# general_logger.info("Bottle server routes set up.")
-
-# server.run(host="localhost", port=8081, debug=True)
+        self.server.close()
+        get_general_logger().info("bottle_server.py: Bottle server stopped.")

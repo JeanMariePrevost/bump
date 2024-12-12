@@ -127,7 +127,8 @@ if __name__ == "__main__":
 
     load_monitors_configuration()
     python_js_bridge.hook_frontend_to_backend_signals()  # Allows the JS frontend to receive specific backend events
-    BottleServer().start_as_background_thread()  # Start custom HTTP server for the pywebview GUI
+    bottle_server = BottleServer()
+    bottle_server.start_as_background_thread()  # Start custom HTTP server for the pywebview GUI
     async_bg_monitoring_thread = mediator.get_monitors_manager().start_background_monitoring_thread()
     tray_icon = SystemTrayIcon()  # Create the tray icon
 
@@ -142,4 +143,5 @@ if __name__ == "__main__":
     mediator.main_loop_exited.trigger()
 
     print("Main window was closed. End of script reached.")
-    exit()
+
+    sys.exit()
