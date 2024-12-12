@@ -16,7 +16,7 @@ class SystemTrayIcon:
     def __init__(self) -> None:
         get_general_logger().debug("system_tray.initialize_system_tray: Initializing system tray...")
         # Load the image for the icon
-        image = PIL.Image.open(util.resource_path("assets/icon_32px.png"))
+        image = PIL.Image.open(util.resolve_relative_path("assets/icon_32px.png"))
 
         # Set up pystray
         global __pystray_icon_object
@@ -42,15 +42,15 @@ class SystemTrayIcon:
         __pystray_icon_object.run_detached()
 
     def changeIconToWarning(self):
-        image = PIL.Image.open(util.resource_path("assets/icon_warning_32px.png"))
+        image = PIL.Image.open(util.resolve_relative_path("assets/icon_warning_32px.png"))
         __pystray_icon_object.icon = image
 
     def changeIconToNormal(self):
-        image = PIL.Image.open(util.resource_path("assets/icon_32px.png"))
+        image = PIL.Image.open(util.resolve_relative_path("assets/icon_32px.png"))
         __pystray_icon_object.icon = image
 
     def changeIconToDown(self):
-        image = PIL.Image.open(util.resource_path("assets/icon_down_32px.png"))
+        image = PIL.Image.open(util.resolve_relative_path("assets/icon_down_32px.png"))
         __pystray_icon_object.icon = image
 
     # Define actions for the RMB menu of the tray icon

@@ -81,7 +81,7 @@ def load_monitors_configuration():
 
             if reveal_config_file:
                 # Open the directory containing the config file in Explorer
-                config_file_path = util.resource_path("data/monitors.json")
+                config_file_path = util.resolve_relative_path("data/monitors.json")
                 os.startfile(os.path.dirname(config_file_path))
 
             root.destroy()

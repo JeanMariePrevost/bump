@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import difflib
+import os
 from ruamel.yaml import YAML, CommentedMap
 from common import util
 from common.custom_logging import get_general_logger
@@ -11,7 +12,7 @@ from common.custom_logging import get_general_logger
 class Settings:
     general_interval: int = 60
     general_log_level: str = "INFO"
-    general_theme: str = "dark"
+    general_theme: str = "light"
     alerts_use_toast: bool = True
     alerts_use_email: bool = False
     alerts_use_sms: bool = False
@@ -33,12 +34,14 @@ def load_configs():
     get_general_logger().debug("Loading app settings from app_config.yaml")
 
     yaml = YAML()
+    config_path = util.resolve_relative_path("config/app_config.yaml")
 
     try:
-        with open(util.resource_path("config/app_config.yaml"), "r") as file:
+        with open(config_path, "r") as file:
             loadedConfigsDict = yaml.load(file)
     except FileNotFoundError:
-        get_general_logger().error("app_config.yaml not found. Settings could not be loaded.")
+        get_general_logger().error(f"{config_path} not found. Settings could not be loaded. Defaults will be used.")
+        save_configs()
         return
     except Exception as e:
         get_general_logger().error(f"Error loading app_config.yaml: {e}")
@@ -87,9 +90,12 @@ def save_configs():
         before="SMTP server details, used for sending email and Email-to-SMS alerts\nNote: The password is entered during setup and stored in the OS credentials manager using keyring (https://pypi.org/project/keyring/)",
     )
 
+    # Create directory if it doesn't exist
+    os.makedirs(os.path.dirname(util.resolve_relative_path("config/app_config.yaml")), exist_ok=True)
+
     # Save the yaml_data to the file
     try:
-        with open(util.resource_path("config/app_config.yaml"), "w") as file:
+        with open(util.resolve_relative_path("config/app_config.yaml"), "w") as file:
             yaml.dump(yaml_data, file)
     except Exception as e:
         get_general_logger().error(f"Error saving app_config.yaml: {e}")

@@ -10,17 +10,20 @@ import common.mediator as mediator
 from common.simple_queue import QueueEvents
 
 
-def resource_path(relative_path):
+def resolve_relative_path(relative_path):
     """
     Resolves absolute path to resource, required for PyInstaller compatibility.
     :param relative_path: The relative path to the resource, from the root directory
     :return: The absolute path to the resource
     """
     if hasattr(sys, "_MEIPASS"):
+        # In bundled app, use PyInstaller's _MEIPASS
         application_root_directory = os.path.abspath(os.path.join(sys._MEIPASS, os.pardir))
         get_general_logger().debug(f"Application root directory: {application_root_directory}")
         return os.path.join(application_root_directory, relative_path)
-    return os.path.join(os.path.abspath("."), relative_path)
+    else:
+        # Running in normal Python environment
+        return os.path.join(os.path.abspath("."), relative_path)
 
 
 def is_valid_filename(filename: str) -> bool:
@@ -80,9 +83,9 @@ def export_app_config_and_logs_to_zip():
 
     # Define the folders to export
     folders = [
-        resource_path("config"),
-        resource_path("data"),
-        resource_path("logs"),
+        resolve_relative_path("config"),
+        resolve_relative_path("data"),
+        resolve_relative_path("logs"),
     ]
 
     # Ensure source paths already exist
@@ -98,7 +101,7 @@ def export_app_config_and_logs_to_zip():
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     filename = timestamp + "_BUMP_EXPORT.zip"
     subdirectory = "exports"
-    output_path = resource_path(subdirectory + "/" + filename)
+    output_path = resolve_relative_path(subdirectory + "/" + filename)
     get_general_logger().debug(f"Exporting app data and logs to {output_path}")
     with zipfile.ZipFile(output_path, "w", zipfile.ZIP_DEFLATED) as zipf:
         for folder in folders:
@@ -117,7 +120,7 @@ def export_app_config_and_logs_to_zip():
     messagebox.showinfo("Export complete", f"Exported to {output_path}")
 
     # Reveal the file in the file explorer
-    full_directory = resource_path(subdirectory)
+    full_directory = resolve_relative_path(subdirectory)
     print(f"Exported to {full_directory}")
     os.startfile(full_directory)
 
@@ -128,9 +131,9 @@ def import_app_config_and_logs_from_zip():
     Application must be stopped and restarted
     """
 
-    exports_folder_exists = os.path.exists(resource_path("exports"))
+    exports_folder_exists = os.path.exists(resolve_relative_path("exports"))
     initial_folder = "exports" if exports_folder_exists else "."
-    initial_folder = resource_path(initial_folder)
+    initial_folder = resolve_relative_path(initial_folder)
 
     # Ask the user to select a file
     from tkinter import Tk
@@ -168,7 +171,7 @@ def import_app_config_and_logs_from_zip():
         return
 
     # Extract the zip file
-    extract_location = resource_path(".")
+    extract_location = resolve_relative_path(".")
     with zipfile.ZipFile(filepath, "r") as zipf:
         zipf.extractall(extract_location)
 

@@ -109,7 +109,7 @@ class Monitor(Deserializable):
     def read_monitor_log_entries(self, max_number_of_entries: int, min_level: str = "INFO"):
         """Reads and returns the last `max_number_of_entries` log entries from the monitor's log file with the specified level."""
         partial_path = f"logs/monitors/{self.unique_name}.log"
-        log_file_path = util.resource_path(partial_path)
+        log_file_path = util.resolve_relative_path(partial_path)
         # If file doesn't exist, log a warning and return []
         if not os.path.exists(log_file_path):
             get_general_logger().warning(f"Log file {partial_path} does not exist.")
@@ -151,7 +151,7 @@ class Monitor(Deserializable):
 
         # Currently using a single app-wide settings, profiles could be implemented in the future
         if settings.alerts_use_toast:
-            icon = util.resource_path("src/frontend/content/favicon.ico")
+            icon = util.resolve_relative_path("src/frontend/content/favicon.ico")
             notification.notify(app_name="BUMP", title=messageTitleString, message=messageString, app_icon=icon)
 
         # TODO - If both enabled, send a single message with both recipients to avoid sending two messages or one being / or filtered out?
@@ -338,7 +338,7 @@ class Monitor(Deserializable):
         try:
             if targetMonitor.unique_name != config["original_name"]:
                 # Rename the history file if it exists
-                old_history_path = util.resource_path(f"data/history/{config['original_name']}.jsonl")
+                old_history_path = util.resolve_relative_path(f"data/history/{config['original_name']}.jsonl")
                 if os.path.exists(old_history_path):
                     os.rename(old_history_path, f"data/history/{targetMonitor.unique_name}.jsonl")
                 # Rename the log file and reinitialize the logger
@@ -348,7 +348,7 @@ class Monitor(Deserializable):
                         targetMonitor.__logger.removeHandler(handler)
                         handler.close()
                 # TODO: Don't hardcode the log path?
-                old_log_path = util.resource_path(f"logs/monitors/{config['original_name']}.log")
+                old_log_path = util.resolve_relative_path(f"logs/monitors/{config['original_name']}.log")
                 if os.path.exists(old_log_path):
                     os.rename(old_log_path, f"logs/{targetMonitor.unique_name}.log")
                 targetMonitor.__logger = get_custom_logger("monitors/" + targetMonitor.unique_name)

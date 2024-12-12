@@ -100,7 +100,7 @@ class JsApi:
         log_entries = []
         if include_general:
             # Add log entries from the general log
-            general_log_path = common.util.resource_path("logs/general.log")
+            general_log_path = common.util.resolve_relative_path("logs/general.log")
             log_entries += read_entries_from_log_file(general_log_path, max_number_of_entries, min_level)
         if include_monitoring:
             # Add log entries for all monitors in the manager
