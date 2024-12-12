@@ -21,8 +21,9 @@ class SystemTrayIcon:
         # Set up pystray
         global __pystray_icon_object
         __pystray_icon_object = pystray.Icon(
-            "Bump - Web Monitoring Tool",
-            image,
+            name="Bump",
+            title="Bump - Web Monitoring Tool",
+            icon=image,
             menu=pystray.Menu(
                 pystray.MenuItem(
                     "default", self.on_clicked_open_gui, default=True, visible=False
