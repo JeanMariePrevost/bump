@@ -17,7 +17,9 @@ def resource_path(relative_path):
     :return: The absolute path to the resource
     """
     if hasattr(sys, "_MEIPASS"):
-        return os.path.join(sys._MEIPASS, relative_path)
+        application_root_directory = os.path.abspath(os.path.join(sys._MEIPASS, os.pardir))
+        get_general_logger().debug(f"Application root directory: {application_root_directory}")
+        return os.path.join(application_root_directory, relative_path)
     return os.path.join(os.path.abspath("."), relative_path)
 
 
