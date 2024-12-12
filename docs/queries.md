@@ -55,6 +55,7 @@ Most query types take in an additional "Condition" argument, described for each 
 
 ## Choosing the Right Query Type
 Select the query type based on the kind of verification needed:
+
 - Use **HTTP Simple** for basic availability.
 - Use **HTTP Status Code** to validate server responses.
 - Use **HTTP Content** or **HTTP Regex** for specific text in the raw response.
