@@ -133,15 +133,32 @@ def import_app_config_and_logs_from_zip():
     # Ask the user to select a file
     from tkinter import Tk
     from tkinter.filedialog import askopenfilename
+    from tkinter import messagebox
 
-    Tk().withdraw()  # Prevents the root window from appearing
+    # Tk().withdraw()  # Prevents the root window from appearing
     filepath = askopenfilename(title="Select the BUMP export ZIP file to import", filetypes=[("ZIP files", "*.zip")], initialdir=initial_folder)
     if not filepath:
         get_general_logger().debug("Import cancelled - no file selected")
         return
 
+    # Validate the file isn't just a random zip file by ensuirng it contains the expected folders and nothing else
+    with zipfile.ZipFile(filepath, "r") as zipf:
+        files = zipf.namelist()
+        expected_dirs = [
+            "config/",
+            "data/",
+            "logs/",
+        ]
+        first_unexpected_directory = next((file for file in files if not any(file.startswith(expected_dir) for expected_dir in expected_dirs)), None)
+        if first_unexpected_directory is not None:
+            get_general_logger().error("Import failed: ZIP file is not a valid BUMP export archive")
+            messagebox.showerror(
+                "Import failed",
+                f"The selected ZIP file is not a valid BUMP export archive.\n\nUnexpected file or directory: {first_unexpected_directory}",
+            )
+            return
+
     # Get confirmation from user that they wish to crush all existing data
-    from tkinter import messagebox
 
     confirm_import = messagebox.askokcancel("Confirm import", "This will overwrite all existing data. Continue?")
     if not confirm_import:
