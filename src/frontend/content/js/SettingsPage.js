@@ -109,11 +109,11 @@ function initializeFormHelper() {
   formHelper.addValidationRule("alerts_use_toast", "isBoolean");
   formHelper.addValidationRule("alerts_use_email", "isBoolean");
   formHelper.addValidationRule("alerts_use_sms", "isBoolean");
-  formHelper.addValidationRule("smtp_server", "isNotEmpty");
-  formHelper.addValidationRule("smtp_port", "isNonNegativeInteger");
-  formHelper.addValidationRule("smtp_username", "isNotEmpty");
-  formHelper.addValidationRule("smtp_target_email", "isEmail");
-  formHelper.addValidationRule("smtp_target_email_for_sms", "isEmail");
+  // formHelper.addValidationRule("smtp_server", "isNotEmpty");
+  // formHelper.addValidationRule("smtp_port", "isNonNegativeInteger");
+  // formHelper.addValidationRule("smtp_username", "isNotEmpty");
+  // formHelper.addValidationRule("smtp_target_email", "isEmail");
+  // formHelper.addValidationRule("smtp_target_email_for_sms", "isEmail");
 }
 
 function handleFormSubmit(formData) {
