@@ -25,6 +25,16 @@ export class MonitorHeaderCard extends BaseComponent {
         this.handleMonitorActionBarLinksClick(event, this.monitorUniqueName);
       });
     });
+
+    this.addManagedEventListener(window, "new_monitor_results_in_backend", (event) => {
+      if (event.detail.monitorUniqueName === this.monitorUniqueName) {
+        // Re-enable the check now button
+        const checkNowActionLink = this.element.querySelector(".monitor-action-link[data-action='execute']");
+        if (checkNowActionLink) {
+          checkNowActionLink.classList.remove("no-events", "opacity-50");
+        }
+      }
+    });
   }
 
   _updateHeaderCard(monitorData) {
@@ -83,6 +93,10 @@ export class MonitorHeaderCard extends BaseComponent {
       case "execute":
         console.log("Execute action clicked");
         // Ask backend to execute the monitor
+        // Disable element to prevent multiple clicks by adding .no-events .opacity-50 classes to it
+        const targetElement = event.target;
+        targetElement.classList.add("no-events", "opacity-50");
+
         requestMonitorExecution(this.monitorUniqueName).then((response) => {
           if (response === "true") {
             console.log("Monitor executed successfully");
