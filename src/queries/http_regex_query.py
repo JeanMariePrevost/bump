@@ -2,6 +2,7 @@ import re
 from http.client import HTTPResponse
 
 from queries.http_query import HttpQuery
+from queries.query import Query
 from queries.query_result import QueryResult
 
 
@@ -11,7 +12,13 @@ class HttpRegexQuery(HttpQuery):
     """
 
     def __init__(
-        self, url: str = "", timeout: float = 1, regex_to_find: str = "", multi_line: bool = False, ignore_case: bool = False, dot_all: bool = False
+        self,
+        url: str = "",
+        timeout: float = Query.DEFAULT_TIMEOUT,
+        regex_to_find: str = "",
+        multi_line: bool = False,
+        ignore_case: bool = False,
+        dot_all: bool = False,
     ) -> None:
         """
         :param url: The URL to query

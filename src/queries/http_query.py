@@ -18,7 +18,7 @@ class HttpQuery(Query):
     def from_dict(cls, dict_object: dict):
         return super().from_dict(dict_object)
 
-    def __init__(self, url: str = "", timeout: float = 1) -> None:
+    def __init__(self, url: str = "", timeout: float = Query.DEFAULT_TIMEOUT) -> None:
         super().__init__()
         self.url = url
         self.timeout = timeout

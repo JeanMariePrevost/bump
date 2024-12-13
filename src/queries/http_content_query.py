@@ -1,6 +1,7 @@
 from http.client import HTTPResponse
 
 from queries.http_query import HttpQuery
+from queries.query import Query
 from queries.query_result import QueryResult
 
 
@@ -9,7 +10,7 @@ class HttpContentQuery(HttpQuery):
     Looks for a string in the response body.
     """
 
-    def __init__(self, url: str = "", timeout: float = 1, string_to_find: str = "") -> None:
+    def __init__(self, url: str = "", timeout: float = Query.DEFAULT_TIMEOUT, string_to_find: str = "") -> None:
         super().__init__(url, timeout)
         self.string_to_find = string_to_find
 

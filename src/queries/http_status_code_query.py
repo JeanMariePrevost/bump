@@ -1,6 +1,7 @@
 from http.client import HTTPResponse
 
 from queries.http_query import HttpQuery
+from queries.query import Query
 from queries.query_result import QueryResult
 
 
@@ -10,7 +11,7 @@ class HttpStatusCodeQuery(HttpQuery):
     An HttpStatusCodeQuery with code 200 would be equivalent to a default HttpQuery.
     """
 
-    def __init__(self, url: str = "", timeout: float = 1, expected_status_code: int = "") -> None:
+    def __init__(self, url: str = "", timeout: float = Query.DEFAULT_TIMEOUT, expected_status_code: int = "") -> None:
         super().__init__(url, timeout)
         self.expected_status_code = expected_status_code
 

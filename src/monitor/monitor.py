@@ -31,7 +31,7 @@ class Monitor(Deserializable):
         self.query = query
         self.period_in_seconds = period_in_seconds
         self.retries = 0
-        self.retries_interval_in_seconds = 30
+        self.retries_interval_in_seconds = 1
         self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
         self.paused = False
         self.error_preventing_execution: str | None = None

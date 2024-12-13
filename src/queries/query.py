@@ -7,6 +7,8 @@ class Query(Deserializable):
     Abstract query that defines the "interface" for all queries and potentially holds common logic.
     """
 
+    DEFAULT_TIMEOUT = 30
+
     def __init__(self) -> None:
         self.query_params_as_string = ""  # Used for the frontend, as it configures queries through a single text field
 

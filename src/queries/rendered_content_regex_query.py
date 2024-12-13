@@ -12,7 +12,13 @@ class RenderedContentRegexQuery(Query):
     """
 
     def __init__(
-        self, url: str = "", timeout: float = 1, regex_to_find: str = "", multi_line: bool = False, ignore_case: bool = False, dot_all: bool = False
+        self,
+        url: str = "",
+        timeout: float = Query.DEFAULT_TIMEOUT,
+        regex_to_find: str = "",
+        multi_line: bool = False,
+        ignore_case: bool = False,
+        dot_all: bool = False,
     ) -> None:
         """
         :param url: The URL to query
