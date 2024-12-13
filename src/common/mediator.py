@@ -42,6 +42,7 @@ monitor_status_changed = Signal(str)  # the status of a monitor has changed, wit
 __active_gui: GuiWindow | None = None
 __monitors_manager: MonitorsManager | None = None
 __http_server: Bottle | None = None
+pywebview_debug_mode: bool = False  # Can be set with command-line arguments
 
 
 def register_active_gui(window: GuiWindow | None):

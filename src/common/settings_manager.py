@@ -139,7 +139,6 @@ def apply_settings_dicitonary_from_frontend(configData: dict):
     """
     Prepares and validates input before passing it to apply_Settings_dictionary()
     """
-    print(configData)
     # general_interval casts to a positive integer
     try:
         configData["general_interval"] = int(configData["general_interval"])
@@ -162,7 +161,7 @@ def apply_settings_dicitonary_from_frontend(configData: dict):
         if configData[key].lower() not in ["true", "false"]:
             get_general_logger().warning(f"{key} must be a string that represents a boolean.")
             return
-        configData[key] = configData[key].lower == "true"
+        configData[key] = configData[key].lower() == "true"
 
     # smtp_port casts to a positive integer
     try:

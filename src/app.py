@@ -115,12 +115,33 @@ def main_thread_loop():
             get_general_logger().error(f"Unknown event received: {event}")
 
 
+def try_parse_cli_args():
+    """
+    Attempt to parse command line arguments and handle them.
+    """
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run the BUMP application.")
+    parser.add_argument("--debugpwv", action="store_true", help="Enable pywebview debugging.")
+    args = parser.parse_args()
+
+    if args.debugpwv:
+        mediator.pywebview_debug_mode = True
+        get_general_logger().info("Debug mode enabled for pywebview through command line argument.")
+
+    # Special case for the debug executable, identified by name (yes it's rather hacky)
+    if "debug_mode.exe" in sys.executable:
+        mediator.pywebview_debug_mode = True
+        get_general_logger().info("Debug mode enabled for pywebview through using the debug executable.")
+
+
 if __name__ == "__main__":
     # NOTE: Order of operations is important in multiple places here
     # (e.g. defining the working directory before loading settings, loading settings before setting log level, etc.)
 
     define_cwd()  # Has to be called before any code that relies on relative paths
     custom_logging.initialize()
+    try_parse_cli_args()
     settings_manager.load_configs()
     set_log_level(settings_manager.settings.general_log_level)
     get_general_logger().info("Application starting...")
