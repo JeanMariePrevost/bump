@@ -149,6 +149,8 @@ class JsApi:
             get_general_logger().debug(f"Monitor after applying config: {targetMonitor}")
             # Save the new config to disk
             mediator.get_monitors_manager().save_monitors_configs_to_file()
+            # Execute the monitor to reflect the new config
+            targetMonitor.execute_in_background()
         except Exception as e:
             get_general_logger().exception(f"Error while applying monitor config: {e}")
             return str(e)

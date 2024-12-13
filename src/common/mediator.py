@@ -4,6 +4,7 @@ from bottle import Bottle
 
 from common.simple_queue import SimpleQueue
 from common.signal import Signal
+from monitor.monitor import Monitor
 
 if TYPE_CHECKING:
     from frontend.gui_window import GuiWindow
@@ -18,7 +19,8 @@ A central hub for communication between different parts of the application.
 # For inter-thread communication, where "get" blocks until an event is received
 # When you need an action to be performed in a specific thread
 main_thread_blocking_queue = SimpleQueue()
-bg_monitoring_queue = SimpleQueue()
+bg_monitoring_queue = SimpleQueue()  # Can take QueueEvents or Monitor objects (in which case the monitor will be executed)
+bg_monitoring_queue.add_allowed_event_type(Monitor)  # Allow Monitors to be added to the queue for immediate bg execution
 
 ############################################################################################
 # Signals

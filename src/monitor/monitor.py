@@ -31,7 +31,7 @@ class Monitor(Deserializable):
         self.query = query
         self.period_in_seconds = period_in_seconds
         self.retries = 0
-        self.retries_interval_in_seconds = 1
+        self.retries_interval_in_seconds = 30
         self._next_run_time = datetime.now() + timedelta(seconds=self.period_in_seconds)
         self.paused = False
         self.error_preventing_execution: str | None = None
@@ -82,6 +82,13 @@ class Monitor(Deserializable):
         # HACK - Ended up with some state in the monitor CONFIGURATIONS... so I'll simply force save on every new result until I can think of a proper solution (just split it? Keep it this way?)
         mediator.get_monitors_manager().save_monitors_configs_to_file()
         return query_result
+
+    def execute_in_background(self):
+        """
+        Queues the monitor for immediate execution in the background monitoring thread instead of blocking the current thread.
+        Disregards the monitor's period_in_seconds.
+        """
+        mediator.bg_monitoring_queue.put(self)
 
     def log_monitor_event(self, event: str, level: str = "INFO"):
         """Adds an entry to the monitoring file."""

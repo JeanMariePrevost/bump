@@ -74,6 +74,9 @@ class MonitorsManager(Deserializable):
                 if event == QueueEvents.EXIT_APP:
                     get_general_logger().debug("Background monitoring loop exiting")
                     break
+                elif isinstance(event, Monitor):
+                    # A monitor has been manually queued for immediate execution
+                    event.execute()
 
         def thread_target():
             asyncio.run(background_monitoring_loop())  # Run the coroutine in this thread's event loop
