@@ -40,15 +40,6 @@ class HttpQuery(Query):
 
         return super().parameters_are_valid()
 
-        # If url cannot be made into a valid URL
-        try:
-            urllib.parse.urlparse(self.url)
-        except ValueError:
-            return False
-
-        if self.timeout <= 0:
-            return False
-
     def execute(self) -> QueryResult:
         # Send an HTTP HEAD request to the URL using urllib
         self._start_time = datetime.now()

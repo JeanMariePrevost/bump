@@ -31,8 +31,8 @@ class HttpContentQuery(HttpQuery):
         return super().parameters_are_valid()
 
     def _test_passed_predicate(self, response: HTTPResponse | Exception) -> bool:
-        if getattr(response, "code", None) == 200:
-            body = response.read().decode("utf-8")
+        if str(getattr(response, "code", None)) == "200":
+            body = response.read().decode("utf-8", errors="ignore")
             return self.string_to_find in body
         else:
             return False
