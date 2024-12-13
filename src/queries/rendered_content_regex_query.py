@@ -2,6 +2,7 @@ from datetime import datetime
 import re
 
 from playwright.sync_api import sync_playwright
+from common.custom_logging import get_general_logger
 from queries.query import Query
 from queries.query_result import QueryResult
 
@@ -67,27 +68,43 @@ class RenderedContentRegexQuery(Query):
 
         return super().parameters_are_valid()
 
+    def get_rendered_page_content(self, url: str, timeout: int = 30) -> str:
+        """
+        Gets the fully rendered content of a webpage using Playwright.
+        Returns the HTML content as a string.
+
+        NOTE: MAJOR not-understood code block here, this was taken straight from various online snippets and appears to work
+        """
+        from playwright.async_api import async_playwright
+        import asyncio
+        from concurrent.futures import ThreadPoolExecutor
+
+        async def _get_content():
+            async with async_playwright() as p:
+                browser = await p.chromium.launch()
+                try:
+                    page = await browser.new_page()
+                    await page.goto(url, timeout=timeout * 1000)
+                    await page.wait_for_load_state("networkidle")
+                    return await page.content()
+                finally:
+                    await browser.close()
+
+        if asyncio.get_event_loop().is_running():
+            # We're in an event loop, so run in a separate thread
+            with ThreadPoolExecutor() as executor:
+                future = executor.submit(asyncio.run, _get_content())
+                return future.result()
+
+        # If no event loop, just run it
+        return asyncio.run(_get_content())
+
     def execute(self) -> QueryResult:
         self._start_time = datetime.now()
         try:
-            # Use Playwright to render the page to get the "real" content
-            with sync_playwright() as p:
-                browser = p.chromium.launch()
-                page = browser.new_page()
-                page.goto(self.url, timeout=self.timeout * 1000)
-                page.wait_for_load_state("networkidle")  # Wait until network requests are idle
-                rendered_content = page.content()
-                browser.close()
+            rendered_content = self.get_rendered_page_content(self.url, self.timeout)
         except Exception as e:
-            return QueryResult(
-                start_time=self._start_time,
-                end_time=datetime.now(),
-                test_passed=False,
-                retries=1,
-                code_or_status=type(e).__name__,
-                message=str(e),
-                reason=str(e),
-            )
+            get_general_logger().error(f"Error getting rendered content: {e}")
 
         test_passed = self._test_passed_predicate(rendered_content)
         return QueryResult(

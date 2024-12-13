@@ -67,16 +67,19 @@ class MonitorsManager(Deserializable):
 
         async def background_monitoring_loop():
             while True:
-                self.execute_due_monitors()
-
                 # Wait listening for an event for a time, or continue after the timeout
                 event = mediator.bg_monitoring_queue.get(timeout_s=settings.general_interval)
+
                 if event == QueueEvents.EXIT_APP:
                     get_general_logger().debug("Background monitoring loop exiting")
                     break
                 elif isinstance(event, Monitor):
                     # A monitor has been manually queued for immediate execution
                     event.execute()
+                    pass
+                else:
+                    # Queue timed out, perform the regular loop
+                    self.execute_due_monitors()
 
         def thread_target():
             asyncio.run(background_monitoring_loop())  # Run the coroutine in this thread's event loop

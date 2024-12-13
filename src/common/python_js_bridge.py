@@ -87,7 +87,7 @@ class JsApi:
         targetMonitor = mediator.get_monitors_manager().get_monitor_by_name(unique_name)
         if targetMonitor is None:
             return f"Monitor with name {unique_name} not found"
-        targetMonitor.execute()
+        targetMonitor.execute_in_background()
         return "true"
 
     def request_log_entries(self, max_number_of_entries: int, min_level: str = "INFO", include_general: bool = True, include_monitoring: bool = True):
