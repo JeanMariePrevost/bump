@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import os
 import traceback
+from plyer import notification
 import common.mediator as mediator
 from common import util
 from common.util import get_query_class_from_string, is_valid_filename, is_valid_url
@@ -145,7 +146,6 @@ class Monitor(Deserializable):
         self.last_query_passed = query_result.test_passed
 
     def sendUserAlerts(self, query_result: QueryResult):
-        from plyer import notification
 
         get_general_logger().debug(f"Sending alert for monitor {self.unique_name}")
 
@@ -158,7 +158,11 @@ class Monitor(Deserializable):
 
         # Currently using a single app-wide settings, profiles could be implemented in the future
         if settings.alerts_use_toast:
-            icon = util.resolve_relative_path("src/frontend/content/favicon.ico")
+            if query_result.test_passed:
+                icon = util.resolve_relative_path("assets/icon_32px.ico")
+            else:
+                icon = util.resolve_relative_path("assets/icon_down_32px.ico")
+            # icon = util.resolve_relative_path_internal("src/frontend/content/favicon.ico")
             notification.notify(app_name="BUMP", title=messageTitleString, message=messageString, app_icon=icon)
 
         # TODO - If both enabled, send a single message with both recipients to avoid sending two messages or one being / or filtered out?

@@ -26,6 +26,21 @@ def resolve_relative_path(relative_path):
         return os.path.join(os.path.abspath("."), relative_path)
 
 
+def resolve_relative_path_internal(relative_path):
+    """
+    Same as resolve_relative_path, but inserts the "_internal" folder in the path when running in a bundled app.
+    Because some resources are moved to the _internal folder, while others stay in the app's root directory.
+    """
+    if hasattr(sys, "_MEIPASS"):
+        # In bundled app, use PyInstaller's _MEIPASS
+        application_internal_directory = os.path.abspath(os.path.join(sys._MEIPASS, os.pardir, "_internal"))
+        get_general_logger().debug(f"Application _internal directory: {application_internal_directory}")
+        return os.path.join(application_internal_directory, relative_path)
+    else:
+        # Running in normal Python environment
+        return os.path.join(os.path.abspath("."), relative_path)
+
+
 def is_valid_filename(filename: str) -> bool:
     """
     Checks if the given string is a valid filename based on Windows filesystem rules.

@@ -41,7 +41,7 @@ class GuiWindow:
         self.window.events.closed += self.close
         mediator.register_active_gui(self)
 
-        webview.start(icon=util.resolve_relative_path("assets/icon_32px.png"), debug=mediator.pywebview_debug_mode)
+        webview.start(icon=util.resolve_relative_path_internal("assets/icon_32px.png"), debug=mediator.pywebview_debug_mode)
 
     def close(self):
         if mediator.get_active_gui() == self.window:

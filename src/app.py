@@ -127,11 +127,13 @@ def try_parse_cli_args():
 
     if args.debugpwv:
         mediator.pywebview_debug_mode = True
+        custom_logging.set_log_level("DEBUG")
         get_general_logger().info("Debug mode enabled for pywebview through command line argument.")
 
     # Special case for the debug executable, identified by name (yes it's rather hacky)
     if "debug_mode.exe" in sys.executable:
         mediator.pywebview_debug_mode = True
+        custom_logging.set_log_level("DEBUG")
         get_general_logger().info("Debug mode enabled for pywebview through using the debug executable.")
 
 
