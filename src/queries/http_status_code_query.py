@@ -33,9 +33,9 @@ class HttpStatusCodeQuery(HttpQuery):
 
     def _test_passed_predicate(self, response: HTTPResponse | Exception) -> bool:
         if hasattr(response, "code"):
-            return response.code == self.expected_status_code
+            return str(response.code) == str(self.expected_status_code)
         elif hasattr(response, "status"):
-            return response.status == self.expected_status_code
+            return str(response.status) == str(self.expected_status_code)
         else:
             return False
 
