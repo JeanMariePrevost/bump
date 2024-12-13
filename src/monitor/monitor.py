@@ -204,8 +204,13 @@ class Monitor(Deserializable):
                 if len(lines) > 0:
                     for line in lines:
                         result: QueryResult = serialization.from_encoded_json(line)
-                        if datetime.now() - result.end_time < timedelta(days=days_to_read):
-                            resultsList.append(result)
+                        try:
+                            if datetime.now() - result.end_time < timedelta(days=days_to_read):
+                                resultsList.append(result)
+                        except Exception as e:
+                            get_general_logger().error(f"Error while filtering results by date: {e}")
+                            traceback.print_exc()
+                            continue
                     return resultsList
         except Exception as e:
             get_general_logger().error(f"Error while getting previous query result: {e}")
@@ -308,7 +313,7 @@ class Monitor(Deserializable):
         # Test whether config["query_type"] is an existing fully qualified class name in the queries package
         queryType = get_query_class_from_string(f"{config['query_type']}")
         if queryType is None:
-            log_and_raise_error("query_type not a known query type")
+            log_and_raise_error(f"query_type [{config['query_type']}] not a known query type")
 
         # Testing query_params_string requires creating a query object temporarily and passing the string to it
         validation_query: Query = queryType()

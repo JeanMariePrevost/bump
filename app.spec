@@ -2,7 +2,7 @@
 
 
 added_files = [
-    ("config", "config"),
+    # ("config", "config"),
     ("assets", "assets"),
     ("metadata.json", "."),
     ("src/frontend/content", "src/frontend/content"),
@@ -14,7 +14,7 @@ a = Analysis(
     pathex=[],
     binaries=[],
     datas=added_files,
-    hiddenimports=['plyer.platforms.win.notification'],
+    hiddenimports=["plyer.platforms.win.notification"],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

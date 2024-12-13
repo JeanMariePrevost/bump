@@ -16,8 +16,8 @@ class QueryResult(Deserializable):
         reason: str = None,
         exception_type: str = None,
     ) -> None:
-        self.start_time = start_time
-        self.end_time = end_time
+        self.start_time = start_time if start_time else datetime.now()
+        self.end_time = end_time if end_time else datetime.now()
         self.test_passed = bool(test_passed) if test_passed is not None else None
         self.retries = int(retries) if retries else None
         self.code_or_status = int(code_or_status) if code_or_status else None
