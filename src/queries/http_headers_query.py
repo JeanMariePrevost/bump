@@ -25,7 +25,7 @@ class HttpHeadersQuery(HttpQuery):
         self.update_query_params_string()
 
     def update_query_params_string(self):
-        self.query_params_as_string = self.string_to_find
+        self.query_params_as_string = f"{self.header_key}:{self.header_value}"
 
     def parameters_are_valid(self) -> bool:
         if not self.header_key or not self.header_value:

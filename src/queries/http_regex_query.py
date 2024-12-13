@@ -60,8 +60,8 @@ class HttpRegexQuery(HttpQuery):
             self.flags |= re.DOTALL
 
         compiled_pattern = re.compile(self.regex_to_find, self.flags)
-        if getattr(response, "code", None) == 200:
-            body = response.read().decode("utf-8")
+        if str(getattr(response, "code", None)) == "200":
+            body = response.read().decode("utf-8", errors="ignore")
             return bool(compiled_pattern.search(body))
         else:
             return False
