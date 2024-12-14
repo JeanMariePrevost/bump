@@ -46,6 +46,7 @@ added_files = [
     ("assets", "assets"),
     ("metadata.json", "."),
     ("src/frontend/content", "src/frontend/content"),
+    ("extra_pyinstaller_datas/playwright/driver/package/.local-browsers", "playwright/driver/package/.local-browsers"),
 ]
 
 

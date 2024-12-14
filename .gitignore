@@ -166,3 +166,4 @@ cython_debug/
 data/
 config/
 exports/
+extra_pyinstaller_datas/
