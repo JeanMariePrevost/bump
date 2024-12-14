@@ -25,10 +25,18 @@ def collect_hiddenimports(src_folder):
     return hiddenimports
 
 
-# Dynamically determine the root directory of the spec file and "src" folder
+# # Dynamically determine the root directory of the spec file and "src" folder
 src_folder = os.path.join(os.getcwd(), "src")  # Append "src" to the spec file location
+
 if not os.path.exists(src_folder):
-    raise FileNotFoundError(f"Source folder not found: {src_folder}")
+    print(f"Source folder not found: {src_folder}")
+    src_folder = input("Enter the path to the 'bump/src' folder to proceed: ")
+    # Strip quotes if present
+    src_folder = src_folder.strip()
+    src_folder = src_folder.strip("'\"")
+    src_folder = src_folder.strip()
+    if not os.path.exists(src_folder):
+        raise FileNotFoundError(f"Source folder not found: {src_folder}")
 dynamic_hidden_imports = collect_hiddenimports(src_folder)
 
 
